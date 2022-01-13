@@ -4,8 +4,8 @@
 # Refer to nginx wiki at http://wiki.codemongers.com/ for configuration syntax
 # 
 
-# change UID/GID to zimbra/zimbra upon startup
-user zimbra zimbra;
+# change UID/GID to zextras/zextras upon startup
+user zextras zextras;
 
 # number of worker processes to start 
 # multiply this by worker_connections to get the maximum number of connections 
@@ -18,18 +18,18 @@ worker_processes  4;
 #error_log  logs/error.log  notice;
 #error_log  logs/error.log  info;
 
-pid        /opt/zimbra/log/nginx.pid;
-error_log  /opt/zimbra/log/nginx.log info;
+pid        /opt/zextras/log/nginx.pid;
+error_log  /opt/zextras/log/nginx.log info;
 
 
 events {
     # number of simultaneous connections that each worker process can 
     # handle simultaneously
     # note that this number should not exceed the hard limit of the 
-    # RLIMIT_NOFILE resource limit that is set for the zimbra user, because
+    # RLIMIT_NOFILE resource limit that is set for the zextras user, because
     # RLIMIT_NOFILE defines the maximum number of open file descriptors that
     # a process running as a user can have - by default, limits.conf on a 
-    # zimbra system will ensure that the zimbra user has more than 10k file
+    # zextras system will ensure that the zextras user has more than 10k file
     # descriptors allowed for a zimbra process
 
     # (note) also see worker_rlimit_nofile at 
@@ -259,8 +259,8 @@ mail {
     # (starttls moved to per-server config)
     # starttls on;
     ssl_prefer_server_ciphers on;
-    ssl_certificate             /opt/zimbra/conf/nginx.crt;
-    ssl_certificate_key         /opt/zimbra/conf/nginx.key;
+    ssl_certificate             /opt/zextras/conf/nginx.crt;
+    ssl_certificate_key         /opt/zextras/conf/nginx.key;
     
     # Ciphers configuration
     #
@@ -386,8 +386,8 @@ http {
 %%uncomment VAR:zimbraReverseProxyHttpEnabled%%     listen %%zimbraMailSSLProxyPort%%;
 %%uncomment VAR:zimbraReverseProxyHttpEnabled%%     client_max_body_size %%zimbraFileUploadMaxSize%%;
 %%uncomment VAR:zimbraReverseProxyHttpEnabled%%     ssl                  on;
-%%uncomment VAR:zimbraReverseProxyHttpEnabled%%     ssl_certificate      /opt/zimbra/conf/nginx.crt;
-%%uncomment VAR:zimbraReverseProxyHttpEnabled%%     ssl_certificate_key  /opt/zimbra/conf/nginx.key;
+%%uncomment VAR:zimbraReverseProxyHttpEnabled%%     ssl_certificate      /opt/zextras/conf/nginx.crt;
+%%uncomment VAR:zimbraReverseProxyHttpEnabled%%     ssl_certificate_key  /opt/zextras/conf/nginx.key;
 %%uncomment VAR:zimbraReverseProxyHttpEnabled%%     location / {
 %%uncomment VAR:zimbraReverseProxyHttpEnabled%%         proxy_pass       http://zimbra;
 %%uncomment VAR:zimbraReverseProxyHttpEnabled%%         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

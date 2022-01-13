@@ -1,0 +1,11 @@
+{
+    "name": "An open-source, community-driven email server",
+    "Description": "The test description",
+    "build_dir": "/tmp/",
+    "output": "artifacts",
+    "Projects": [
+        {
+            "name": "."
+        }
+    ]
+}
