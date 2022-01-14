@@ -29,7 +29,7 @@ server
         alias /opt/zextras/web/$1;
     }
 
-    location /carbonio/
+    location /carbonio
     {
         try_files index.html /carbonio/;
         add_header Content-Type "text/html";
