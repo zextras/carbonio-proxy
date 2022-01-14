@@ -1,0 +1,80 @@
+targets=(
+  "centos"
+  "ubuntu"
+)
+pkgname="carbonio-proxy"
+pkgver="3.1.0"
+pkgrel="1"
+pkgdesc="An open-source, community-driven email server"
+pkgdesclong=(
+  "An open-source, community-driven email server"
+)
+maintainer="Zextras <packages@zextras.com>"
+url="https://zextras.com"
+section="mail"
+priority="optional"
+arch="amd64"
+depends:apt=(
+  "service-discover"
+  "pending-setups"
+  "carbonio-core"
+  "carbonio-memcached"
+  "carbonio-nginx"
+  "sqlite3"
+)
+depends:yum=(
+  "service-discover"
+  "pending-setups"
+  "carbonio-core"
+  "carbonio-memcached"
+  "carbonio-nginx"
+  "sqlite"
+)
+
+package() {
+  cd "${srcdir}"/../..
+
+  install -D package/carbonio-proxy "${pkgdir}/usr/bin/carbonio-proxy"
+  install -D package/02_carbonio-proxy "${pkgdir}/etc/sudoers.d/02_carbonio-proxy"
+  install -D package/carbonio-proxy-sidecar.service "${pkgdir}/lib/systemd/system/carbonio-proxy-sidecar.service"
+  install -D package/carbonio-proxy.hcl "${pkgdir}/etc/zextras/service-discover/carbonio-proxy.hcl"
+  mkdir -p "${pkgdir}/opt/zextras/conf/nginx/includes/"
+  rsync -a conf/nginx/ "${pkgdir}/opt/zextras/conf/nginx/templates/"
+}
+
+postinst() {
+  getent group 'carbonio-proxy' >/dev/null ||
+    groupadd -r 'carbonio-proxy'
+  getent passwd 'carbonio-proxy' >/dev/null ||
+    useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+
+  mkdir -p '/etc/zextras/carbonio-proxy/'
+  chown 'carbonio-proxy:carbonio-proxy' '/etc/zextras/carbonio-proxy/'
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
+  fi
+
+  grep -E -q '^%zextras[[:space:]]' /etc/sudoers
+
+  if [ $? = 0 ]; then
+    sudotmp=$(mktemp -t zsudoers.XXXXXX 2>/dev/null) || {
+      echo "Failed to create tmpfile"
+      exit 1
+    }
+    SUDOMODE=$(perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);')
+    grep -E -v '^%zextras[[:space:]]' /etc/sudoers >$sudotmp
+    mv -f $sudotmp /etc/sudoers
+    chmod $SUDOMODE /etc/sudoers
+  fi
+  chmod 440 /etc/sudoers.d/02_carbonio-proxy
+  chown root:root /etc/sudoers.d/02_carbonio-proxy
+  chown -R zextras:zextras /opt/zextras/conf/nginx
+
+  echo "Installed, you must now run pending-setups."
+  cat > /etc/zextras/pending-setups.d/carbonio-proxy-setup.sh <<EOF
+#!/usr/bin/env bash
+carbonio-proxy setup
+EOF
+}
