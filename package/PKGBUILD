@@ -3,7 +3,7 @@ targets=(
   "ubuntu"
 )
 pkgname="carbonio-proxy"
-pkgver="3.1.0"
+pkgver="4.0.0"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 pkgdesclong=(
@@ -34,10 +34,15 @@ depends:yum=(
 package() {
   cd "${srcdir}"/../..
 
-  install -D package/carbonio-proxy "${pkgdir}/usr/bin/carbonio-proxy"
-  install -D package/02_carbonio-proxy "${pkgdir}/etc/sudoers.d/02_carbonio-proxy"
-  install -D package/carbonio-proxy-sidecar.service "${pkgdir}/lib/systemd/system/carbonio-proxy-sidecar.service"
-  install -D package/carbonio-proxy.hcl "${pkgdir}/etc/zextras/service-discover/carbonio-proxy.hcl"
+  install -D package/carbonio-proxy \
+    "${pkgdir}/usr/bin/carbonio-proxy"
+  install -D package/02_carbonio-proxy \
+    "${pkgdir}/etc/sudoers.d/02_carbonio-proxy"
+  install -D package/carbonio-proxy-sidecar.service \
+    "${pkgdir}/lib/systemd/system/carbonio-proxy-sidecar.service"
+  install -D package/carbonio-proxy.hcl \
+    "${pkgdir}/etc/zextras/service-discover/carbonio-proxy.hcl"
+
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/includes/"
   rsync -a conf/nginx/ "${pkgdir}/opt/zextras/conf/nginx/templates/"
 }
