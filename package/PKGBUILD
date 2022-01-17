@@ -44,7 +44,13 @@ package() {
     "${pkgdir}/etc/zextras/service-discover/carbonio-proxy.hcl"
 
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/includes/"
-  rsync -a conf/nginx/ "${pkgdir}/opt/zextras/conf/nginx/templates/"
+  rsync -a conf/nginx/templates/ "${pkgdir}/opt/zextras/conf/nginx/templates/"
+
+  # Copy errors files in nginx html data
+  mkdir -p "${pkgdir}/opt/zextras/data/nginx/html/"
+  rsync -a conf/nginx/errors/ \
+    "${pkgdir}/opt/zextras/data/nginx/html/"
+
 }
 
 postinst() {
