@@ -37,6 +37,12 @@ server
         alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
     }
 
+    location /services/files/
+    {
+        proxy_request_buffering off;
+        proxy_pass http://files/;
+    }
+
     location = /
     {
         if ($http_cookie !~ "ZM_AUTH_TOKEN=") {
