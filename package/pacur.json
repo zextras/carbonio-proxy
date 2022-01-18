@@ -5,7 +5,7 @@
     "output": "artifacts",
     "Projects": [
         {
-            "name": "package"
+            "name": "."
         }
     ]
 }

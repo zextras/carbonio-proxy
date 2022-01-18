@@ -24,20 +24,11 @@ pipeline {
             }
         }
         stage('Build deb/rpm') {
-            when {
-                anyOf {
-                    branch 'release/*'
-                    branch 'custom/*'
-                    branch 'beta/*'
-                    branch 'playground/*'
-                    expression { params.PLAYGROUND == true }
-                    buildingTag()
-                }
             }
             stages {
                 stage('Stash') {
                     steps {
-                        stash includes: 'pacur.json,PKGBUILD,sudoers/**,conf/**', name: 'binaries'
+                        stash includes: 'pacur.json,PKGBUILD,package/**,conf/**', name: 'binaries'
                     }
                 }
                 stage('pacur') {
@@ -49,9 +40,10 @@ pipeline {
                                 }
                             }
                             steps {
-                                unstash 'binaries'
-                                sh 'sudo cp -r * /tmp'
-                                sh 'sudo pacur build ubuntu'
+                                dir('/tmp/staging'){
+                                    unstash 'binaries'
+                                }
+                                sh 'sudo pacur build ubuntu /tmp/staging/package'
                                 stash includes: 'artifacts/', name: 'artifacts-deb'
                             }
                             post {
@@ -67,9 +59,10 @@ pipeline {
                                 }
                             }
                             steps {
-                                unstash 'binaries'
-                                sh 'sudo cp -r * /tmp'
-                                sh 'sudo pacur build centos'
+                                dir('/tmp/staging'){
+                                    unstash 'binaries'
+                                }
+                                sh 'sudo pacur build centos /tmp/staging/package'
                                 dir('artifacts/') {
                                     sh 'echo carbonio-proxy* | sed -E "s#(carbonio-proxy-[0-9.]*).*#\\0 \\1.x86_64.rpm#" | xargs sudo mv'
                                 }
