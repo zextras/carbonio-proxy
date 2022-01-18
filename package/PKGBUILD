@@ -53,7 +53,7 @@ package() {
   install -D conf/nginx/errors/zmerror_upstream_502.html \
     "${pkgdir}/opt/zextras/data/nginx/html/zmerror_upstream_502.html"
   rsync -a conf/nginx/errors/zmerror_upstream_504.html \
-    "${pkgdir}/opt/zextras/data/nginx/html/zmerror_upstream_502.html"
+    "${pkgdir}/opt/zextras/data/nginx/html/zmerror_upstream_504.html"
 
 }
 
