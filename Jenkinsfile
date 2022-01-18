@@ -24,7 +24,6 @@ pipeline {
             }
         }
         stage('Build deb/rpm') {
-            }
             stages {
                 stage('Stash') {
                     steps {
