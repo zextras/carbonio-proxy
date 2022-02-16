@@ -15,16 +15,12 @@ section="mail"
 priority="optional"
 arch="amd64"
 depends:apt=(
-  "service-discover"
-  "pending-setups"
   "carbonio-core"
   "carbonio-memcached"
   "carbonio-nginx"
   "sqlite3"
 )
 depends:yum=(
-  "service-discover"
-  "pending-setups"
   "carbonio-core"
   "carbonio-memcached"
   "carbonio-nginx"
