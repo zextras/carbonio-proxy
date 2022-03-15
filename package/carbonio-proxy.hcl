@@ -12,6 +12,11 @@ services {
             destination_name = "carbonio-files"
             local_bind_port = 20000
             local_bind_address = "127.78.0.1"
+          },
+          {
+            destination_name = "carbonio-chats"
+            local_bind_port = 20001
+            local_bind_address = "127.78.0.1"
           }
         ]
       }
