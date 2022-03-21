@@ -165,4 +165,6 @@ http
     ${web.sso.default.enabled}include ${core.includes}/${core.cprefix}.web.sso.default;
     ${web.admin.default.enabled}include ${core.includes}/${core.cprefix}.web.admin;
     ${web.admin.default.enabled}include ${core.includes}/${core.cprefix}.web.admin.default;
+    include ${core.includes}/${core.cprefix}.web.carbonio.admin.default;
+
 }
