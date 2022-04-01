@@ -49,6 +49,24 @@ server
         proxy_http_version 1.1;
     }
 
+    location /services/docs/
+    {
+        proxy_request_buffering off;
+        proxy_pass http://docs-connector/;
+        proxy_http_version 1.1;
+    }
+
+    location /services/docs/editor/
+    {
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $http_host;
+
+        proxy_request_buffering off;
+        proxy_pass http://docs-editor;
+        proxy_http_version 1.1;
+    }
+
     location = /
     {
         if ($http_cookie !~ "ZM_AUTH_TOKEN=") {
