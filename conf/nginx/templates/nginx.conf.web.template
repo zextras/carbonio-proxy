@@ -109,6 +109,16 @@ http
         server 127.78.0.1:20003 fail_timeout=10s;
     }
 
+    upstream chats-messaging-http
+    {
+        server 127.78.0.1:20004 fail_timeout=10s;
+    }
+
+    upstream chats-messaging-xmpp
+    {
+        server 127.78.0.1:20005 fail_timeout=10s;
+    }
+
     include                 ${core.includes}/${core.cprefix}.docs.upstream;
 
     #  Define the collection of upstream HTTP EWS servers to which we will

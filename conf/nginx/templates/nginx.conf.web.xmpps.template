@@ -1,0 +1,23 @@
+!{explode domain(vhn)}
+# XMPPS proxy configuration
+#
+server
+{
+    server_name                     ${vhn};
+    ${core.ipboth.enabled}listen    ${vip}${web.xmpps.port} ssl;
+    ${core.ipv4only.enabled}listen  ${vip}${web.xmpps.port} ssl;
+    ${core.ipv6only.enabled}listen  ${vip}${web.xmpps.port} ssl;
+    protocol                        xmpp;
+    proxy                           on;
+    timeout                         ${web.xmpp.timeout};
+    proxy_timeout                   ${web.xmpp.proxytimeout};
+    ssl_certificate                 ${ssl.crt};
+    ssl_certificate_key             ${ssl.key};
+    sasl_service_name               "xmpp";
+
+    location /
+    {
+        proxy_pass xmpp://carbonio-chats-messaging-xmpp/;
+    }
+}
+
