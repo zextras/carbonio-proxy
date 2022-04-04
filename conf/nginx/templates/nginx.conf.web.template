@@ -99,6 +99,16 @@ http
         server 127.78.0.1:20001 fail_timeout=10s;
     }
 
+    upstream docs-connector
+    {
+        server 127.78.0.1:20002 fail_timeout=10s;
+    }
+
+    upstream docs-editor
+    {
+        server 127.78.0.1:20003 fail_timeout=10s;
+    }
+
     include                 ${core.includes}/${core.cprefix}.docs.upstream;
 
     #  Define the collection of upstream HTTP EWS servers to which we will

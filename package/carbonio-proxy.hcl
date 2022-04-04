@@ -17,6 +17,16 @@ services {
             destination_name = "carbonio-chats"
             local_bind_port = 20001
             local_bind_address = "127.78.0.1"
+          },
+          {
+            destination_name = "carbonio-docs-connector"
+            local_bind_port = 20002
+            local_bind_address = "127.78.0.1"
+          },
+          {
+            destination_name = "carbonio-docs-editor"
+            local_bind_port = 20003
+            local_bind_address = "127.78.0.1"
           }
         ]
       }
