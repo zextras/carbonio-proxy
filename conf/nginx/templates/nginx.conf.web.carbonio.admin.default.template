@@ -41,7 +41,7 @@ server
 
         # Avoid leak the ${web.admin.uport} in the response such as 302 redirection
         #
-        proxy_redirect https://$relhost:${web.admin.login.port}/ https://$relhost:${web.admin.port}/;
+        proxy_redirect https://$relhost:${web.carbonio.admin.port}/ https://$relhost:${web.admin.uport}/;
     }
 
     location /login
@@ -51,6 +51,12 @@ server
     }
 
     location /carbonioAdmin {
-        rewrite ^/carbonioAdmin(.*)$ $scheme://$host:7071/carbonioAdmin redirect;
+        rewrite ^/carbonioAdmin(.*)$ $scheme://$host:${web.admin.uport}/carbonioAdmin redirect;
+    }
+
+    location ~/static/(.*)
+    {
+        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
+        alias /opt/zextras/admin/$1;
     }
 }
