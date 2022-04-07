@@ -41,7 +41,7 @@ server
 
         # Avoid leak the ${web.admin.uport} in the response such as 302 redirection
         #
-        proxy_redirect https://$relhost:${web.admin.login.port}/ https://$relhost:${web.admin.port}/;
+        proxy_redirect https://$relhost:${web.carbonio.admin.port}/ https://$relhost:${web.admin.port}/;
     }
 
     location /login
