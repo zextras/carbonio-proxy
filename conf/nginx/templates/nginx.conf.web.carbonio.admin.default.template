@@ -51,6 +51,12 @@ server
     }
 
     location /carbonioAdmin {
-        rewrite ^/carbonioAdmin(.*)$ $scheme://$host:7071/carbonioAdmin redirect;
+        rewrite ^/carbonioAdmin(.*)$ $scheme://$host:${web.admin.uport}/carbonioAdmin redirect;
+    }
+
+    location ~/static/(.*)
+    {
+        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
+        alias /opt/zextras/admin/$1;
     }
 }
