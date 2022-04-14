@@ -35,6 +35,14 @@ server
         alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
     }
 
+    location /meeting
+    {
+        try_files index.html /meeting/;
+        add_header Content-Type "text/html";
+        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
+        alias /opt/zextras/web/iris/carbonio-chats-ui/current/meeting/;
+    }
+
     location /services/files/
     {
         proxy_request_buffering off;
