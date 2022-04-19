@@ -1,0 +1,22 @@
+stream
+{
+    upstream chats-messaging-xmpp
+    {
+        server 127.78.0.1:20005 fail_timeout=10s;
+    }
+
+    # Enable Access logs for xmpp traffic
+    log_format upstream '$remote_addr:$remote_port - [$time_local] '
+      '"$upstream_addr" "$server_addr:$server_port"';
+    access_log ${web.logfile} upstream;
+
+    # Set proxy timeout
+    proxy_connect_timeout ${web.upstream.connect.timeout};
+    proxy_timeout ${web.upstream.read.timeout};
+
+    include ${core.includes}/${core.cprefix}.messaging.xmpp.default;
+    include ${core.includes}/${core.cprefix}.messaging.xmpp;
+    include ${core.includes}/${core.cprefix}.messaging.xmpps.default;
+    include ${core.includes}/${core.cprefix}.messaging.xmpps;
+
+}
