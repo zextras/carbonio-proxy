@@ -50,10 +50,11 @@ server
         alias /opt/zextras/admin/login;
     }
 
-    location ^~ /carbonioAdmin
+    location ^~/carbonioAdmin/
     {
         # Proxy to Zimbra adminclient Upstream
-        proxy_pass          https://${web.admin.upstream.name};
+        # proxy_pass          https://${web.admin.upstream.name};
+        proxy_pass          https://${web.admin.upstream.adminclient.name};
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -69,7 +70,7 @@ server
 
         # Avoid leak the ${web.admin.uport} in the response such as 302 redirection
         #
-        proxy_redirect https://$relhost:${web.admin.uport}/ https://$relhost:${web.carbonio.admin.port}/;
+        proxy_redirect https://$relhost:${web.carbonio.admin.uport}/ https://$relhost:${web.admin.port}/;
     }
 
     location ~/static/(.*)
