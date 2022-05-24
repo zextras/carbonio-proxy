@@ -164,6 +164,7 @@ http
     proxy_send_timeout ${web.upstream.send.timeout};
 
     # Custom error pages for upstream connection errors
+    proxy_intercept_errors on;
     error_page 502 /zmerror_upstream_502.html;
     error_page 504 /zmerror_upstream_504.html;
     error_page 404 /carbonio_error_404.html;
