@@ -577,5 +577,10 @@ server
         internal;
     }
 
+    location ~* ^/carbonio_error_.*\.html$ {
+        # for custom error pages, internal use only
+        internal;
+    }
+
     include                 ${core.includes}/${core.cprefix}.docs.common;
 }
