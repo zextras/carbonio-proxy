@@ -69,4 +69,15 @@ server
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/admin/login;
     }
+
+    location ~* ^/zmerror_.*\.html$ {
+        # for custom error pages, internal use only
+        internal;
+    }
+
+    location ~* ^/carbonio_error_.*\.html$ {
+        # for custom error pages, internal use only
+        internal;
+    }
+
 }
