@@ -86,7 +86,11 @@ postinst() {
   chown root:root /etc/sudoers.d/02_carbonio-proxy
   chown -R zextras:zextras /opt/zextras/conf/nginx
 
-  echo "Installed, you must now run pending-setups."
+  echo "======================================================"
+  echo "Carbonio Proxy installed successfully!"
+  echo "You must run pending-setups to configure it correctly."
+  echo "======================================================"
+
   cat > /etc/zextras/pending-setups.d/carbonio-proxy-setup.sh <<EOF
 #!/usr/bin/env bash
 carbonio-proxy setup
