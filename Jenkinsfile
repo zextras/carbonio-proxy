@@ -32,10 +32,10 @@ pipeline {
                 }
                 stage('pacur') {
                     parallel {
-                        stage('Ubuntu 16.04') {
+                        stage('Ubuntu 20.04') {
                             agent {
                                 node {
-                                    label 'pacur-agent-ubuntu-16.04-v1'
+                                    label 'pacur-agent-ubuntu-20.04-v1'
                                 }
                             }
                             steps {
@@ -51,17 +51,17 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Centos 7') {
+                        stage('Rocky 8') {
                             agent {
                                 node {
-                                    label 'pacur-agent-centos-7-v1'
+                                    label 'pacur-agent-rocky-8-v1'
                                 }
                             }
                             steps {
                                 dir('/tmp/staging'){
                                     unstash 'binaries'
                                 }
-                                sh 'sudo pacur build centos /tmp/staging/package'
+                                sh 'sudo pacur build rocky /tmp/staging/package'
                                 dir('artifacts/') {
                                     sh 'echo carbonio-proxy* | sed -E "s#(carbonio-proxy-[0-9.]*).*#\\0 \\1.x86_64.rpm#" | xargs sudo mv'
                                 }
@@ -98,7 +98,7 @@ pipeline {
                             {
                                 "pattern": "artifacts/carbonio-proxy*.deb",
                                 "target": "ubuntu-playground/pool/",
-                                "props": "deb.distribution=bionic;deb.distribution=focal;deb.component=main;deb.architecture=amd64"
+                                "props": "deb.distribution=focal;deb.component=main;deb.architecture=amd64"
                             },
                             {
                                 "pattern": "artifacts/(carbonio-proxy)-(*).rpm",
@@ -127,7 +127,7 @@ pipeline {
                     def uploadSpec
                     def config
 
-                    //ubuntu
+                    // ubuntu
                     buildInfo = Artifactory.newBuildInfo()
                     buildInfo.name += '-ubuntu'
                     uploadSpec= '''{
@@ -135,7 +135,7 @@ pipeline {
                             {
                                 "pattern": "artifacts/carbonio-proxy*.deb",
                                 "target": "ubuntu-rc/pool/",
-                                "props": "deb.distribution=bionic;deb.distribution=focal;deb.component=main;deb.architecture=amd64"
+                                "props": "deb.distribution=focal;deb.component=main;deb.architecture=amd64"
                             }
                         ]
                     }'''
@@ -154,7 +154,7 @@ pipeline {
                     Artifactory.addInteractivePromotion server: server, promotionConfig: config, displayName: 'Ubuntu Promotion to Release'
                     server.publishBuildInfo buildInfo
 
-                    //centos8
+                    // rocky8
                     buildInfo = Artifactory.newBuildInfo()
                     buildInfo.name += '-centos8'
                     uploadSpec= '''{
