@@ -103,8 +103,7 @@ server
             return 307 "/static/login/";
         }
 
-        #temporary redirect: do the redirection based on UI http cookie value
-        if ($cookie_UI = "iris"){
+        if ($http_cookie !~ "UI") {
            return 307 "/carbonio/";
         }
 
