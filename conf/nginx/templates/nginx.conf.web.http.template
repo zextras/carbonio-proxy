@@ -105,6 +105,10 @@ server
             return 307 "/static/login/";
         }
 
+        if ($cookie_UI = "iris"){
+           return 307 "/carbonio/";
+        }
+
         if ($http_cookie !~ "UI") {
            return 307 "/carbonio/";
         }
