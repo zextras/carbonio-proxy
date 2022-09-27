@@ -77,4 +77,17 @@ server
         # for custom error pages, internal use only
         internal;
     }
+    location ~/logout
+    {
+        add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        return 307 "/static/login/";
+    }
+
 }
