@@ -22,24 +22,7 @@ server
 
     location /
     {
-        # Proxy to Zimbra adminclient Upstream
-        proxy_pass          https://${web.admin.upstream.adminclient.name};
-
-        # For audit
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-        # For admin console, the proxied request must have ${web.admin.uport}
-        # in Host header. Otherwise, the web client page or error might be returned.
-        #
-        set $relhost $host;
-        if ($host = '') {
-            set $relhost $server_addr;
-        }
-        proxy_set_header Host            $relhost:${web.admin.uport};
-
-        # Avoid leak the ${web.admin.uport} in the response such as 302 redirection
-        #
-        proxy_redirect https://$relhost:${web.admin.uport}/ https://$relhost:${web.carbonio.admin.port}/;
+     return 404;
     }
 
     location ^~ /service
@@ -61,13 +44,27 @@ server
 
         # Avoid leak the ${web.admin.uport} in the response such as 302 redirection
         #
-        proxy_redirect https://$relhost:${web.admin.uport}/ https://$relhost:${web.carbonio.admin.port}/;
+        proxy_redirect https://$relhost:${web.carbonio.admin.port}/ https://$relhost:${web.admin.uport}/;
     }
 
     location /login
     {
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/admin/login;
+    }
+
+    location /carbonioAdmin
+    {
+        try_files index.html /carbonioAdmin/;
+        add_header Content-Type "text/html";
+        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
+        alias /opt/zextras/admin/iris/carbonio-admin-ui/current/;
+    }
+
+    location ~/static/(.*)
+    {
+        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
+        alias /opt/zextras/admin/$1;
     }
 
     location ~* ^/zmerror_.*\.html$ {
@@ -80,4 +77,16 @@ server
         internal;
     }
 
+    location ~/logout
+    {
+        add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        return 307 "/static/login/";
+    }
 }
