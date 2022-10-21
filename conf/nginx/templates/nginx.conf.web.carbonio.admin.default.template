@@ -79,7 +79,6 @@ server
 
     location ~/logout
     {
-        add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
         add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
         add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
         add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
@@ -88,5 +87,14 @@ server
         add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
         add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
         return 307 "/static/login/";
+    }
+
+    location ^~ /zx/
+    {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $http_host;
+        proxy_pass ${web.upstream.zx};
     }
 }
