@@ -27,6 +27,12 @@ server
         alias /opt/zextras/web/$1;
     }
 
+    location ~/.well-known/(.*)
+    {
+        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
+        alias /opt/zextras/.well-known/$1;
+    }
+
     location /carbonio
     {
         try_files index.html /carbonio/;
