@@ -22,7 +22,13 @@ server
 
     location /
     {
-     return 404;
+        if ($http_cookie !~ "ZM_ADMIN_AUTH_TOKEN=") {
+            return 307 "/static/login/";
+        }
+
+        if ($http_cookie ~ "ZM_ADMIN_AUTH_TOKEN=") {
+            return 307 "/carbonioAdmin";
+        }
     }
 
     location ^~ /service
