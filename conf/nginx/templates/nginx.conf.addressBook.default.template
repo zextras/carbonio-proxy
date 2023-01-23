@@ -1,5 +1,4 @@
-# Address Proxy Configuration
-# Address Proxy Configuration (HTTPS ONLY)
+# Address Book Proxy Configuration (HTTPS ONLY)
 server
 {
     listen 8389 default_server ssl;

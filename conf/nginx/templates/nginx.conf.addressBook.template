@@ -1,5 +1,5 @@
 !{explode domain(vhn)}
-# Address Proxy Configuration (HTTPS ONLY)
+# Address Book Proxy Configuration (HTTPS ONLY)
 #
 server
 {
