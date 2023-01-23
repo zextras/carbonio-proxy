@@ -114,6 +114,11 @@ http
         server 127.78.0.1:20004 fail_timeout=10s;
     }
 
+    upstream address-book
+    {
+        server 127.78.0.1:20006 fail_timeout=10s;
+    }
+
     include                 ${core.includes}/${core.cprefix}.docs.upstream;
 
     #  Define the collection of upstream HTTP EWS servers to which we will
@@ -184,5 +189,7 @@ http
     ${web.admin.default.enabled}include ${core.includes}/${core.cprefix}.web.admin.default;
     include ${core.includes}/${core.cprefix}.web.carbonio.admin;
     include ${core.includes}/${core.cprefix}.web.carbonio.admin.default;
+    include ${core.includes}/${core.cprefix}.addressBook;
+    include ${core.includes}/${core.cprefix}.addressBook.default;
 
 }

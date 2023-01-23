@@ -1,0 +1,16 @@
+# Address Proxy Configuration
+# Address Proxy Configuration (HTTPS ONLY)
+server
+{
+    listen 8389 default_server ssl;
+    ssl_certificate         ${ssl.crt.default};
+    ssl_certificate_key     ${ssl.key.default};
+
+    location /
+    {
+        proxy_set_header Host $http_host;
+        proxy_request_buffering off;
+        proxy_pass http://address-book;
+        proxy_http_version 1.1;
+    }
+}
