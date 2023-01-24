@@ -1,10 +1,11 @@
 # Address Book Proxy Configuration (HTTPS ONLY)
 server
 {
-    ${core.ipboth.enabled}listen                  8389 default_server ssl;
-    ${core.ipboth.enabled}listen                  [::]:8389 default_server ssl;
-    ${core.ipv4only.enabled}listen                8389 default_server ssl;
-    ${core.ipv6only.enabled}listen                [::]:8389 default_server ssl;
+    ${core.ipboth.enabled}listen                  ${web.carbonio.admin.port} default_server ssl;
+    ${core.ipboth.enabled}listen                  [::]:${web.carbonio.admin.port} default_server ssl;
+    ${core.ipv4only.enabled}listen                ${web.carbonio.admin.port} default_server ssl;
+    ${core.ipv6only.enabled}listen                [::]:${web.carbonio.admin.port} default_server ssl;
+    ${web.add.headers.default}
     client_max_body_size    0;
     ssl_protocols           ${web.ssl.protocols};
     ssl_prefer_server_ciphers ${web.ssl.preferserverciphers};
@@ -12,9 +13,8 @@ server
     ssl_session_timeout     ${ssl.session.timeout};
     ssl_ciphers             ${web.ssl.ciphers};
     ssl_ecdh_curve          ${web.ssl.ecdh.curve};
-    ssl_certificate         ${ssl.crt};
-    ssl_certificate_key     ${ssl.key};
-    ssl_verify_client       ${ssl.clientcertmode};
+    ssl_certificate         ${ssl.crt.default};
+    ssl_certificate_key     ${ssl.key.default};
     proxy_ssl_protocols           ${web.ssl.protocols};
     proxy_ssl_ciphers             ${web.ssl.ciphers};
     ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
