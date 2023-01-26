@@ -1,10 +1,10 @@
 # Address Book Proxy Configuration (HTTPS ONLY)
 server
 {
-    ${core.ipboth.enabled}listen                  8389 default_server ssl;
-    ${core.ipboth.enabled}listen                  [::]:8389 default_server ssl;
-    ${core.ipv4only.enabled}listen                8389 default_server ssl;
-    ${core.ipv6only.enabled}listen                [::]:8389 default_server ssl;
+    ${core.ipboth.enabled}listen                  8389 ssl;
+    ${core.ipboth.enabled}listen                  [::]:8389 ssl;
+    ${core.ipv4only.enabled}listen                8389 ssl;
+    ${core.ipv6only.enabled}listen                [::]:8389 ssl;
     ${web.add.headers.default}
     client_max_body_size    0;
     ssl_protocols           ${web.ssl.protocols};
