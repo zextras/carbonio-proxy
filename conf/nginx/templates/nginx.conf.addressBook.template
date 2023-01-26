@@ -16,10 +16,7 @@ server
     proxy_ssl_protocols           ${web.ssl.protocols};
     proxy_ssl_ciphers             ${web.ssl.ciphers};
     ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
-
-    location /
-    {
-        proxy_pass address-book;
-        proxy_ssl on;
-    }
+    proxy_pass address-book;
+    # Address Book is exposed with TLS natively
+    proxy_ssl on;
 }
