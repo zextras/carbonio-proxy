@@ -1,0 +1,9 @@
+map $ssl_server_name $targetCert {
+   default_server ${ssl.crt.default};
+   include ${core.includes}/${core.cprefix}.stream.map.crt;
+}
+
+map $ssl_server_name $targetCertKey {
+   default_server ${ssl.key.default};
+   include ${core.includes}/${core.cprefix}.stream.map.key;
+}
