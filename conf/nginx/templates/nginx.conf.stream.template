@@ -5,6 +5,5 @@ stream {
     }
 
    include ${core.includes}/${core.cprefix}.addressBook;
-   include ${core.includes}/${core.cprefix}.addressBook.default;
 
 }
