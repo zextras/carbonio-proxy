@@ -1,3 +1,4 @@
+# Defines mapping for server name -> certificate
 map $ssl_server_name $targetCert {
    default ${ssl.crt.default};
    include ${core.includes}/${core.cprefix}.stream.map.crt;

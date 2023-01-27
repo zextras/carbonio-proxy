@@ -1,11 +1,6 @@
-# Address Book Proxy Configuration (HTTPS ONLY)
+# Address Book Proxy Configuration
 
-include ${core.includes}/${core.cprefix}.stream.ssl;
-
-map $ssl_server_name $upstream_address_book {
-   default address-book;
-   include ${core.includes}/${core.cprefix}.stream.map.addressBook;
-}
+include ${core.includes}/${core.cprefix}.map.ssl;
 
 server
 {
@@ -21,7 +16,7 @@ server
     proxy_ssl_protocols           ${web.ssl.protocols};
     proxy_ssl_ciphers             ${web.ssl.ciphers};
     ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
-    proxy_pass $upstream_address_book;
+    proxy_pass address-book;
     # Address Book is exposed with TLS natively
     proxy_ssl on;
 }

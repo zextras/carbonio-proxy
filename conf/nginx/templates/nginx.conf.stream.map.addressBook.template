@@ -1,2 +1,0 @@
-!{explode domain(vhn)}
-${vhn} address-book;

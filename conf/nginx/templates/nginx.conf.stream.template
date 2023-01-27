@@ -4,6 +4,6 @@ stream {
         server 127.78.0.1:20006 fail_timeout=10s;
     }
 
-   include ${core.includes}/${core.cprefix}.addressBook;
+   include ${core.includes}/${core.cprefix}.stream.addressBook;
 
 }
