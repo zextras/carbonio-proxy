@@ -3,7 +3,7 @@
 include ${core.includes}/${core.cprefix}.stream.ssl;
 
 map $ssl_server_name $upstream_address_book {
-   default_server address-book;
+   default address-book;
    include ${core.includes}/${core.cprefix}.stream.map.addressBook;
 }
 
