@@ -37,6 +37,11 @@ services {
             destination_name = "carbonio-chats-messaging-xmpp"
             local_bind_port = 20005
             local_bind_address = "127.78.0.1"
+          },
+          {
+            destination_name = "carbonio-address-book"
+            local_bind_port = 20006
+            local_bind_address = "127.78.0.1"
           }
         ]
       }
