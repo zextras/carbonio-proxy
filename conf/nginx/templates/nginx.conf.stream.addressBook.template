@@ -4,9 +4,9 @@ include ${core.includes}/${core.cprefix}.map.ssl;
 
 server
 {
-    ${core.ipboth.enabled}listen                  8389 ssl;
-    ${core.ipv4only.enabled}listen                8389 ssl;
-    ${core.ipv6only.enabled}listen                [::]:8389 ssl;
+    ${core.ipboth.enabled}listen                  8636 ssl;
+    ${core.ipv4only.enabled}listen                8636 ssl;
+    ${core.ipv6only.enabled}listen                [::]:8636 ssl;
     ssl_protocols           ${web.ssl.protocols};
     ssl_prefer_server_ciphers ${web.ssl.preferserverciphers};
     ssl_ciphers             ${web.ssl.ciphers};
