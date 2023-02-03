@@ -5,7 +5,7 @@ metadata:
   name: carbonio-nginx-conf
   title: Carbonio Nginx Configuration
   description: | 
-    Nginx Template files for Carbonio and Consul Service registration.
+    Project containing Nginx Template files for Carbonio and Nginx Consul Service registration.
   annotations:
     backstage.io/techdocs-ref: dir:.
   tags:
