@@ -1,0 +1,17 @@
+# see https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component for more component conf info
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: carbonio-nginx-conf
+  title: Carbonio Nginx Configuration
+  description: | 
+    Project containing Nginx Template files for Carbonio and Nginx Consul Service registration.
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - nginx
+    - carbonio-proxy
+spec:
+  type: configuration
+  lifecycle: production
+  owner: new-bacon-monsters
