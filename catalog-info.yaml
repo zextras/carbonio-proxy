@@ -10,6 +10,7 @@ metadata:
     backstage.io/techdocs-ref: dir:.
   tags:
     - nginx
+    - carbonio-proxy
 spec:
   type: configuration
   lifecycle: production
