@@ -18,12 +18,14 @@ depends:apt=(
   "carbonio-core"
   "carbonio-memcached"
   "carbonio-nginx"
+  "carbonio-prometheus-nginx-exporter"
   "sqlite3"
 )
 depends:yum=(
   "carbonio-core"
   "carbonio-memcached"
   "carbonio-nginx"
+  "carbonio-prometheus-nginx-exporter"
   "sqlite"
 )
 
