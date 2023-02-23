@@ -114,7 +114,10 @@ http
         server 127.78.0.1:20004 fail_timeout=10s;
     }
 
-    include                 ${core.includes}/${core.cprefix}.docs.upstream;
+    upstream tasks
+    {
+        server 127.78.0.1:20007 fail_timeout=10s;
+    }
 
     #  Define the collection of upstream HTTP EWS servers to which we will
     #  proxy EWS request. Define each server:port against a server directive

@@ -3,7 +3,7 @@ targets=(
   "ubuntu"
 )
 pkgname="carbonio-proxy"
-pkgver="4.0.14"
+pkgver="4.0.15"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 pkgdesclong=(
@@ -18,12 +18,14 @@ depends:apt=(
   "carbonio-core"
   "carbonio-memcached"
   "carbonio-nginx"
+  "carbonio-prometheus-nginx-exporter"
   "sqlite3"
 )
 depends:yum=(
   "carbonio-core"
   "carbonio-memcached"
   "carbonio-nginx"
+  "carbonio-prometheus-nginx-exporter"
   "sqlite"
 )
 
