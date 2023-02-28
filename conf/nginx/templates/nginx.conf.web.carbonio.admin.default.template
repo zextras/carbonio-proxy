@@ -52,6 +52,7 @@ server
 
     location /login
     {
+        ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/admin/login;
     }
@@ -59,13 +60,14 @@ server
     location /carbonioAdmin
     {
         try_files index.html /carbonioAdmin/;
-        add_header Content-Type "text/html";
+        ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/admin/iris/carbonio-admin-ui/current/;
     }
 
     location ~/static/(.*)
     {
+        ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/admin/$1;
     }
