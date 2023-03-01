@@ -1,9 +1,14 @@
 stream {
+  upstream chats-messaging-xmpp
+    {
+        server 127.78.0.1:20005 fail_timeout=10s;
+    }
+
   upstream address-book
     {
         server 127.78.0.1:20006 fail_timeout=10s;
     }
 
    include ${core.includes}/${core.cprefix}.stream.addressBook;
-
+   include ${core.includes}/${core.cprefix}.stream.chats.messaging.xmpp;
 }
