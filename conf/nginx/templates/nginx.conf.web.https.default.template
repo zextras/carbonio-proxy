@@ -82,12 +82,14 @@ server
 
     location ~/static/(.*)
     {
+        ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/web/$1;
     }
 
     location ~/.well-known/(.*)
     {
+        ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/.well-known/$1;
     }
@@ -95,7 +97,7 @@ server
     location /carbonio
     {
         try_files index.html /carbonio/;
-        add_header Content-Type "text/html";
+        ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
     }
@@ -103,7 +105,7 @@ server
     location /meeting
     {
         try_files index.html /meeting/;
-        add_header Content-Type "text/html";
+        ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/web/iris/carbonio-chats-ui/current/meeting/;
     }
