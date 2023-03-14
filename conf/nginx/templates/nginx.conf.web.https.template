@@ -23,6 +23,8 @@ server
     ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
     include                 ${core.includes}/${core.cprefix}.web.https.mode-${web.mailmode};
 
+    ${proxy.http.compression}
+
     set $login_upstream     ${web.upstream.login.target};
     if ($http_cookie ~ "ZM_AUTH_TOKEN=") {
         set $login_upstream    ${web.upstream.webclient.target};
