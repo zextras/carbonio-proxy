@@ -21,6 +21,8 @@ server
     proxy_ssl_ciphers             ${web.ssl.ciphers};
     ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
 
+    ${proxy.http.compression}
+
     location /
     {
         if ($http_cookie !~ "ZM_ADMIN_AUTH_TOKEN=") {
