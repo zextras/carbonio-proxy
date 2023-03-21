@@ -15,6 +15,7 @@ section="mail"
 priority="optional"
 arch="amd64"
 depends:apt=(
+  "carbonio-certbot"
   "carbonio-core"
   "carbonio-memcached"
   "carbonio-nginx"
@@ -22,6 +23,7 @@ depends:apt=(
   "sqlite3"
 )
 depends:yum=(
+  "carbonio-certbot"
   "carbonio-core"
   "carbonio-memcached"
   "carbonio-nginx"
