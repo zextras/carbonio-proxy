@@ -21,6 +21,8 @@ server
     proxy_ssl_ciphers             ${web.ssl.ciphers};
     ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
 
+    ${proxy.http.compression}
+
     location /
     {
         if ($http_cookie !~ "ZM_ADMIN_AUTH_TOKEN=") {
@@ -53,6 +55,7 @@ server
 
     location /login
     {
+        ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/admin/login;
     }
@@ -60,13 +63,14 @@ server
     location /carbonioAdmin
     {
         try_files index.html /carbonioAdmin/;
-        add_header Content-Type "text/html";
+        ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/admin/iris/carbonio-admin-ui/current/;
     }
 
     location ~/static/(.*)
     {
+        ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/admin/$1;
     }
@@ -80,6 +84,7 @@ server
         # for custom error pages, internal use only
         internal;
     }
+
     location ~/logout
     {
         add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
