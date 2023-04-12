@@ -67,6 +67,9 @@ cat <<EOF | consul config write -
 }
 EOF
 
+# Allow other services to contact this service
+consul config write "/etc/carbonio/proxy/service-discover/intentions.json"
+
 if [[ ! -f "/etc/zextras/carbonio-proxy/token" ]]; then
     # create the token
     consul acl token create -format json -policy-name "${POLICY_NAME}" -description "Token for carbonio-proxy/$(hostname -A)" |
