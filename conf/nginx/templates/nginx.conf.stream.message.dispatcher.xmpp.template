@@ -1,4 +1,4 @@
-# Message Dispatcher Xmpp Proxy Configuration
+# Message Dispatcher XMPP Proxy Configuration
 
 include ${core.includes}/${core.cprefix}.map.ssl;
 
