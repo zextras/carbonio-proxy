@@ -1,8 +1,16 @@
-# Carbonio ClamAV Signature Provider proxy default configuration
+# Carbonio ClamAV Signature Provider proxy configuration
 #
 server
 {
-    listen 127.78.0.1:10000;
+    listen 127.78.0.21:10000;
+
+    location / {
+        add_header Content-Type text/plain;
+        return 200 'Ok';
+        allow 127.0.0.1;
+        allow ::1;
+        deny all;
+    }
 
     location ^~ /av_signature {
         alias /opt/zextras/av_signature/;
