@@ -2,8 +2,8 @@
 SERVICE="clamav-signature-provider"
 SERVICE_COMMON_NAME="Carbonio ${SERVICE}"
 SERVICE_NAME="carbonio-${SERVICE}"
-SERVICE_USER="carbonio-${SERVICE}"
-SERVICE_GROUP="carbonio-${SERVICE}"
+SERVICE_USER="carbonio-clamav-sig-provider" #name truncated to 34 char limit
+SERVICE_GROUP="carbonio-clamav-sig-provider" #name truncated to 34 char limit
 SERVICE_BASE_DIR="/etc/carbonio/${SERVICE}/service-discover/"
 
 if [[ $(id -u) -ne 0 ]]; then

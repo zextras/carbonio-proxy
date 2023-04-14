@@ -1,2 +1,2 @@
 #!/bin/bash
-carbonio-proxy setup
+carbonio-clamav-signature-provider setup

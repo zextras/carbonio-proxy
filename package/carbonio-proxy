@@ -50,9 +50,6 @@ set -e
 # Declare the service protocol
 consul config write "${SERVICE_BASE_DIR}/service-protocol-${SERVICE}.json"
 
-# Allow other services to contact this service
-consul config write "${SERVICE_BASE_DIR}/intentions-${SERVICE}.json"
-
 if [[ ! -f "/etc/zextras/carbonio-proxy/token" ]]; then
     # Create the token
     consul acl token create -format json -policy-name "${POLICY_NAME}" -description "Token for

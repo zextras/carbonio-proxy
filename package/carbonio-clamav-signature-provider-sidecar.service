@@ -12,7 +12,7 @@ ExecStart=/usr/bin/consul connect envoy \
     -sidecar-for carbonio-clamav-signature-provider
 Restart=on-failure
 RestartSec=15
-User=carbonio-clamav-signature-provider
+User=carbonio-clamav-sig-provider
 KillMode=process
 KillSignal=SIGKILL
 LimitNOFILE=65536

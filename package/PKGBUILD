@@ -36,22 +36,57 @@ package() {
   # srcdir is pacur.json build_dir/src
   cd "${srcdir}/../staging"
 
-  # Install service registration files for consul
-  install -D package/carbonio-proxy \
+  # start install proxy service registration files for consul
+  install -D -m 755 "package/carbonio-proxy" \
     "${pkgdir}/usr/bin/carbonio-proxy"
-  install -D package/carbonio-proxy-sidecar.service \
+
+  install -D -m 644 "package/carbonio-proxy-sidecar.service" \
     "${pkgdir}/lib/systemd/system/carbonio-proxy-sidecar.service"
-  install -D package/carbonio-proxy.hcl \
+
+  install -D -m 644 "package/policies-proxy.json" \
+    "${pkgdir}/etc/carbonio/proxy/service-discover/policies-proxy.json"
+
+  install -D -m 644 "package/carbonio-proxy.hcl" \
     "${pkgdir}/etc/zextras/service-discover/carbonio-proxy.hcl"
-  install -D -m 644 "package/intentions.json" \
-    "${pkgdir}/etc/carbonio/proxy/service-discover/intentions.json"
+
+  install -D -m 644 "package/service-protocol-proxy.json" \
+    "${pkgdir}/etc/carbonio/proxy/service-discover/service-protocol-proxy.json"
+
+  install -D -m 755 "package/carbonio-proxy-setup.sh" \
+    "${pkgdir}/etc/zextras/pending-setups.d/carbonio-proxy-setup.sh"
+  # end install proxy service registration files for consul
+
+
+  # start install clamav-signature-provider service registration files for consul
+  install -D -m 755 "package/carbonio-clamav-signature-provider" \
+    "${pkgdir}/usr/bin/carbonio-clamav-signature-provider"
+
+  install -D -m 644 "package/carbonio-clamav-signature-provider-sidecar.service" \
+    "${pkgdir}/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
+
+  install -D -m 644 "package/policies-clamav-signature-provider.json" \
+    "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/policies-clamav-signature-provider.json"
+
+  install -D -m 644 "package/carbonio-clamav-signature-provider.hcl" \
+    "${pkgdir}/etc/zextras/service-discover/carbonio-clamav-signature-provider.hcl"
+
+  install -D -m 644 "package/intentions-clamav-signature-provider.json" \
+    "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/intentions-clamav-signature-provider.json"
+
+  install -D -m 644 "package/service-protocol-clamav-signature-provider.json" \
+    "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/service-protocol-clamav-signature-provider.json"
+
+  install -D -m 755 "package/carbonio-clamav-signature-provider-setup.sh" \
+    "${pkgdir}/etc/zextras/pending-setups.d/carbonio-clamav-signature-provider-setup.sh"
+  # end install clamav-signature-provider service registration files for consul
+
 
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/includes/"
   rsync -a conf/nginx/templates/ "${pkgdir}/opt/zextras/conf/nginx/templates/"
 
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/templates_custom/"
 
-  # Install errors files in nginx html data
+  # start install errors files in nginx html data
   mkdir -p "${pkgdir}/opt/zextras/data/nginx/html/"
   install -D conf/nginx/errors/zmerror_upstream_502.html \
     "${pkgdir}/opt/zextras/data/nginx/html/zmerror_upstream_502.html"
@@ -59,9 +94,12 @@ package() {
     "${pkgdir}/opt/zextras/data/nginx/html/zmerror_upstream_504.html"
   install -D conf/nginx/errors/carbonio_error_404.html \
     "${pkgdir}/opt/zextras/data/nginx/html/carbonio_error_404.html"
+  # end install errors files in nginx html data
+
 }
 
 postinst() {
+  # start Proxy consul registration
   getent group 'carbonio-proxy' >/dev/null ||
     groupadd -r 'carbonio-proxy'
   getent passwd 'carbonio-proxy' >/dev/null ||
@@ -85,9 +123,42 @@ postinst() {
   echo "Carbonio Proxy installed successfully!"
   echo "You must run pending-setups to configure it correctly."
   echo "======================================================"
+  # end Proxy consul registration
 
-  cat > /etc/zextras/pending-setups.d/carbonio-proxy-setup.sh <<EOF
-#!/usr/bin/env bash
-carbonio-proxy setup
-EOF
+
+  # start ClamAV signature provider consul registration
+  getent group 'carbonio-clamav-sig-provider' >/dev/null ||
+    groupadd -r 'carbonio-clamav-sig-provider'
+  getent passwd 'carbonio-clamav-sig-provider' >/dev/null ||
+    useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
+  fi
+
+  echo "======================================================"
+  echo "Carbonio ClamAV signature provider installed successfully!"
+  echo "You must run pending-setups to configure it correctly."
+  echo "======================================================"
+  # end ClamAV signature provider consul registration
+}
+
+prerm() {
+  if [ -d /run/systemd/system ]; then
+    systemctl --no-reload disable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
+    systemctl stop carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
+
+    systemctl --no-reload disable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
+    systemctl stop carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
+  fi
+}
+
+postrm() {
+  rm -f /etc/carbonio/proxy/service-discover/token
+  rm -f /etc/carbonio/clamav-signature-provider/service-discover/token
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+  fi
 }
