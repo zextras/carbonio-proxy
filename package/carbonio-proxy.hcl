@@ -53,5 +53,5 @@ services {
     }
   }
   name = "carbonio-proxy"
-  port = 10000
+  port = 443
 }

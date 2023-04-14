@@ -1,0 +1,7 @@
+{
+  "Kind": "service-intentions",
+  "Name": "carbonio-proxy",
+  "Sources": [
+    {}
+  ]
+}
