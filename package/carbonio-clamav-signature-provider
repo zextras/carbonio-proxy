@@ -1,0 +1,71 @@
+#!/bin/bash
+SERVICE="clamav-signature-provider"
+SERVICE_COMMON_NAME="Carbonio ${SERVICE}"
+SERVICE_NAME="carbonio-${SERVICE}"
+SERVICE_USER="carbonio-${SERVICE}"
+SERVICE_GROUP="carbonio-${SERVICE}"
+SERVICE_BASE_DIR="/etc/carbonio/${SERVICE}/service-discover/"
+
+if [[ $(id -u) -ne 0 ]]; then
+  echo "Please run as root"
+  exit 1
+fi
+
+if [[ "$1" != "setup" ]]; then
+  echo "Syntax: '${SERVICE_NAME} setup' to automatically configure the service"
+  exit 1;
+fi
+
+# Decrypt the bootstrap token, asking the password to the sys admin
+# --setup check for SETUP_CONSUL_TOKEN env. variable and uses it
+# to avoid re-asking for the password
+echo -n "Insert the cluster credential password: "
+# shellcheck disable=SC2155
+export CONSUL_HTTP_TOKEN=$(service-discover bootstrap-token --setup)
+EXIT_CODE="$?"
+echo ""
+if [[ "${EXIT_CODE}" != "0" ]]; then
+  echo "Cannot access to bootstrap token"
+  exit 1;
+fi
+# Limit secret visibility as much as possible
+export -n SETUP_CONSUL_TOKEN
+
+POLICY_NAME="${SERVICE_NAME}-policy"
+POLICY_DESCRIPTION="Carbonio ${SERVICE} service policy for service and sidecar proxy"
+
+# Create or update policy for the specific service (this will be shared across cluster)
+consul acl policy create -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTION}" -rules @"${SERVICE_BASE_DIR}/policies-${SERVICE}.json" >/dev/null 2>&1
+# shellcheck disable=SC2181
+if [[ "$?" != "0" ]]; then
+    consul acl policy update -no-merge -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTION}" -rules @"${SERVICE_BASE_DIR}/policies-${SERVICE}.json"
+    if [[ "$?" != "0" ]]; then
+      echo "Setup failed: Cannot update policy for ${POLICY_NAME}"
+      exit 1
+    fi
+fi
+
+trap 'echo Script for ${SERVICE_COMMON_NAME} terminated with error' EXIT
+set -e
+# Declare the service protocol
+consul config write "${SERVICE_BASE_DIR}/service-protocol-${SERVICE}.json"
+
+# Allow other services to contact this service
+consul config write "${SERVICE_BASE_DIR}/intentions-${SERVICE}.json"
+
+if [[ ! -f "${SERVICE_BASE_DIR}/token" ]]; then
+    # Create the token
+    consul acl token create -format json -policy-name "${POLICY_NAME}" -description "Token for
+    ${SERVICE_NAME}/$(hostname -A)" |
+      jq -r '.SecretID' > ${SERVICE_BASE_DIR}/token;
+    chown ${SERVICE_USER}:${SERVICE_GROUP} ${SERVICE_BASE_DIR}/token
+    chmod 0600 ${SERVICE_BASE_DIR}/token
+fi
+
+consul reload
+
+# Limit token visibility as much as possible
+export -n CONSUL_HTTP_TOKEN
+
+systemctl restart ${SERVICE_NAME}-sidecar.service
+trap - EXIT
