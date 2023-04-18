@@ -14,7 +14,7 @@ services {
             local_bind_address = "127.78.0.1"
           },
           {
-            destination_name = "carbonio-chats"
+            destination_name = "carbonio-ws-collaboration"
             local_bind_port = 20001
             local_bind_address = "127.78.0.1"
           },
@@ -29,12 +29,12 @@ services {
             local_bind_address = "127.78.0.1"
           },
           {
-            destination_name = "carbonio-chats-messaging-http"
+            destination_name = "carbonio-message-dispatcher-http"
             local_bind_port = 20004
             local_bind_address = "127.78.0.1"
           },
           {
-            destination_name = "carbonio-chats-messaging-xmpp"
+            destination_name = "carbonio-message-dispatcher-xmpp"
             local_bind_port = 20005
             local_bind_address = "127.78.0.1"
           },
