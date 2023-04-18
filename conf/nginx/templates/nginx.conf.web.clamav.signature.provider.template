@@ -3,6 +3,8 @@
 server
 {
     listen 127.78.0.21:10000;
+    access_log /opt/zextras/log/nginx_clamav_signature_provider_access.log;
+
 
     location / {
         add_header Content-Type text/plain;
