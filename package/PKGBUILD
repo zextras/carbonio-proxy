@@ -44,13 +44,13 @@ package() {
     "${pkgdir}/lib/systemd/system/carbonio-proxy-sidecar.service"
 
   install -D -m 644 "package/policies-proxy.json" \
-    "${pkgdir}/etc/carbonio/proxy/service-discover/policies-proxy.json"
+    "${pkgdir}/etc/carbonio/proxy/service-discover/policies.json"
 
   install -D -m 644 "package/carbonio-proxy.hcl" \
     "${pkgdir}/etc/zextras/service-discover/carbonio-proxy.hcl"
 
   install -D -m 644 "package/service-protocol-proxy.json" \
-    "${pkgdir}/etc/carbonio/proxy/service-discover/service-protocol-proxy.json"
+    "${pkgdir}/etc/carbonio/proxy/service-discover/service-protocol.json"
 
   install -D -m 755 "package/carbonio-proxy-setup.sh" \
     "${pkgdir}/etc/zextras/pending-setups.d/carbonio-proxy-setup.sh"
@@ -65,16 +65,16 @@ package() {
     "${pkgdir}/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 
   install -D -m 644 "package/policies-clamav-signature-provider.json" \
-    "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/policies-clamav-signature-provider.json"
+    "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/policies.json"
 
   install -D -m 644 "package/carbonio-clamav-signature-provider.hcl" \
     "${pkgdir}/etc/zextras/service-discover/carbonio-clamav-signature-provider.hcl"
 
   install -D -m 644 "package/intentions-clamav-signature-provider.json" \
-    "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/intentions-clamav-signature-provider.json"
+    "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/intentions.json"
 
   install -D -m 644 "package/service-protocol-clamav-signature-provider.json" \
-    "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/service-protocol-clamav-signature-provider.json"
+    "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/service-protocol.json"
 
   install -D -m 755 "package/carbonio-clamav-signature-provider-setup.sh" \
     "${pkgdir}/etc/zextras/pending-setups.d/carbonio-clamav-signature-provider-setup.sh"

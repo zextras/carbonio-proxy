@@ -35,10 +35,10 @@ POLICY_NAME="${SERVICE_NAME}-policy"
 POLICY_DESCRIPTION="Carbonio ${SERVICE} service policy for service and sidecar proxy"
 
 # Create or update policy for the specific service (this will be shared across cluster)
-consul acl policy create -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTION}" -rules @"${SERVICE_BASE_DIR}/policies-${SERVICE}.json" >/dev/null 2>&1
+consul acl policy create -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTION}" -rules @"${SERVICE_BASE_DIR}/policies.json" >/dev/null 2>&1
 # shellcheck disable=SC2181
 if [[ "$?" != "0" ]]; then
-    consul acl policy update -no-merge -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTION}" -rules @"${SERVICE_BASE_DIR}/policies-${SERVICE}.json"
+    consul acl policy update -no-merge -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTION}" -rules @"${SERVICE_BASE_DIR}/policies.json"
     if [[ "$?" != "0" ]]; then
       echo "Setup failed: Cannot update policy for ${POLICY_NAME}"
       exit 1
@@ -48,10 +48,10 @@ fi
 trap 'echo Script for ${SERVICE_COMMON_NAME} terminated with error' EXIT
 set -e
 # Declare the service protocol
-consul config write "${SERVICE_BASE_DIR}/service-protocol-${SERVICE}.json"
+consul config write "${SERVICE_BASE_DIR}/service-protocol.json"
 
 # Allow other services to contact this service
-consul config write "${SERVICE_BASE_DIR}/intentions-${SERVICE}.json"
+consul config write "${SERVICE_BASE_DIR}/intentions.json"
 
 if [[ ! -f "${SERVICE_BASE_DIR}/token" ]]; then
     # Create the token
