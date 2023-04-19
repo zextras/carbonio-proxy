@@ -126,14 +126,14 @@ server
         proxy_set_header Connection "upgrade";
         proxy_set_header Host $http_host;
         proxy_request_buffering off;
-        proxy_pass http://chats/events;
+        proxy_pass http://ws-collaboration/events;
         proxy_http_version 1.1;
     }
 
     location /services/chats/
     {
         proxy_request_buffering off;
-        proxy_pass http://chats/;
+        proxy_pass http://ws-collaboration/;
         proxy_http_version 1.1;
     }
 
@@ -144,7 +144,7 @@ server
         proxy_set_header Connection "upgrade";
         proxy_set_header Host $http_host;
         proxy_request_buffering off;
-        proxy_pass http://chats-messaging-http/ws-xmpp;
+        proxy_pass http://message-dispatcher-http/ws-xmpp;
         proxy_http_version 1.1;
     }
 
