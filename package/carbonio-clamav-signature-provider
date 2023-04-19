@@ -1,9 +1,9 @@
 #!/bin/bash
-SERVICE="proxy"
+SERVICE="clamav-signature-provider"
 SERVICE_COMMON_NAME="Carbonio ${SERVICE}"
 SERVICE_NAME="carbonio-${SERVICE}"
-SERVICE_USER="carbonio-${SERVICE}"
-SERVICE_GROUP="carbonio-${SERVICE}"
+SERVICE_USER="carbonio-clamav-sig-provider" #name truncated to 34 char limit
+SERVICE_GROUP="carbonio-clamav-sig-provider" #name truncated to 34 char limit
 SERVICE_BASE_DIR="/etc/carbonio/${SERVICE}/service-discover/"
 
 if [[ $(id -u) -ne 0 ]]; then
@@ -50,13 +50,16 @@ set -e
 # Declare the service protocol
 consul config write "${SERVICE_BASE_DIR}/service-protocol.json"
 
-if [[ ! -f "/etc/zextras/carbonio-proxy/token" ]]; then
+# Allow other services to contact this service
+consul config write "${SERVICE_BASE_DIR}/intentions.json"
+
+if [[ ! -f "${SERVICE_BASE_DIR}/token" ]]; then
     # Create the token
     consul acl token create -format json -policy-name "${POLICY_NAME}" -description "Token for
     ${SERVICE_NAME}/$(hostname -A)" |
-      jq -r '.SecretID' > /etc/zextras/carbonio-proxy/token;
-    chown ${SERVICE_USER}:${SERVICE_GROUP} /etc/zextras/carbonio-proxy/token
-    chmod 0600 /etc/zextras/carbonio-proxy/token
+      jq -r '.SecretID' > ${SERVICE_BASE_DIR}/token;
+    chown ${SERVICE_USER}:${SERVICE_GROUP} ${SERVICE_BASE_DIR}/token
+    chmod 0600 ${SERVICE_BASE_DIR}/token
 fi
 
 consul reload
