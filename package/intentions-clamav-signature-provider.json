@@ -1,0 +1,10 @@
+{
+  "Kind": "service-intentions",
+  "Name": "carbonio-clamav-signature-provider",
+  "Sources": [
+    {
+      "Name": "carbonio-clamav",
+      "Action": "allow"
+    }
+  ]
+}
