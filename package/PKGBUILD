@@ -3,8 +3,8 @@ targets=(
   "ubuntu"
 )
 pkgname="carbonio-proxy"
-pkgver="4.0.16"
-pkgrel="2"
+pkgver="4.0.17"
+pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 pkgdesclong=(
   "An open-source, community-driven email server"
