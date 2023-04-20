@@ -94,7 +94,7 @@ http
         server 127.78.0.1:20000 fail_timeout=10s;
     }
 
-    upstream chats
+    upstream ws-collaboration
     {
         server 127.78.0.1:20001 fail_timeout=10s;
     }
@@ -109,7 +109,7 @@ http
         server 127.78.0.1:20003 fail_timeout=10s;
     }
 
-    upstream chats-messaging-http
+    upstream message-dispatcher-http
     {
         server 127.78.0.1:20004 fail_timeout=10s;
     }
@@ -187,5 +187,6 @@ http
     ${web.admin.default.enabled}include ${core.includes}/${core.cprefix}.web.admin.default;
     include ${core.includes}/${core.cprefix}.web.carbonio.admin;
     include ${core.includes}/${core.cprefix}.web.carbonio.admin.default;
+    include ${core.includes}/${core.cprefix}.web.clamav.signature.provider;
 
 }

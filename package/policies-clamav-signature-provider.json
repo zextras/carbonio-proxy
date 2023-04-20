@@ -1,0 +1,26 @@
+{
+  "key_prefix": [
+    {
+      "carbonio-clamav-signature-provider/": {
+        "policy": "read"
+      }
+    }
+  ],
+  "node_prefix": [
+    {
+      "": {
+        "policy": "read"
+      }
+    }
+  ],
+  "service": [
+    {
+      "carbonio-clamav-signature-provider": {
+        "policy": "write"
+      },
+      "carbonio-clamav-signature-provider-sidecar-proxy": {
+        "policy": "write"
+      }
+    }
+  ]
+}
