@@ -9,4 +9,3 @@ server
     ${core.ipv6only.enabled}listen            ${vip}${web.http.port};
     include                 ${core.includes}/${core.cprefix}.web.http.mode-${web.mailmode};
 }
-
