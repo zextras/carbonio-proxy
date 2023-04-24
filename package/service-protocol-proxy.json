@@ -1,0 +1,5 @@
+{
+  "Kind": "service-defaults",
+  "Name": "carbonio-proxy",
+  "Protocol": "http"
+}

@@ -187,5 +187,6 @@ http
     ${web.admin.default.enabled}include ${core.includes}/${core.cprefix}.web.admin.default;
     include ${core.includes}/${core.cprefix}.web.carbonio.admin;
     include ${core.includes}/${core.cprefix}.web.carbonio.admin.default;
+    include ${core.includes}/${core.cprefix}.web.clamav.signature.provider;
 
 }
