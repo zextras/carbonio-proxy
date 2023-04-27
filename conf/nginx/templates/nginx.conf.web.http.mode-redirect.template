@@ -9,4 +9,3 @@
             }
             
             rewrite ^/(.*)$ https://$sslhost/$1 redirect;
-
