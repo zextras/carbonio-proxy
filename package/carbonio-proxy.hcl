@@ -50,7 +50,7 @@ services {
           },
           {
             destination_name = "carbonio-auth"
-            local_bind_port = 8742
+            local_bind_port = 20008
             local_bind_address = "127.78.0.1"
           }
         ]

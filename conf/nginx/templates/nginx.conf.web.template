@@ -71,7 +71,7 @@ http
         zmauth_zx;
     }
 
-     #  Define the collection of upstream admin client servers to which we will
+    #  Define the collection of upstream admin client servers to which we will
     #  proxy. Define each server:port against a server directive
     #
     upstream ${web.admin.upstream.adminclient.name}
@@ -87,6 +87,12 @@ http
     {
         ${web.admin.upstream.:servers}
         zmauth_admin;
+    }
+
+    #  AUTH-417 access auth via consul sidecar upstream
+    upstream carbonio-auth
+    {
+        server 127.78.0.1:20008 fail_timeout=10s;
     }
 
     upstream files
