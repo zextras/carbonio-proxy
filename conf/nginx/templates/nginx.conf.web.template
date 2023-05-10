@@ -89,12 +89,6 @@ http
         zmauth_admin;
     }
 
-    #  AUTH-417 access auth via consul sidecar upstream
-    upstream carbonio-auth
-    {
-        server 127.78.0.1:20008 fail_timeout=10s;
-    }
-
     upstream files
     {
         server 127.78.0.1:20000 fail_timeout=10s;
@@ -123,6 +117,11 @@ http
     upstream tasks
     {
         server 127.78.0.1:20007 fail_timeout=10s;
+    }
+
+    upstream carbonio-auth
+    {
+        server 127.78.0.1:20008 fail_timeout=10s;
     }
 
     #  Define the collection of upstream HTTP EWS servers to which we will
