@@ -47,6 +47,11 @@ services {
             destination_name = "carbonio-tasks"
             local_bind_port = 20007
             local_bind_address = "127.78.0.1"
+          },
+          {
+            destination_name = "carbonio-auth"
+            local_bind_port = 20008
+            local_bind_address = "127.78.0.1"
           }
         ]
       }
