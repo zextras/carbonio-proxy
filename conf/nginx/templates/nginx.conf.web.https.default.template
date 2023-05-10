@@ -180,7 +180,6 @@ server
         proxy_set_header Host $http_host;
         proxy_http_version 1.1;
         proxy_pass http://carbonio-auth/zx/login/;
-
     }
 
     location ^~ /zx/auth/
@@ -191,7 +190,6 @@ server
         proxy_set_header Host $http_host;
         proxy_http_version 1.1;
         proxy_pass http://carbonio-auth/zx/auth/;
-
     }
 
     location = /
