@@ -1,6 +1,12 @@
 !{explode domain(vhn)}
 # HTTPS Proxy Configuration
 #
+
+map $http_cookie $auth_token_cookie {
+    default       0;
+    "~ZM_AUTH_TOKEN="  1;
+}
+
 server
 {
     server_name             ${vhn};
@@ -49,14 +55,6 @@ server
         ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/.well-known/$1;
-    }
-
-    location /carbonio
-    {
-        try_files index.html /carbonio/;
-        ${web.add.headers.vhost}
-        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
     }
 
     location /meeting
@@ -148,34 +146,24 @@ server
         proxy_pass http://carbonio-auth/zx/auth/;
     }
 
+    location ~ ^/carbonio(/|$)
+    {
+        if ($auth_token_cookie = 0) {
+            return 307 "/static/login/";
+        }
+
+        try_files index.html /carbonio/;
+        ${web.add.headers.default}
+        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
+        alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
+
+    }
+
     location = /
     {
 
-        if ($query_string ~ loginOp=logout) {
-            add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        if ($auth_token_cookie = 0) {
             return 307 "/static/login/";
-        }
-
-        if ($http_cookie !~ "ZM_AUTH_TOKEN=") {
-            return 307 "/static/login/";
-        }
-
-        if ($http_cookie !~ "UI") {
-           return 307 "/carbonio/";
-        }
-
-        if ($cookie_UI = "iris"){
-           return 307 "/carbonio/";
-        }
-
-        if ($cookie_UI = "") {
-           return 307 "/carbonio/";
         }
 
         # Begin stray redirect hack
@@ -226,6 +214,19 @@ server
 
         # Fudge inter-mailbox redirects (kludge)
         proxy_redirect http://$relhost/ https://$http_host/;
+
+        if ($query_string ~ loginOp=logout) {
+            add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+            add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+            add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+            add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+            add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+            add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+            add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+            return 307 "/static/login/";
+        }
+
+        return 307 "/carbonio/";
     }
 
     location /
