@@ -3,7 +3,7 @@ targets=(
   "ubuntu"
 )
 pkgname="carbonio-proxy"
-pkgver="4.1.0"
+pkgver="4.1.1"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 pkgdesclong=(
@@ -105,8 +105,8 @@ postinst() {
   getent passwd 'carbonio-proxy' >/dev/null ||
     useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
 
-  mkdir -p '/etc/zextras/carbonio-proxy/'
-  chown 'carbonio-proxy:carbonio-proxy' '/etc/zextras/carbonio-proxy/'
+  mkdir -p '/etc/carbonio/proxy/service-discover/'
+  chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
