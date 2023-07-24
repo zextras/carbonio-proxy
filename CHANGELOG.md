@@ -1,5 +1,12 @@
 
 
+# [4.2.0](https://github.com/Zextras/carbonio-proxy/compare/4.1.1...4.2.0) (2023-07-24)
+
+
+### Features
+
+* [CO-767] Remove UI cookie logic + minor improvements ([#75](https://github.com/Zextras/carbonio-proxy/issues/75)) ([76bb781](https://github.com/Zextras/carbonio-proxy/commit/76bb78150dd2246fb09c18a8d6d28ddd70e15348))
+
 # [4.1.0](https://github.com/Zextras/carbonio-nginx-conf/compare/4.0.18...4.1.0) (2023-07-05)
 
 
