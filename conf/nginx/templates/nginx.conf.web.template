@@ -25,6 +25,10 @@ http
     # Define the collection of upstream HTTP webclient servers to which we will proxy
     # Define each server:port against a server directive
     #
+    upstream mailbox {
+      server 127.78.0.1:20009 fail_timeout=10s
+    }
+
     upstream ${web.upstream.webclient.name}
     {
         ${web.upstream.webclient.:servers}

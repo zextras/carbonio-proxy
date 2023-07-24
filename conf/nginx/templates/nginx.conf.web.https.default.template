@@ -483,8 +483,8 @@ server
 
         # End stray redirect hack
 
-        # Proxy to Zimbra Upstream
-        proxy_pass          ${web.upstream.target};
+        # Proxy to Mailbox Upstream
+        proxy_pass          mailbox;
         proxy_read_timeout  ${web.upstream.waitset.timeout};
         proxy_buffering     off;
 
@@ -535,7 +535,7 @@ server
             set $relhost $host:$mailhostport;
         }
 
-        set $autodiscover_upstream     ${web.upstream.target};
+        set $autodiscover_upstream     mailbox;
         ${web.ews.upstream.disable}    if ($http_user_agent ~ "ExchangeWebServices") {
         ${web.ews.upstream.disable}       set $autodiscover_upstream    ${web.upstream.ews.target};
         ${web.ews.upstream.disable}    }
