@@ -2,7 +2,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: carbonio-nginx-conf
+  name: carbonio-proxy
   title: Carbonio Nginx Configuration
   description: | 
     Project containing Nginx Template files for Carbonio and Nginx Consul Service registration.
