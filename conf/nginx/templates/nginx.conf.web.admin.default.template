@@ -6,8 +6,7 @@ server
     ${core.ipboth.enabled}listen                  [::]:${web.admin.port} default_server ssl;
     ${core.ipv4only.enabled}listen                ${web.admin.port} default_server ssl;
     ${core.ipv6only.enabled}listen                [::]:${web.admin.port} default_server ssl;
-    ${web.add.headers.default}
-    client_max_body_size    0;
+
     ssl_protocols           ${web.ssl.protocols};
     ssl_prefer_server_ciphers ${web.ssl.preferserverciphers};
     ssl_session_cache       ${ssl.session.cachesize};
@@ -19,6 +18,12 @@ server
     proxy_ssl_protocols           ${web.ssl.protocols};
     proxy_ssl_ciphers             ${web.ssl.ciphers};
     ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
+
+    # no maximum limit imposed on the size of the request body
+    client_max_body_size    0;
+
+    # response headers
+    ${web.add.headers.default}
 
     location /
     {
