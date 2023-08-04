@@ -129,7 +129,7 @@ pipeline {
                             {
                                 "pattern": "artifacts/carbonio-proxy*.deb",
                                 "target": "ubuntu-playground/pool/",
-                                "props": "deb.distribution=focal;deb.component=main;deb.architecture=amd64"
+                                "props": "deb.distribution=focal;deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
                             },
                             {
                                 "pattern": "artifacts/(carbonio-proxy)-(*).rpm",
@@ -166,7 +166,7 @@ pipeline {
                             {
                                 "pattern": "artifacts/carbonio-proxy*.deb",
                                 "target": "ubuntu-rc/pool/",
-                                "props": "deb.distribution=focal;deb.component=main;deb.architecture=amd64"
+                                "props": "deb.distribution=focal;deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
                             }
                         ]
                     }'''
