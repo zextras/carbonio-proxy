@@ -124,24 +124,6 @@ http
         server 127.78.0.1:20008 fail_timeout=10s;
     }
 
-    #  Define the collection of upstream HTTP EWS servers to which we will
-    #  proxy EWS request. Define each server:port against a server directive
-    #
-    ${web.ews.upstream.disable} upstream ${web.ews.upstream.name}
-    ${web.ews.upstream.disable} {
-    ${web.ews.upstream.disable}    ${web.upstream.ewsserver.:servers}
-    ${web.ews.upstream.disable}    zmauth;
-    ${web.ews.upstream.disable} }
-
-    #  Define the collection of upstream HTTPS EWS servers to which we will
-    #  proxy EWS request. Define each server:port against a server directive
-    #
-    ${web.ews.upstream.disable} upstream ${web.ssl.ews.upstream.name}
-    ${web.ews.upstream.disable} {
-    ${web.ews.upstream.disable}    ${web.ssl.upstream.ewsserver.:servers}
-    ${web.ews.upstream.disable}    zmauth;
-    ${web.ews.upstream.disable} }
-
     #  Define the collection of upstream HTTP Login servers to which we will
     #  proxy login request. Define each server:port against a server directive
     #

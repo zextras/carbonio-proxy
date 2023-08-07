@@ -594,9 +594,6 @@ server
         }
 
         set $autodiscover_upstream     ${web.upstream.target};
-        ${web.ews.upstream.disable}    if ($http_user_agent ~ "ExchangeWebServices") {
-        ${web.ews.upstream.disable}       set $autodiscover_upstream    ${web.upstream.ews.target};
-        ${web.ews.upstream.disable}    }
 
         # End stray redirect hack
 
@@ -651,34 +648,6 @@ server
     ${web.xmpp.bosh.upstream.disable}     }
     ${web.xmpp.bosh.upstream.disable}     proxy_set_header Host            $virtual_host;
     ${web.xmpp.bosh.upstream.disable} }
-
-    ${web.ews.upstream.disable} location ~* ^/ews/Exchange.asmx
-    ${web.ews.upstream.disable} {
-    ${web.ews.upstream.disable}     # Proxy to Zimbra Upstream
-    ${web.ews.upstream.disable}     proxy_pass          ${web.upstream.ews.target};
-    ${web.ews.upstream.disable}     proxy_read_timeout  ${web.upstream.polling.timeout};
-    ${web.ews.upstream.disable}     proxy_buffering     off;
-    ${web.ews.upstream.disable}
-    ${web.ews.upstream.disable}     # For audit
-    ${web.ews.upstream.disable}     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    ${web.ews.upstream.disable}
-    ${web.ews.upstream.disable}     # For Virtual Hosting
-    ${web.ews.upstream.disable}     set $virtual_host $http_host;
-    ${web.ews.upstream.disable}     if ($virtual_host = '') {
-    ${web.ews.upstream.disable}        set $virtual_host $server_addr:$server_port;
-    ${web.ews.upstream.disable}     }
-    ${web.ews.upstream.disable}     proxy_set_header Host            $virtual_host;
-    ${web.ews.upstream.disable}
-    ${web.ews.upstream.disable}     # Location header fudging
-    ${web.ews.upstream.disable}     # Because NGINX SSL speaks plain HTTP to upstream, therefore any
-    ${web.ews.upstream.disable}     # redirects to http:// coming from the upstream need to be fudged
-    ${web.ews.upstream.disable}     # to https://
-    ${web.ews.upstream.disable}     #
-    ${web.ews.upstream.disable}     proxy_redirect http://$http_host/ https://$http_host/;
-    ${web.ews.upstream.disable}
-    ${web.ews.upstream.disable}     # Fudge inter-mailbox redirects (kludge)
-    ${web.ews.upstream.disable}     proxy_redirect http://$relhost/ https://$http_host/;
-    ${web.ews.upstream.disable} }
 
     location ~* /(service|principals|dav|\.well-known|home|shf|user|certauth|spnegoauth)/
     {
