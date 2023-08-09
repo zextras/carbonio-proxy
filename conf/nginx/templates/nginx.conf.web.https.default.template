@@ -70,11 +70,13 @@ server
     }
 
     # if to loginOp is logout, all the requests should be routed to login server so that updated assets can be loaded
+    # Marked for removal: will be removed in 23.10.0 and logout will be handled at ~/logout
     if ($arg_loginOp = "logout") {
         set $login_upstream    ${web.upstream.login.target};
     }
 
     # Same as above for relogin loginOp
+    # Marked for removal: will be removed in 23.10.0
     if ($arg_loginOp = "relogin") {
         set $login_upstream    ${web.upstream.login.target};
     }
@@ -83,6 +85,18 @@ server
     # server - which could be an old one and not yet upgraded
     if ($arg_client = "mobile") {
         set $login_upstream    https://zimbra_ssl_webclient;
+    }
+
+    location ~/logout
+    {
+        add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        ${web.carbonio.webui.logout.redirect.default};
     }
 
     location ~/static/(.*)
@@ -205,7 +219,7 @@ server
     {
         # End user session and redirect them to logout URL.
         # Defaults to /static/login/
-        # NOTE: Keep this on top of location /
+        # Marked for removal: will be removed in 23.10.0 and logout will be handled at ~/logout
         if ($query_string ~ loginOp=logout) {
             add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
             add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
