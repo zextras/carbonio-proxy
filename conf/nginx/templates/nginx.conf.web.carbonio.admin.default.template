@@ -6,8 +6,7 @@ server
     ${core.ipboth.enabled}listen                  [::]:${web.carbonio.admin.port} default_server ssl;
     ${core.ipv4only.enabled}listen                ${web.carbonio.admin.port} default_server ssl;
     ${core.ipv6only.enabled}listen                [::]:${web.carbonio.admin.port} default_server ssl;
-    ${web.add.headers.default}
-    client_max_body_size    0;
+
     ssl_protocols           ${web.ssl.protocols};
     ssl_prefer_server_ciphers ${web.ssl.preferserverciphers};
     ssl_session_cache       ${ssl.session.cachesize};
@@ -20,12 +19,19 @@ server
     proxy_ssl_ciphers             ${web.ssl.ciphers};
     ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
 
+    # no maximum limit imposed on the size of the request body
+    client_max_body_size    0;
+
+    # nginx compression
     ${proxy.http.compression}
+
+    # response headers
+    ${web.add.headers.default}
 
     location /
     {
         if ($http_cookie !~ "ZM_ADMIN_AUTH_TOKEN=") {
-            return 307 "/static/login/";
+            return 307 ${web.carbonio.admin.login.url.default};
         }
         return 307 "/carbonioAdmin";
     }
@@ -93,7 +99,7 @@ server
         add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
         add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
         add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-        return 307 "/static/login/";
+        ${web.carbonio.admin.logout.redirect.default};
     }
 
     location ^~ /zx/
