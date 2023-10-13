@@ -27,23 +27,23 @@ pipeline {
             stages {
                 stage('Stash') {
                     steps {
-                        stash includes: 'pacur.json,PKGBUILD,package/**,conf/**', name: 'binaries'
+                        sh 'cp conf/nginx/errors/* package/proxy'
+                        sh 'cp conf/nginx/templates/* package/proxy'
+                        stash includes: '**', name: 'staging'
                     }
                 }
-                stage('pacur') {
+                stage('yap') {
                     parallel {
-                        stage('Ubuntu 20.04') {
+                        stage('Ubuntu') {
                             agent {
                                 node {
-                                    label 'pacur-agent-ubuntu-20.04-v1'
+                                    label 'yap-agent-ubuntu-20.04-v2'
                                 }
                             }
                             steps {
-                                dir('/tmp/staging'){
-                                    unstash 'binaries'
-                                }
-                                sh 'sudo pacur build ubuntu /tmp/staging/package'
-                                stash includes: 'artifacts/', name: 'artifacts-deb'
+                                unstash 'staging'
+                                sh 'sudo yap build ubuntu package'
+                                stash includes: 'artifacts/*.deb', name: 'artifacts-deb'
                             }
                             post {
                                 always {
@@ -51,25 +51,20 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Rocky 8') {
+                        stage('Rocky') {
                             agent {
                                 node {
-                                    label 'pacur-agent-rocky-8-v1'
+                                    label 'yap-agent-rocky-8-v2'
                                 }
                             }
                             steps {
-                                dir('/tmp/staging'){
-                                    unstash 'binaries'
-                                }
-                                sh 'sudo pacur build rocky /tmp/staging/package'
-                                dir('artifacts/') {
-                                    sh 'echo carbonio-proxy* | sed -E "s#(carbonio-proxy-[0-9.]*).*#\\0 \\1.x86_64.rpm#" | xargs sudo mv'
-                                }
-                                stash includes: 'artifacts/', name: 'artifacts-rpm'
+                                unstash 'staging'
+                                sh 'sudo yap build rocky package'
+                                stash includes: 'artifacts/x86_64/*.rpm', name: 'artifacts-rpm'
                             }
                             post {
                                 always {
-                                    archiveArtifacts artifacts: 'artifacts/*.rpm', fingerprint: true
+                                    archiveArtifacts artifacts: 'artifacts/x86_64/*.rpm', fingerprint: true
                                 }
                             }
                         }
@@ -98,9 +93,14 @@ pipeline {
                                 "props": "deb.distribution=focal;deb.component=main;deb.architecture=amd64"
                             },
                             {
-                                "pattern": "artifacts/(carbonio-proxy)-(*).rpm",
+                                "pattern": "artifacts/noarch/(carbonio-proxy)-(*).rpm",
                                 "target": "centos8-devel/zextras/{1}/{1}-{2}.rpm",
-                                "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
+                                "props": "rpm.metadata.arch=noarch;rpm.metadata.vendor=zextras"
+                            },
+                            {
+                                "pattern": "artifacts/noarch/(carbonio-proxy)-(*).rpm",
+                                "target": "rhel9-devel/zextras/{1}/{1}-{2}.rpm",
+                                "props": "rpm.metadata.arch=noarch;rpm.metadata.vendor=zextras"
                             }
                         ]
                     }'''
@@ -134,7 +134,12 @@ pipeline {
                             {
                                 "pattern": "artifacts/(carbonio-proxy)-(*).rpm",
                                 "target": "centos8-playground/zextras/{1}/{1}-{2}.rpm",
-                                "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
+                                "props": "rpm.metadata.arch=noarch;rpm.metadata.vendor=zextras"
+                            },
+                            {
+                                "pattern": "artifacts/noarch/(carbonio-proxy)-(*).rpm",
+                                "target": "rhel9-playground/zextras/{1}/{1}-{2}.rpm",
+                                "props": "rpm.metadata.arch=noarch;rpm.metadata.vendor=zextras"
                             }
                         ]
                     }'''
@@ -193,7 +198,7 @@ pipeline {
                             {
                                 "pattern": "artifacts/(carbonio-proxy)-(*).rpm",
                                 "target": "centos8-rc/zextras/{1}/{1}-{2}.rpm",
-                                "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
+                                "props": "rpm.metadata.arch=noarch;rpm.metadata.vendor=zextras"
                             }
                         ]
                     }'''
@@ -203,6 +208,33 @@ pipeline {
                             'buildNumber'        : buildInfo.number,
                             'sourceRepo'         : 'centos8-rc',
                             'targetRepo'         : 'centos8-release',
+                            'comment'            : 'Do not change anything! Just press the button',
+                            'status'             : 'Released',
+                            'includeDependencies': false,
+                            'copy'               : true,
+                            'failFast'           : true
+                    ]
+                    Artifactory.addInteractivePromotion server: server, promotionConfig: config, displayName: 'Centos8 Promotion to Release'
+                    server.publishBuildInfo buildInfo
+
+                    // rocky9
+                    buildInfo = Artifactory.newBuildInfo()
+                    buildInfo.name += '-rhel9'
+                    uploadSpec= '''{
+                        "files": [
+                            {
+                                "pattern": "artifacts/noarch/(carbonio-proxy)-(*).rpm",
+                                "target": "rhel9-rc/zextras/{1}/{1}-{2}.rpm",
+                                "props": "rpm.metadata.arch=noarch;rpm.metadata.vendor=zextras"
+                            }
+                        ]
+                    }'''
+                    server.upload spec: uploadSpec, buildInfo: buildInfo, failNoOp: false
+                    config = [
+                            'buildName'          : buildInfo.name,
+                            'buildNumber'        : buildInfo.number,
+                            'sourceRepo'         : 'rhel9-rc',
+                            'targetRepo'         : 'rhel9-release',
                             'comment'            : 'Do not change anything! Just press the button',
                             'status'             : 'Released',
                             'includeDependencies': false,

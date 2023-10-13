@@ -1,7 +1,3 @@
-targets=(
-  "centos"
-  "ubuntu"
-)
 pkgname="carbonio-proxy"
 pkgver="4.3.0"
 pkgrel="1"
@@ -13,8 +9,8 @@ maintainer="Zextras <packages@zextras.com>"
 url="https://zextras.com"
 section="mail"
 priority="optional"
-arch="amd64"
-depends:apt=(
+arch=('x86_64')
+depends__apt=(
   "carbonio-certbot"
   "carbonio-core"
   "carbonio-memcached"
@@ -22,7 +18,7 @@ depends:apt=(
   "carbonio-prometheus-nginx-exporter"
   "sqlite3"
 )
-depends:yum=(
+depends__yum=(
   "carbonio-certbot"
   "carbonio-core"
   "carbonio-memcached"
@@ -30,72 +26,117 @@ depends:yum=(
   "carbonio-prometheus-nginx-exporter"
   "sqlite"
 )
+source=(
+  "carbonio_error_404.html"
+  "carbonio-clamav-signature-provider-setup.sh"
+  "carbonio-clamav-signature-provider-sidecar.service"
+  "carbonio-clamav-signature-provider.hcl"
+  "carbonio-clamav-signature-provider"
+  "carbonio-proxy-setup.sh"
+  "carbonio-proxy-sidecar.service"
+  "carbonio-proxy.hcl"
+  "carbonio-proxy"
+  "intentions-clamav-signature-provider.json"
+  "nginx.conf.mail.imap.default.template"
+  "nginx.conf.mail.imap.template"
+  "nginx.conf.mail.imaps.default.template"
+  "nginx.conf.mail.imaps.template"
+  "nginx.conf.mail.pop3.default.template"
+  "nginx.conf.mail.pop3.template"
+  "nginx.conf.mail.pop3s.default.template"
+  "nginx.conf.mail.pop3s.template"
+  "nginx.conf.mail.template"
+  "nginx.conf.main.template"
+  "nginx.conf.map.crt.template"
+  "nginx.conf.map.key.template"
+  "nginx.conf.map.ssl.template"
+  "nginx.conf.memcache.template"
+  "nginx.conf.stream.addressBook.template"
+  "nginx.conf.stream.message.dispatcher.xmpp.template"
+  "nginx.conf.stream.template"
+  "nginx.conf.template"
+  "nginx.conf.web.admin.default.template"
+  "nginx.conf.web.admin.template"
+  "nginx.conf.web.carbonio.admin.default.template"
+  "nginx.conf.web.carbonio.admin.template"
+  "nginx.conf.web.clamav.signature.provider.template"
+  "nginx.conf.web.http.default.template"
+  "nginx.conf.web.http.mode-redirect.template"
+  "nginx.conf.web.http.template"
+  "nginx.conf.web.https.default.template"
+  "nginx.conf.web.https.template"
+  "nginx.conf.web.sso.default.template"
+  "nginx.conf.web.sso.template"
+  "nginx.conf.web.template"
+  "nginx.conf.zmlookup.template"
+  "policies-clamav-signature-provider.json"
+  "policies-proxy.json"
+  "service-protocol-clamav-signature-provider.json"
+  "service-protocol-proxy.json"
+  "zmerror_upstream_502.html"
+  "zmerror_upstream_504.html"
+)
 
 package() {
-
-  # srcdir is pacur.json build_dir/src
-  cd "${srcdir}/../staging"
-
   # start install proxy service registration files for consul
-  install -D -m 755 "package/carbonio-proxy" \
+  install -Dm755 "${srcdir}/carbonio-proxy" \
     "${pkgdir}/usr/bin/carbonio-proxy"
 
-  install -D -m 644 "package/carbonio-proxy-sidecar.service" \
+  install -Dm644 "${srcdir}/carbonio-proxy-sidecar.service" \
     "${pkgdir}/lib/systemd/system/carbonio-proxy-sidecar.service"
 
-  install -D -m 644 "package/policies-proxy.json" \
+  install -Dm644 "${srcdir}/policies-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/policies.json"
 
-  install -D -m 644 "package/carbonio-proxy.hcl" \
+  install -Dm644 "${srcdir}/carbonio-proxy.hcl" \
     "${pkgdir}/etc/zextras/service-discover/carbonio-proxy.hcl"
 
-  install -D -m 644 "package/service-protocol-proxy.json" \
+  install -Dm644 "${srcdir}/service-protocol-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/service-protocol.json"
 
-  install -D -m 755 "package/carbonio-proxy-setup.sh" \
+  install -Dm755 "${srcdir}/carbonio-proxy-setup.sh" \
     "${pkgdir}/etc/zextras/pending-setups.d/carbonio-proxy-setup.sh"
   # end install proxy service registration files for consul
 
-
   # start install clamav-signature-provider service registration files for consul
-  install -D -m 755 "package/carbonio-clamav-signature-provider" \
+  install -Dm755 "${srcdir}/carbonio-clamav-signature-provider" \
     "${pkgdir}/usr/bin/carbonio-clamav-signature-provider"
 
-  install -D -m 644 "package/carbonio-clamav-signature-provider-sidecar.service" \
+  install -Dm644 "${srcdir}/carbonio-clamav-signature-provider-sidecar.service" \
     "${pkgdir}/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 
-  install -D -m 644 "package/policies-clamav-signature-provider.json" \
+  install -Dm644 "${srcdir}/policies-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/policies.json"
 
-  install -D -m 644 "package/carbonio-clamav-signature-provider.hcl" \
+  install -Dm644 "${srcdir}/carbonio-clamav-signature-provider.hcl" \
     "${pkgdir}/etc/zextras/service-discover/carbonio-clamav-signature-provider.hcl"
 
-  install -D -m 644 "package/intentions-clamav-signature-provider.json" \
+  install -Dm644 "${srcdir}/intentions-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/intentions.json"
 
-  install -D -m 644 "package/service-protocol-clamav-signature-provider.json" \
+  install -Dm644 "${srcdir}/service-protocol-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/service-protocol.json"
 
-  install -D -m 755 "package/carbonio-clamav-signature-provider-setup.sh" \
+  install -Dm755 "${srcdir}/carbonio-clamav-signature-provider-setup.sh" \
     "${pkgdir}/etc/zextras/pending-setups.d/carbonio-clamav-signature-provider-setup.sh"
   # end install clamav-signature-provider service registration files for consul
 
-
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/includes/"
-  rsync -a conf/nginx/templates/ "${pkgdir}/opt/zextras/conf/nginx/templates/"
+  mkdir -p "${pkgdir}/opt/zextras/conf/nginx/templates/"
+  cp "${srcdir}"/*.template \
+    "${pkgdir}/opt/zextras/conf/nginx/templates/"
 
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/templates_custom/"
 
   # start install errors files in nginx html data
   mkdir -p "${pkgdir}/opt/zextras/data/nginx/html/"
-  install -D conf/nginx/errors/zmerror_upstream_502.html \
+  install -D "${srcdir}/zmerror_upstream_502.html" \
     "${pkgdir}/opt/zextras/data/nginx/html/zmerror_upstream_502.html"
-  install -D conf/nginx/errors/zmerror_upstream_504.html \
+  install -D "${srcdir}/zmerror_upstream_504.html" \
     "${pkgdir}/opt/zextras/data/nginx/html/zmerror_upstream_504.html"
-  install -D conf/nginx/errors/carbonio_error_404.html \
+  install -D "${srcdir}/carbonio_error_404.html" \
     "${pkgdir}/opt/zextras/data/nginx/html/carbonio_error_404.html"
   # end install errors files in nginx html data
-
 }
 
 postinst() {
@@ -124,7 +165,6 @@ postinst() {
   echo "You must run pending-setups to configure it correctly."
   echo "======================================================"
   # end Proxy consul registration
-
 
   # start ClamAV signature provider consul registration
   getent group 'carbonio-clamav-sig-provider' >/dev/null ||
@@ -162,3 +202,54 @@ postrm() {
     systemctl daemon-reload >/dev/null 2>&1 || :
   fi
 }
+
+sha256sums=(
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+)
