@@ -29,6 +29,11 @@ server
     # response headers
     ${web.add.headers.vhost}
 
+    location = /favicon.ico
+    {
+      return 404;
+    }
+
     location /
     {
         if ($http_cookie !~ "ZM_ADMIN_AUTH_TOKEN=") {
