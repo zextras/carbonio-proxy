@@ -11,4 +11,4 @@ NGINX configuration resources for Carbonio
 
 ## License
 
-See [COPYING](COPYING) file for details
+See [COPYING](COPYING-AGPL-3.0-only) file for details

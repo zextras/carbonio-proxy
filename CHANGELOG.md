@@ -1,5 +1,7 @@
 
 
+## [4.5.1](https://github.com/Zextras/carbonio-proxy/compare/4.5.0...4.5.1) (2023-11-09)
+
 # [4.5.0](https://github.com/Zextras/carbonio-proxy/compare/4.4.0...4.5.0) (2023-10-20)
 
 
