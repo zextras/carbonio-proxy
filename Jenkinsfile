@@ -93,13 +93,13 @@ pipeline {
                                 "props": "deb.distribution=focal;deb.component=main;deb.architecture=amd64"
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).rpm",
-                                "target": "centos8-devel/zextras/{1}/{1}-{2}.rpm",
+                                "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).x86_64.rpm",
+                                "target": "centos8-devel/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).rpm",
-                                "target": "rhel9-devel/zextras/{1}/{1}-{2}.rpm",
+                                "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).x86_64.rpm",
+                                "target": "rhel9-devel/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             }
                         ]
@@ -132,13 +132,13 @@ pipeline {
                                 "props": "deb.distribution=focal;deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
                             },
                             {
-                                "pattern": "artifacts/(carbonio-proxy)-(*).rpm",
-                                "target": "centos8-playground/zextras/{1}/{1}-{2}.rpm",
+                                "pattern": "artifacts/(carbonio-proxy)-(*).x86_64.rpm",
+                                "target": "centos8-playground/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).rpm",
-                                "target": "rhel9-playground/zextras/{1}/{1}-{2}.rpm",
+                                "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).x86_64.rpm",
+                                "target": "rhel9-playground/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             }
                         ]
@@ -196,8 +196,8 @@ pipeline {
                     uploadSpec= '''{
                         "files": [
                             {
-                                "pattern": "artifacts/(carbonio-proxy)-(*).rpm",
-                                "target": "centos8-rc/zextras/{1}/{1}-{2}.rpm",
+                                "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).x86_64.rpm",
+                                "target": "centos8-rc/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             }
                         ]
@@ -223,8 +223,8 @@ pipeline {
                     uploadSpec= '''{
                         "files": [
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).rpm",
-                                "target": "rhel9-rc/zextras/{1}/{1}-{2}.rpm",
+                                "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).x86_64.rpm",
+                                "target": "rhel9-rc/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             }
                         ]
