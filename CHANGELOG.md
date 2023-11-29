@@ -1,4 +1,9 @@
+# [4.6.1](https://github.com/Zextras/carbonio-proxy/compare/4.6.0...4.6.1) (2023-11-29)
 
+
+### Bug Fixes
+
+* **config:** [CO-901] use correct proxy var to expand virtual host response headers ([3f789b8](https://github.com/Zextras/carbonio-proxy/commit/3f789b8849f3a9036deec1ca7bed208d0d897f75))
 
 # [4.6.0](https://github.com/Zextras/carbonio-proxy/compare/4.5.1...4.6.0) (2023-11-24)
 
