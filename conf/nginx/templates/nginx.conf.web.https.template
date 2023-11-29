@@ -92,7 +92,7 @@ server
     {
         set $public_link 0;
         set $AUTH_COOKIE_MISSING 0;
-        if ($uri ~* "^/services/files/link/.*$")  {
+        if ($uri ~* "^/services/files/(link|public)/.*$")  {
         set $public_link 1;
         }
         if ($http_cookie !~ "ZM_AUTH_TOKEN=") {
