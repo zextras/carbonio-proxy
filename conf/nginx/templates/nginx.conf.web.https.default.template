@@ -136,7 +136,7 @@ server
         if ($http_cookie !~ "ZM_AUTH_TOKEN=") {
         set $AUTH_COOKIE_MISSING 1;
         }
-        set $require_login $public_link:$AUTH_COOKIE_MISSING;
+        set $require_login $public_link:$auth_token_cookie;
         if ( $require_login ~* "0:1") {
             return 307 "/static/login/";
         }
