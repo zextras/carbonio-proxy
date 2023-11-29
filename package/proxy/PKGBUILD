@@ -1,15 +1,14 @@
 pkgname="carbonio-proxy"
-pkgver="4.6.0"
+pkgver="4.6.1"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 arch=('x86_64')
 maintainer="Zextras <packages@zextras.com>"
 copyright=(
-  "2022, Zextras <https://www.zextras.com>"
+  "2022-2024, Zextras <https://www.zextras.com>"
   "2022, Synacor, Inc."
 )
 license=(
-  "AGPL-3.0-only"
   "GPL-2.0-only"
 )
 url="https://github.com/zextras"
