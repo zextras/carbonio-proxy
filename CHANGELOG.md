@@ -1,5 +1,22 @@
 
 
+## [4.5.1](https://github.com/Zextras/carbonio-proxy/compare/4.5.0...4.5.1) (2023-11-09)
+
+# [4.5.0](https://github.com/Zextras/carbonio-proxy/compare/4.4.0...4.5.0) (2023-10-20)
+
+
+### Bug Fixes
+
+* Carbonio shows Jetty favicon instead of Carbonio one ([#90](https://github.com/Zextras/carbonio-proxy/issues/90)) ([8cbfc4a](https://github.com/Zextras/carbonio-proxy/commit/8cbfc4af1d21cc14699a1e37057319d9891f0b31))
+
+
+### Features
+
+* add ubuntu 22.04 (jammy jellyfish) support ([#87](https://github.com/Zextras/carbonio-proxy/issues/87)) ([ee368fd](https://github.com/Zextras/carbonio-proxy/commit/ee368fd2e99f9b4652d9ae92ae8058df3ff43a4f))
+* add ubuntu 22.04 (jammy jellyfish) support ([#87](https://github.com/Zextras/carbonio-proxy/issues/87)) ([9c0b62e](https://github.com/Zextras/carbonio-proxy/commit/9c0b62e3ed26665ac491cc0a953f85da0821a14e))
+* move to yap agent and add rhel9 support ([6cd2579](https://github.com/Zextras/carbonio-proxy/commit/6cd2579976e5b46a8529db63e3d6dc3fe9b107a6))
+* move to yap agent and add rhel9 support ([#88](https://github.com/Zextras/carbonio-proxy/issues/88)) ([e2de359](https://github.com/Zextras/carbonio-proxy/commit/e2de359c20092afd48ebcb6b40eb31e66a9d874b))
+
 # [4.4.0](https://github.com/Zextras/carbonio-proxy/compare/4.3.0...4.4.0) (2023-09-26)
 
 
