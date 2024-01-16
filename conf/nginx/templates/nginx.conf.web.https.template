@@ -90,13 +90,13 @@ server
 
     location /files/public/link/access/assets/
     {
-        ${web.add.headers.default}
+        ${web.add.headers.vhost}
         alias /opt/zextras/web/carbonio-files-public-folder-ui/assets/;
     }
 
     location /files/public/link/access/
     {
-        ${web.add.headers.default}
+        ${web.add.headers.vhost}
         try_files index.html /carbonio-files-public-folder-ui/;
         alias /opt/zextras/web/carbonio-files-public-folder-ui/;
     }
@@ -208,7 +208,7 @@ server
         }
 
         try_files index.html /carbonio/;
-        ${web.add.headers.default}
+        ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
 

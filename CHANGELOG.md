@@ -1,4 +1,22 @@
+# [4.6.1](https://github.com/Zextras/carbonio-proxy/compare/4.6.0...4.6.1) (2023-11-29)
 
+
+### Bug Fixes
+
+* **config:** [CO-901] use correct proxy var to expand virtual host response headers ([3f789b8](https://github.com/Zextras/carbonio-proxy/commit/3f789b8849f3a9036deec1ca7bed208d0d897f75))
+
+# [4.6.0](https://github.com/Zextras/carbonio-proxy/compare/4.5.1...4.6.0) (2023-11-24)
+
+
+### Bug Fixes
+
+* **ci:** packages are not uploaded ([7d18cd4](https://github.com/Zextras/carbonio-proxy/commit/7d18cd491d094983d6d23e888cd9d686977d813d))
+* fix rpm uploads ([b47c36e](https://github.com/Zextras/carbonio-proxy/commit/b47c36ef24b161b893578d732f74bdb731ccebdf))
+
+
+### Features
+
+* add nginx rule to fetch carbonio-files-public-folder-ui bundle ([#96](https://github.com/Zextras/carbonio-proxy/issues/96)) ([d780b06](https://github.com/Zextras/carbonio-proxy/commit/d780b06eb6f70252f7be5d359c8484bef681a246))
 
 ## [4.5.1](https://github.com/Zextras/carbonio-proxy/compare/4.5.0...4.5.1) (2023-11-09)
 
