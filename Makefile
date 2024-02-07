@@ -6,17 +6,26 @@ build:
 		--entrypoint='/project/build_entrypoint.sh' \
 		registry.dev.zextras.com/jenkins/pacur/ubuntu-20.04:v2
 
-sys-status:
-	ssh root@${HOST}.${DOMAIN} "systemctl status carbonio-proxy"
-
-sys-stop:
-	ssh root@${HOST}.${DOMAIN} "systemctl stop carbonio-proxy"
-
-sys-start:
-	ssh root@${HOST}.${DOMAIN} "systemctl start carbonio-proxy"
-
-sys-install: build
+install:
 	./install_packages.sh ${HOST}.${DOMAIN}
 
-.PHONY: build sys-status sys-stop sys-start sys-install
+sys-status:
+	@$(call execute_zextras_cmd, "zmproxyctl status")
+
+sys-stop:
+	@$(call execute_zextras_cmd, "zmproxyctl stop")
+
+sys-start:
+	@$(call execute_zextras_cmd, "zmproxyctl start")
+
+sys-restart:
+	@$(call execute_zextras_cmd, "zmproxyctl restart")
+
+sys-install: build install sys-restart
+
+.PHONY: build install sys-status sys-stop sys-start sys-restart sys-install
+
+define execute_zextras_cmd
+	ssh root@${HOST}.${DOMAIN} "su - zextras -c '$(1)'"
+endef
 
