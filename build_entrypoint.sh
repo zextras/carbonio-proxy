@@ -2,6 +2,7 @@
 
 set -x
 
+mkdir -p /project/artifacts 
 mkdir /tmp/build
 
 cp -r /project/package/* /tmp/build/
