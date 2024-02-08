@@ -4,32 +4,30 @@ build:
 		--entrypoint='/project/build_entrypoint.sh' \
 		registry.dev.zextras.com/jenkins/pacur/ubuntu-20.04:v2
 
-install:
-	@$(call check, HOST,$(HOST))
+sys-install: host-check
 	./install_packages.sh ${HOST}
+
+sys-deploy: host-check build sys-install sys-restart
 
 sys-status:
 	@$(call execute_zextras_cmd, "zmproxyctl status")
 
-sys-stop:
-	@$(call execute_zextras_cmd, "zmproxyctl stop")
-
 sys-start:
 	@$(call execute_zextras_cmd, "zmproxyctl start")
+
+sys-stop:
+	@$(call execute_zextras_cmd, "zmproxyctl stop")
 
 sys-restart:
 	@$(call execute_zextras_cmd, "zmproxyctl restart")
 
-sys-install: host-check build install sys-restart
-
 host-check:
-	 @$(call check,HOST,$(HOST))
+	 @$(call check, HOST, $(HOST))
 
-
-.PHONY: host-check build install sys-status sys-stop sys-start sys-restart sys-install
+.PHONY: build sys-install sys-deploy sys-status sys-start sys-stop sys-restart host-check 
 
 define execute_zextras_cmd
-  @$(call check, HOST,$(HOST))
+  @$(call check, HOST, $(HOST))
   ssh root@${HOST} "su - zextras -c '$(1)'"
 endef
 
