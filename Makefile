@@ -2,7 +2,7 @@ build:
 	docker run --rm -it \
 		-v $(shell pwd):/project \
 		--entrypoint='/project/build_entrypoint.sh' \
-		registry.dev.zextras.com/jenkins/pacur/ubuntu-20.04:v2
+		docker.io/m0rf30/yap-ubuntu-focal:1.6
 
 sys-install: host-check
 	./install_packages.sh ${HOST}
