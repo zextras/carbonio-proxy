@@ -29,8 +29,8 @@ host-check:
 .PHONY: host-check build install sys-status sys-stop sys-start sys-restart sys-install
 
 define execute_zextras_cmd
-	@$(call check, HOST,$(HOST))
-	ssh root@${HOST} "su - zextras -c '$(1)'"
+  @$(call check, HOST,$(HOST))
+  ssh root@${HOST} "su - zextras -c '$(1)'"
 endef
 
 define check 
@@ -46,6 +46,6 @@ define check
     echo "$(RED)No $(VAR_NAME) found$(NC). Please provide one."; \
     exit 1; \
   else \
-	echo "$(GREEN)Using $(VAR_NAME): $(VAR_VALUE)$(NC)"; \
+    echo "$(GREEN)Using $(VAR_NAME): $(VAR_VALUE)$(NC)"; \
   fi
 endef
