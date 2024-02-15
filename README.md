@@ -9,6 +9,22 @@
 
 NGINX configuration resources for Carbonio
 
+## Makefile Overview
+
+For almost every command you need to pass the `HOST` enviroment variable in order to tell which cluster you want to reach.
+
+For example:
+```shell
+$ HOST=hostname.zextras.io make sys-deploy
+```
+
+Summary of the available commands:
+
+- build: create the `.deb` package under `artifacts` folder
+- sys-install: copy and install latest built `.deb` package in a remote server
+- sys-deploy: build, install and restart the service in a remote server
+- sys-status|start|stop|restart: Check or control via SSH the service into the specified host
+
 ## License
 
 See [COPYING](COPYING) file for details
