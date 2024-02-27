@@ -58,9 +58,10 @@ if [[ ! -f "${SERVICE_BASE_DIR}/token" ]]; then
     consul acl token create -format json -policy-name "${POLICY_NAME}" -description "Token for
     ${SERVICE_NAME}/$(hostname -A)" |
       jq -r '.SecretID' > ${SERVICE_BASE_DIR}/token;
-    chown ${SERVICE_USER}:${SERVICE_GROUP} ${SERVICE_BASE_DIR}/token
-    chmod 0600 ${SERVICE_BASE_DIR}/token
 fi
+
+chown ${SERVICE_USER}:${SERVICE_GROUP} ${SERVICE_BASE_DIR}/token
+chmod 0600 ${SERVICE_BASE_DIR}/token
 
 consul reload
 
