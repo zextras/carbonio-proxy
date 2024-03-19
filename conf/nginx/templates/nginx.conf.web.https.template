@@ -216,7 +216,7 @@ server
         alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
     }
 
-	  location ~ ^/carbonio(/|$)
+    location ~ ^/carbonio(/|$)
     {
         if ($auth_token_cookie = 0) {
             return 307 ${web.carbonio.webui.login.url.vhost};
