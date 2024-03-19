@@ -246,6 +246,14 @@ server
         proxy_pass http://carbonio-auth/zx/auth/;
     }
 
+    location ~ ^/carbonio/focus-mode/meetings(/|$)
+    {
+        try_files index.html /carbonio/focus-mode/meetings/;
+        ${web.add.headers.default}
+        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
+        alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
+    }
+
     location ~ ^/carbonio(/|$)
     {
         if ($auth_token_cookie = 0) {
