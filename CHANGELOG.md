@@ -1,3 +1,19 @@
+
+
+# [4.7.0](https://github.com/zextras/carbonio-proxy/compare/4.6.0...4.7.0) (2024-02-15)
+
+
+### Bug Fixes
+
+* *.hcl: apply corrections to validate with hclfmt ([#105](https://github.com/zextras/carbonio-proxy/issues/105)) ([0567358](https://github.com/zextras/carbonio-proxy/commit/0567358f4109b2e449cefebc40214ed3222116fd))
+* use correct proxy var to expand virtual host headers ([ce272f8](https://github.com/zextras/carbonio-proxy/commit/ce272f82ce711ea32140aca6ec761743bafb50f3))
+
+
+### Features
+
+* [FILES-725] handle missing cookies for collaboration links ([#97](https://github.com/zextras/carbonio-proxy/issues/97)) ([237d618](https://github.com/zextras/carbonio-proxy/commit/237d618aa248ec275741865ae69f7c860df5a167))
+* [FILES-725] handle missing cookies for collaboration links ([#97](https://github.com/zextras/carbonio-proxy/issues/97)) ([4ec8900](https://github.com/zextras/carbonio-proxy/commit/4ec8900a1b0e5511aa4cd5772d506e4e5c0f2e91))
+
 # [4.6.1](https://github.com/Zextras/carbonio-proxy/compare/4.6.0...4.6.1) (2023-11-29)
 
 
