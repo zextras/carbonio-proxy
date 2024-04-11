@@ -57,6 +57,11 @@ services {
             destination_name   = "carbonio-storages"
             local_bind_port    = 20009
             local_bind_address = "127.78.0.1"
+          },
+          {
+            destination_name   = "carbonio-notification-push"
+            local_bind_port    = 20010
+            local_bind_address = "127.78.0.1"
           }
         ]
       }

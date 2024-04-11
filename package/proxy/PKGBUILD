@@ -1,5 +1,5 @@
 pkgname="carbonio-proxy"
-pkgver="4.7.0"
+pkgver="4.7.1"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 arch=('x86_64')
@@ -31,15 +31,16 @@ depends__yum=(
   "sqlite"
 )
 source=(
+  "${pkgname}-setup.sh"
+  "${pkgname}-sidecar.service"
+  "${pkgname}.hcl"
+  "${pkgname}.target"
+  "${pkgname}"
   "carbonio_error_404.html"
   "carbonio-clamav-signature-provider-setup.sh"
   "carbonio-clamav-signature-provider-sidecar.service"
   "carbonio-clamav-signature-provider.hcl"
   "carbonio-clamav-signature-provider"
-  "carbonio-proxy-setup.sh"
-  "carbonio-proxy-sidecar.service"
-  "carbonio-proxy.hcl"
-  "carbonio-proxy"
   "intentions-clamav-signature-provider.json"
   "nginx.conf.mail.imap.default.template"
   "nginx.conf.mail.imap.template"
@@ -83,23 +84,23 @@ source=(
 
 package() {
   # start install proxy service registration files for consul
-  install -Dm755 "${srcdir}/carbonio-proxy" \
-    "${pkgdir}/usr/bin/carbonio-proxy"
+  install -Dm755 "${srcdir}/${pkgname}" \
+    "${pkgdir}/usr/bin/${pkgname}"
 
-  install -Dm644 "${srcdir}/carbonio-proxy-sidecar.service" \
-    "${pkgdir}/lib/systemd/system/carbonio-proxy-sidecar.service"
+  install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
 
   install -Dm644 "${srcdir}/policies-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/policies.json"
 
-  install -Dm644 "${srcdir}/carbonio-proxy.hcl" \
-    "${pkgdir}/etc/zextras/service-discover/carbonio-proxy.hcl"
+  install -Dm644 "${srcdir}/${pkgname}.hcl" \
+    "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
 
   install -Dm644 "${srcdir}/service-protocol-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/service-protocol.json"
 
-  install -Dm755 "${srcdir}/carbonio-proxy-setup.sh" \
-    "${pkgdir}/etc/zextras/pending-setups.d/carbonio-proxy-setup.sh"
+  install -Dm755 "${srcdir}/${pkgname}-setup.sh" \
+    "${pkgdir}/etc/zextras/pending-setups.d/${pkgname}-setup.sh"
   # end install proxy service registration files for consul
 
   # start install clamav-signature-provider service registration files for consul
@@ -141,6 +142,20 @@ package() {
   install -D "${srcdir}/carbonio_error_404.html" \
     "${pkgdir}/opt/zextras/data/nginx/html/carbonio_error_404.html"
   # end install errors files in nginx html data
+
+  # systemd units and target
+  mkdir "${pkgdir}/lib/systemd/system/${pkgname}.target.wants"
+  install -Dm 644 "${srcdir}/${pkgname}.target" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target"
+
+  ln -sf "/lib/systemd/system/carbonio-configd.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-configd.service"
+  ln -sf "/lib/systemd/system/carbonio-memcached.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-memcached.service"
+  ln -sf "/lib/systemd/system/carbonio-nginx.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-nginx.service"
+  ln -sf "/lib/systemd/system/carbonio-stats.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-stats.service"
 }
 
 postinst() {
@@ -208,6 +223,7 @@ postrm() {
 }
 
 sha256sums=(
+  "SKIP"
   "SKIP"
   "SKIP"
   "SKIP"
