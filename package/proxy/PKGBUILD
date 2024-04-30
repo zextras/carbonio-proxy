@@ -1,5 +1,5 @@
 pkgname="carbonio-proxy"
-pkgver="4.7.1"
+pkgver="4.7.2"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 arch=('x86_64')
@@ -158,7 +158,7 @@ package() {
     "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-stats.service"
 }
 
-postinst() {
+postinst__apt() {
   # start Proxy consul registration
   getent group 'carbonio-proxy' >/dev/null ||
     groupadd -r 'carbonio-proxy'
@@ -203,13 +203,122 @@ postinst() {
   # end ClamAV signature provider consul registration
 }
 
-prerm() {
+postinst__rocky_8() {
+  # start Proxy consul registration
+  getent group 'carbonio-proxy' >/dev/null ||
+    groupadd -r 'carbonio-proxy'
+  getent passwd 'carbonio-proxy' >/dev/null ||
+    useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+
+  mkdir -p '/etc/carbonio/proxy/service-discover/'
+  chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
+  fi
+
+  chown -R zextras:zextras /opt/zextras/conf/nginx
+  chown root:zextras /opt/zextras/common/sbin/nginx
+  chmod 750 /opt/zextras/common/sbin/nginx
+
+  setcap CAP_NET_BIND_SERVICE=+ep /opt/zextras/common/sbin/nginx
+
+  echo "======================================================"
+  echo "Carbonio Proxy installed successfully!"
+  echo "You must run pending-setups to configure it correctly."
+  echo "======================================================"
+  # end Proxy consul registration
+
+  # start ClamAV signature provider consul registration
+  getent group 'carbonio-clamav-sig-provider' >/dev/null ||
+    groupadd -r 'carbonio-clamav-sig-provider'
+  getent passwd 'carbonio-clamav-sig-provider' >/dev/null ||
+    useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
+  fi
+
+  echo "======================================================"
+  echo "Carbonio ClamAV signature provider installed successfully!"
+  echo "You must run pending-setups to configure it correctly."
+  echo "======================================================"
+  # end ClamAV signature provider consul registration
+}
+
+postinst__rocky_9() {
+  # start Proxy consul registration
+  getent group 'carbonio-proxy' >/dev/null ||
+    groupadd -r 'carbonio-proxy'
+  getent passwd 'carbonio-proxy' >/dev/null ||
+    useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+
+  mkdir -p '/etc/carbonio/proxy/service-discover/'
+  chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-proxy.target >/dev/null 2>&1 || :
+    systemctl enable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
+  fi
+
+  chown -R zextras:zextras /opt/zextras/conf/nginx
+  chown root:zextras /opt/zextras/common/sbin/nginx
+  chmod 750 /opt/zextras/common/sbin/nginx
+
+  setcap CAP_NET_BIND_SERVICE=+ep /opt/zextras/common/sbin/nginx
+
+  echo "======================================================"
+  echo "Carbonio Proxy installed successfully!"
+  echo "You must run pending-setups to configure it correctly."
+  echo "======================================================"
+  # end Proxy consul registration
+
+  # start ClamAV signature provider consul registration
+  getent group 'carbonio-clamav-sig-provider' >/dev/null ||
+    groupadd -r 'carbonio-clamav-sig-provider'
+  getent passwd 'carbonio-clamav-sig-provider' >/dev/null ||
+    useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
+  fi
+
+  echo "======================================================"
+  echo "Carbonio ClamAV signature provider installed successfully!"
+  echo "You must run pending-setups to configure it correctly."
+  echo "======================================================"
+  # end ClamAV signature provider consul registration
+}
+
+prerm__apt() {
   if [ -d /run/systemd/system ]; then
     systemctl --no-reload disable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
     systemctl stop carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
 
     systemctl --no-reload disable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
     systemctl stop carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
+  fi
+}
+
+prerm__rocky_8() {
+  if [ -d /run/systemd/system ]; then
+    systemctl --no-reload disable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
+    systemctl stop carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
+
+    systemctl --no-reload disable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
+    systemctl stop carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
+  fi
+}
+
+prerm__rocky_9() {
+  if [ -d /run/systemd/system ]; then
+    systemctl --no-reload disable --now carbonio-proxy.target >/dev/null 2>&1 || :
+    systemctl -no-reload disable --now carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
+    systemctl -no-reload disable --now carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
   fi
 }
 
