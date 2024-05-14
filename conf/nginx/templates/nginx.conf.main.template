@@ -6,7 +6,6 @@
 worker_processes auto;
 # worker_processes ${main.workers};
 
-pid        ${main.pidfile};
 error_log  ${main.logfile} ${main.loglevel};
 
 
