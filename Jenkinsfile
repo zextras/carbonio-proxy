@@ -109,7 +109,7 @@ pipeline {
                             {
                                 "pattern": "artifacts/carbonio-proxy*.deb",
                                 "target": "ubuntu-devel/pool/",
-                                "props": "deb.distribution=focal;deb.component=main;deb.architecture=amd64"
+                                "props": "deb.distribution=focal;deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
                             },
                             {
                                 "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).el8.x86_64.rpm",
