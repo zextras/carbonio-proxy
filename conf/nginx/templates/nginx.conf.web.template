@@ -134,6 +134,11 @@ http
         server 127.78.0.1:20010 fail_timeout=10s;
     }
 
+    upstream carbonio-certficate-manager
+    {
+        server 127.78.0.1:20011 fail_timeout=10s;
+    }
+
     #  Define the collection of upstream HTTP EWS servers to which we will
     #  proxy EWS request. Define each server:port against a server directive
     #
