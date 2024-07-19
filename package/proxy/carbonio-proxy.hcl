@@ -62,6 +62,11 @@ services {
             destination_name   = "carbonio-notification-push"
             local_bind_port    = 20010
             local_bind_address = "127.78.0.1"
+          },
+          {
+            destination_name   = "carbonio-certificate-manager"
+            local_bind_port    = 20011
+            local_bind_address = "127.78.0.1"
           }
         ]
       }
