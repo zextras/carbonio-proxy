@@ -14,7 +14,7 @@ server
         deny all;
     }
 
-    location ^~ /av_signature {
+    location ^~ /av_signatures {
         alias /opt/zextras/av_signatures/;
         allow 127.0.0.1;
         allow ::1;
