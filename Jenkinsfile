@@ -34,7 +34,7 @@ pipeline {
                 }
                 stage('yap') {
                     parallel {
-                        stage('Ubuntu') {
+                        stage('Ubuntu 20') {
                             agent {
                                 node {
                                     label 'yap-agent-ubuntu-20.04-v2'
@@ -45,16 +45,64 @@ pipeline {
                                 script {
                                     if (BRANCH_NAME == 'devel') {
                                         def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build ubuntu package -r ${timestamp} -s"
+                                        sh "yap build ubuntu-focal package -r ${timestamp} -s"
                                     } else {
-                                        sh 'yap build ubuntu package -s'
+                                        sh 'yap build ubuntu-focal package -s'
                                     }
                                 }
-                                stash includes: 'artifacts/*.deb', name: 'artifacts-deb'
+                                stash includes: 'artifacts/*focal*.deb', name: 'artifacts-ubuntu-focal'
                             }
                             post {
                                 always {
-                                    archiveArtifacts artifacts: 'artifacts/*.deb', fingerprint: true
+                                    archiveArtifacts artifacts: 'artifacts/*focal*.deb', fingerprint: true
+                                }
+                            }
+                        }
+                        stage('Ubuntu 22') {
+                            agent {
+                                node {
+                                    label 'yap-agent-ubuntu-22.04-v2'
+                                }
+                            }
+                            steps {
+                                unstash 'staging'
+                                script {
+                                    if (BRANCH_NAME == 'devel') {
+                                        def timestamp = new Date().format('yyyyMMddHHmmss')
+                                        sh "yap build ubuntu-jammy package -r ${timestamp} -s"
+                                    } else {
+                                        sh 'yap build ubuntu-jammy package -s'
+                                    }
+                                }
+                                stash includes: 'artifacts/*jammy*.deb', name: 'artifacts-ubuntu-jammy'
+                            }
+                            post {
+                                always {
+                                    archiveArtifacts artifacts: 'artifacts/*jammy*.deb', fingerprint: true
+                                }
+                            }
+                        }
+                        stage('Ubuntu 24') {
+                            agent {
+                                node {
+                                    label 'yap-agent-ubuntu-24.04-v2'
+                                }
+                            }
+                            steps {
+                                unstash 'staging'
+                                script {
+                                    if (BRANCH_NAME == 'devel') {
+                                        def timestamp = new Date().format('yyyyMMddHHmmss')
+                                        sh "yap build ubuntu-noble package -r ${timestamp} -s"
+                                    } else {
+                                        sh 'yap build ubuntu-noble package -s'
+                                    }
+                                }
+                                stash includes: 'artifacts/*noble*.deb', name: 'artifacts-ubuntu-noble'
+                            }
+                            post {
+                                always {
+                                    archiveArtifacts artifacts: 'artifacts/*noble*.deb', fingerprint: true
                                 }
                             }
                         }
@@ -115,7 +163,9 @@ pipeline {
                 branch 'devel'
             }
             steps {
-                unstash 'artifacts-deb'
+                unstash 'artifacts-ubuntu-focal'
+                unstash 'artifacts-ubuntu-jammy'
+                unstash 'artifacts-ubuntu-noble'
                 unstash 'artifacts-rhel8'
                 unstash 'artifacts-rhel9'
 
@@ -128,9 +178,19 @@ pipeline {
                     uploadSpec = '''{
                         "files": [
                             {
-                                "pattern": "artifacts/carbonio-proxy*.deb",
+                                "pattern": "artifacts/*focal*.deb",
                                 "target": "ubuntu-devel/pool/",
-                                "props": "deb.distribution=focal;deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
+                                "props": "deb.distribution=focal;deb.component=main;deb.architecture=amd64"
+                            },
+                            {
+                                "pattern": "artifacts/*jammy*.deb",
+                                "target": "ubuntu-devel/pool/",
+                                "props": "deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
+                            },
+                            {
+                                "pattern": "artifacts/*noble*.deb",
+                                "target": "ubuntu-devel/pool/",
+                                "props": "deb.distribution=noble;deb.component=main;deb.architecture=amd64"
                             },
                             {
                                 "pattern": "artifacts/x86_64/(carbonio-proxy)-(*).el8.x86_64.rpm",
@@ -156,7 +216,9 @@ pipeline {
                 }
             }
             steps {
-                unstash 'artifacts-deb'
+                unstash 'artifacts-ubuntu-focal'
+                unstash 'artifacts-ubuntu-jammy'
+                unstash 'artifacts-ubuntu-noble'
                 unstash 'artifacts-rhel8'
                 unstash 'artifacts-rhel9'
 
@@ -169,9 +231,19 @@ pipeline {
                     uploadSpec = '''{
                         "files": [
                             {
-                                "pattern": "artifacts/carbonio-proxy*.deb",
+                                "pattern": "artifacts/*focal*.deb",
                                 "target": "ubuntu-playground/pool/",
-                                "props": "deb.distribution=focal;deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
+                                "props": "deb.distribution=focal;deb.component=main;deb.architecture=amd64"
+                            },
+                            {
+                                "pattern": "artifacts/*jammy*.deb",
+                                "target": "ubuntu-playground/pool/",
+                                "props": "deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
+                            },
+                            {
+                                "pattern": "artifacts/*noble*.deb",
+                                "target": "ubuntu-playground/pool/",
+                                "props": "deb.distribution=noble;deb.component=main;deb.architecture=amd64"
                             },
                             {
                                 "pattern": "artifacts/(carbonio-proxy)-(*).el8.x86_64.rpm",
@@ -197,7 +269,9 @@ pipeline {
                 }
             }
             steps {
-                unstash 'artifacts-deb'
+                unstash 'artifacts-ubuntu-focal'
+                unstash 'artifacts-ubuntu-jammy'
+                unstash 'artifacts-ubuntu-noble'
                 unstash 'artifacts-rhel8'
                 unstash 'artifacts-rhel9'
 
@@ -213,9 +287,19 @@ pipeline {
                     uploadSpec= '''{
                         "files": [
                             {
-                                "pattern": "artifacts/carbonio-proxy*.deb",
+                                "pattern": "artifacts/*focal*.deb",
                                 "target": "ubuntu-rc/pool/",
-                                "props": "deb.distribution=focal;deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
+                                "props": "deb.distribution=focal;deb.component=main;deb.architecture=amd64"
+                            },
+                            {
+                                "pattern": "artifacts/*jammy*.deb",
+                                "target": "ubuntu-rc/pool/",
+                                "props": "deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
+                            },
+                            {
+                                "pattern": "artifacts/*noble*.deb",
+                                "target": "ubuntu-rc/pool/",
+                                "props": "deb.distribution=noble;deb.component=main;deb.architecture=amd64"
                             }
                         ]
                     }'''
