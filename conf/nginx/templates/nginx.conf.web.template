@@ -2,6 +2,10 @@ http
 {
     # necessary to have content-type while serving files
     include /opt/zextras/common/conf/mime.types;
+    types
+    {
+        application/javascript mjs;
+    }
 
     # disable nginx version on error pages
     server_tokens off;
