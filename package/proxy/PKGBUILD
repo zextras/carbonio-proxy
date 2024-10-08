@@ -31,60 +31,26 @@ depends__yum=(
   "sqlite"
 )
 source=(
+  "${pkgname}::git+${url}/${pkgname}#branch=devel"
   "${pkgname}-setup.sh"
   "${pkgname}-sidecar.service"
   "${pkgname}.hcl"
   "${pkgname}.target"
-  "${pkgname}"
-  "carbonio_error_404.html"
+  "${pkgname}.sh"
   "carbonio-clamav-signature-provider-setup.sh"
   "carbonio-clamav-signature-provider-sidecar.service"
   "carbonio-clamav-signature-provider.hcl"
   "carbonio-clamav-signature-provider"
   "intentions-clamav-signature-provider.json"
-  "nginx.conf.mail.imap.default.template"
-  "nginx.conf.mail.imap.template"
-  "nginx.conf.mail.imaps.default.template"
-  "nginx.conf.mail.imaps.template"
-  "nginx.conf.mail.pop3.default.template"
-  "nginx.conf.mail.pop3.template"
-  "nginx.conf.mail.pop3s.default.template"
-  "nginx.conf.mail.pop3s.template"
-  "nginx.conf.mail.template"
-  "nginx.conf.main.template"
-  "nginx.conf.map.crt.template"
-  "nginx.conf.map.key.template"
-  "nginx.conf.map.ssl.template"
-  "nginx.conf.memcache.template"
-  "nginx.conf.stream.addressBook.template"
-  "nginx.conf.stream.message.dispatcher.xmpp.template"
-  "nginx.conf.stream.template"
-  "nginx.conf.template"
-  "nginx.conf.web.admin.default.template"
-  "nginx.conf.web.admin.template"
-  "nginx.conf.web.carbonio.admin.default.template"
-  "nginx.conf.web.carbonio.admin.template"
-  "nginx.conf.web.clamav.signature.provider.template"
-  "nginx.conf.web.http.default.template"
-  "nginx.conf.web.http.mode-redirect.template"
-  "nginx.conf.web.http.template"
-  "nginx.conf.web.https.default.template"
-  "nginx.conf.web.https.template"
-  "nginx.conf.web.sso.default.template"
-  "nginx.conf.web.sso.template"
-  "nginx.conf.web.template"
-  "nginx.conf.zmlookup.template"
   "policies-clamav-signature-provider.json"
   "policies-proxy.json"
   "service-protocol-clamav-signature-provider.json"
   "service-protocol-proxy.json"
-  "zmerror_upstream_502.html"
-  "zmerror_upstream_504.html"
 )
 
 package() {
   # start install proxy service registration files for consul
-  install -Dm755 "${srcdir}/${pkgname}" \
+  install -Dm755 "${srcdir}/${pkgname}.sh" \
     "${pkgdir}/usr/bin/${pkgname}"
 
   install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
@@ -126,22 +92,18 @@ package() {
     "${pkgdir}/etc/zextras/pending-setups.d/carbonio-clamav-signature-provider-setup.sh"
   # end install clamav-signature-provider service registration files for consul
 
+  # start install template and errors files
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/includes/"
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/templates/"
-  cp "${srcdir}"/*.template \
-    "${pkgdir}/opt/zextras/conf/nginx/templates/"
-
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/templates_custom/"
-
-  # start install errors files in nginx html data
   mkdir -p "${pkgdir}/opt/zextras/data/nginx/html/"
-  install -D "${srcdir}/zmerror_upstream_502.html" \
-    "${pkgdir}/opt/zextras/data/nginx/html/zmerror_upstream_502.html"
-  install -D "${srcdir}/zmerror_upstream_504.html" \
-    "${pkgdir}/opt/zextras/data/nginx/html/zmerror_upstream_504.html"
-  install -D "${srcdir}/carbonio_error_404.html" \
-    "${pkgdir}/opt/zextras/data/nginx/html/carbonio_error_404.html"
-  # end install errors files in nginx html data
+
+  cd "${srcdir}/${pkgname}"
+  cp conf/nginx/templates/*.template \
+    "${pkgdir}/opt/zextras/conf/nginx/templates/"
+  cp conf/nginx/errors/*.html \
+    "${pkgdir}/opt/zextras/data/nginx/html/"
+  # end install template and errors files
 
   # systemd units and target
   mkdir "${pkgdir}/lib/systemd/system/${pkgname}.target.wants"
@@ -370,55 +332,18 @@ postrm() {
     systemctl daemon-reload >/dev/null 2>&1 || :
   fi
 }
-
-sha256sums=(
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-)
+sha256sums=('SKIP'
+  'bb536a6e911924cde7438acdfaffaf88efcc070089319bad5dc9c68f5e7a33e3'
+  'cc70de7eb24ec600041c23d619ad71ef9754debbd79976e775232634fdea75c6'
+  '189510e2b8bdb629cf252bd0e24585c8f871cc009bbc62bb3e14d15fec94b426'
+  '149e451c32346dba55f8adab63399a22f0c1e3613b7b0e82151f74ab31bb843b'
+  '98e5fccf13b8ca8691c19495e5e496d1daa24a5962178e3f7b86706507c56e55'
+  'cbd42efea9c34bd8cd661a7f9a4902ee86a3ba2b07db5c2be07dc36ab894df7a'
+  '704a6e67b2dcf1754d98a13395b83bfadf4ea064a2961131c0261ebb009c0dba'
+  'e31069c73e7326c68188381fd485866c8d083466a576ee9141b9fdbefbb2c157'
+  '9cb0f1b78f9a93dc8c05d7dc3db1514ef9af5a4f165416a497b543a3d620438d'
+  '5b9d7a1598959eec4d81994d8a3d9c912d77f0b75de84529d3b65a19ee13c724'
+  '8eedc2664b9d837fd7527410414d6d3b29ddc5acebec9b8a7bb4d35b804151bc'
+  '5bf2b4598abd0dbbf7bd9ff94858f2c73c0f88504e9f83e0a3952c5e52b7a968'
+  'a015381620f2a4efeb33310e9b8fec40dbf71c3683164806b4f92000f786c18f'
+  '1ae8e720f43dd1744771804e352f999a346893e8b5ee8e9a7a01995848ac2f81')

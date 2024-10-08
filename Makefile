@@ -1,11 +1,12 @@
 build:
 	docker run --rm -it \
+		--workdir /project \
 		-v $(shell pwd):/project \
-		--entrypoint='/project/build_entrypoint.sh' \
-		docker.io/m0rf30/yap-ubuntu-focal:1.6
+		docker.io/m0rf30/yap-ubuntu-focal:1.11 \
+		build ubuntu-focal package -sdc
 
 sys-install: host-check
-	./install_packages.sh ${HOST}
+	./install-packages.sh ${HOST}
 
 sys-deploy: host-check build sys-install sys-restart
 
