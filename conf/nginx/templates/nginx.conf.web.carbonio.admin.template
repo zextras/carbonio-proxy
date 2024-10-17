@@ -115,6 +115,11 @@ server
         ${web.carbonio.admin.logout.redirect.vhost};
     }
 
+    location ^~ /zx/powerstore/
+    {
+        return 404;
+    }
+
     location ^~ /zx/
     {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
