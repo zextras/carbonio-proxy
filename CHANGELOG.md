@@ -1,5 +1,12 @@
 
 
+## [4.8.1](https://github.com/zextras/carbonio-proxy/compare/4.8.0...4.8.1) (2025-02-17)
+
+
+### Bug Fixes
+
+* [CO=1822] pass X-Forwarded-Proto header to upstream ([#136](https://github.com/zextras/carbonio-proxy/issues/136)) ([5249246](https://github.com/zextras/carbonio-proxy/commit/52492463483ebbed9b4ada7d2368b5f8d17bc0fc))
+
 # [4.7.0](https://github.com/zextras/carbonio-proxy/compare/4.6.0...4.7.0) (2024-02-15)
 
 
