@@ -54,7 +54,7 @@ package() {
     "${pkgdir}/usr/bin/${pkgname}"
 
   install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
 
   install -Dm644 "${srcdir}/policies-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/policies.json"
@@ -74,7 +74,7 @@ package() {
     "${pkgdir}/usr/bin/carbonio-clamav-signature-provider"
 
   install -Dm644 "${srcdir}/carbonio-clamav-signature-provider-sidecar.service" \
-    "${pkgdir}/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
+    "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 
   install -Dm644 "${srcdir}/policies-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/policies.json"
@@ -106,26 +106,28 @@ package() {
   # end install template and errors files
 
   # systemd units and target
-  mkdir "${pkgdir}/lib/systemd/system/${pkgname}.target.wants"
+  mkdir -p "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants"
+  mkdir "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants"
   install -Dm 644 "${srcdir}/${pkgname}.target" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target"
-
-  ln -sf "/lib/systemd/system/carbonio-configd.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-configd.service"
-  ln -sf "/lib/systemd/system/carbonio-memcached.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-memcached.service"
-  ln -sf "/lib/systemd/system/carbonio-nginx.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-nginx.service"
-  ln -sf "/lib/systemd/system/carbonio-stats.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-stats.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target"
+  ln -sf "/usr/lib/systemd/system/${pkgname}.target" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants/${pkgname}.target"
+  ln -sf "/usr/lib/systemd/system/carbonio-configd.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-configd.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-memcached.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-memcached.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-nginx.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-nginx.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-stats.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-stats.service"
 }
 
 postinst__apt() {
   # start Proxy consul registration
-  getent group 'carbonio-proxy' >/dev/null ||
-    groupadd -r 'carbonio-proxy'
-  getent passwd 'carbonio-proxy' >/dev/null ||
-    useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+  getent group 'carbonio-proxy' >/dev/null \
+    || groupadd -r 'carbonio-proxy'
+  getent passwd 'carbonio-proxy' >/dev/null \
+    || useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
 
   mkdir -p '/etc/carbonio/proxy/service-discover/'
   chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
@@ -143,16 +145,14 @@ postinst__apt() {
   # end Proxy consul registration
 
   # start ClamAV signature provider consul registration
-  getent group 'carbonio-clamav-sig-provider' >/dev/null ||
-    groupadd -r 'carbonio-clamav-sig-provider'
-  getent passwd 'carbonio-clamav-sig-provider' >/dev/null ||
-    useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
+  getent group 'carbonio-clamav-sig-provider' >/dev/null \
+    || groupadd -r 'carbonio-clamav-sig-provider'
+  getent passwd 'carbonio-clamav-sig-provider' >/dev/null \
+    || useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl enable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
-    systemctl enable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
+  systemctl enable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+  systemctl enable carbonio-proxy-sidecar.service &>/dev/null || :
 
   echo "======================================================"
   echo "Carbonio ClamAV signature provider installed successfully!"
@@ -163,10 +163,10 @@ postinst__apt() {
 
 postinst__ubuntu_noble() {
   # start Proxy consul registration
-  getent group 'carbonio-proxy' >/dev/null ||
-    groupadd -r 'carbonio-proxy'
-  getent passwd 'carbonio-proxy' >/dev/null ||
-    useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+  getent group 'carbonio-proxy' >/dev/null \
+    || groupadd -r 'carbonio-proxy'
+  getent passwd 'carbonio-proxy' >/dev/null \
+    || useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
 
   mkdir -p '/etc/carbonio/proxy/service-discover/'
   chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
@@ -184,17 +184,15 @@ postinst__ubuntu_noble() {
   # end Proxy consul registration
 
   # start ClamAV signature provider consul registration
-  getent group 'carbonio-clamav-sig-provider' >/dev/null ||
-    groupadd -r 'carbonio-clamav-sig-provider'
-  getent passwd 'carbonio-clamav-sig-provider' >/dev/null ||
-    useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
+  getent group 'carbonio-clamav-sig-provider' >/dev/null \
+    || groupadd -r 'carbonio-clamav-sig-provider'
+  getent passwd 'carbonio-clamav-sig-provider' >/dev/null \
+    || useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl enable carbonio-proxy.target >/dev/null 2>&1 || :
-    systemctl enable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
-    systemctl enable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
+  systemctl enable carbonio-proxy.target &>/dev/null || :
+  systemctl enable carbonio-proxy-sidecar.service &>/dev/null || :
+  systemctl enable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
 
   echo "======================================================"
   echo "Carbonio ClamAV signature provider installed successfully!"
@@ -205,10 +203,10 @@ postinst__ubuntu_noble() {
 
 postinst__rocky_8() {
   # start Proxy consul registration
-  getent group 'carbonio-proxy' >/dev/null ||
-    groupadd -r 'carbonio-proxy'
-  getent passwd 'carbonio-proxy' >/dev/null ||
-    useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+  getent group 'carbonio-proxy' >/dev/null \
+    || groupadd -r 'carbonio-proxy'
+  getent passwd 'carbonio-proxy' >/dev/null \
+    || useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
 
   mkdir -p '/etc/carbonio/proxy/service-discover/'
   chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
@@ -226,16 +224,14 @@ postinst__rocky_8() {
   # end Proxy consul registration
 
   # start ClamAV signature provider consul registration
-  getent group 'carbonio-clamav-sig-provider' >/dev/null ||
-    groupadd -r 'carbonio-clamav-sig-provider'
-  getent passwd 'carbonio-clamav-sig-provider' >/dev/null ||
-    useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
+  getent group 'carbonio-clamav-sig-provider' >/dev/null \
+    || groupadd -r 'carbonio-clamav-sig-provider'
+  getent passwd 'carbonio-clamav-sig-provider' >/dev/null \
+    || useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl enable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
-    systemctl enable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
+  systemctl enable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+  systemctl enable carbonio-proxy-sidecar.service &>/dev/null || :
 
   echo "======================================================"
   echo "Carbonio ClamAV signature provider installed successfully!"
@@ -246,19 +242,17 @@ postinst__rocky_8() {
 
 postinst__rocky_9() {
   # start Proxy consul registration
-  getent group 'carbonio-proxy' >/dev/null ||
-    groupadd -r 'carbonio-proxy'
-  getent passwd 'carbonio-proxy' >/dev/null ||
-    useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+  getent group 'carbonio-proxy' >/dev/null \
+    || groupadd -r 'carbonio-proxy'
+  getent passwd 'carbonio-proxy' >/dev/null \
+    || useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
 
   mkdir -p '/etc/carbonio/proxy/service-discover/'
   chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl enable carbonio-proxy.target >/dev/null 2>&1 || :
-    systemctl enable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
+  systemctl enable carbonio-proxy.target &>/dev/null || :
+  systemctl enable carbonio-proxy-sidecar.service &>/dev/null || :
 
   chown -R zextras:zextras /opt/zextras/conf/nginx
   chown root:zextras /opt/zextras/common/sbin/nginx
@@ -273,15 +267,13 @@ postinst__rocky_9() {
   # end Proxy consul registration
 
   # start ClamAV signature provider consul registration
-  getent group 'carbonio-clamav-sig-provider' >/dev/null ||
-    groupadd -r 'carbonio-clamav-sig-provider'
-  getent passwd 'carbonio-clamav-sig-provider' >/dev/null ||
-    useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
+  getent group 'carbonio-clamav-sig-provider' >/dev/null \
+    || groupadd -r 'carbonio-clamav-sig-provider'
+  getent passwd 'carbonio-clamav-sig-provider' >/dev/null \
+    || useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl enable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
+  systemctl enable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
 
   echo "======================================================"
   echo "Carbonio ClamAV signature provider installed successfully!"
@@ -291,52 +283,42 @@ postinst__rocky_9() {
 }
 
 prerm__apt() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
-    systemctl --no-reload disable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
-    systemctl stop carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
-    systemctl stop carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl --no-reload disable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+  systemctl --no-reload disable carbonio-proxy-sidecar.service &>/dev/null || :
+  systemctl stop carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+  systemctl stop carbonio-proxy-sidecar.service &>/dev/null || :
 }
 
 prerm__ubuntu_noble() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable --now carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
-    systemctl --no-reload disable --now carbonio-proxy.target >/dev/null 2>&1 || :
-    systemctl --no-reload disable --now carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl --no-reload disable --now carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+  systemctl --no-reload disable --now carbonio-proxy.target &>/dev/null || :
+  systemctl --no-reload disable --now carbonio-proxy-sidecar.service &>/dev/null || :
 }
 
 prerm__rocky_8() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
-    systemctl --no-reload disable carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
-    systemctl stop carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
-    systemctl stop carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl --no-reload disable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+  systemctl --no-reload disable carbonio-proxy-sidecar.service &>/dev/null || :
+  systemctl stop carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+  systemctl stop carbonio-proxy-sidecar.service &>/dev/null || :
 }
 
 prerm__rocky_9() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable --now carbonio-clamav-signature-provider-sidecar.service >/dev/null 2>&1 || :
-    systemctl --no-reload disable --now carbonio-proxy.target >/dev/null 2>&1 || :
-    systemctl --no-reload disable --now carbonio-proxy-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl --no-reload disable --now carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+  systemctl --no-reload disable --now carbonio-proxy.target &>/dev/null || :
+  systemctl --no-reload disable --now carbonio-proxy-sidecar.service &>/dev/null || :
 }
 
 postrm() {
   rm -f /etc/carbonio/proxy/service-discover/token
   rm -f /etc/carbonio/clamav-signature-provider/service-discover/token
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
 }
 sha256sums=('SKIP'
   'bb536a6e911924cde7438acdfaffaf88efcc070089319bad5dc9c68f5e7a33e3'
   'cc70de7eb24ec600041c23d619ad71ef9754debbd79976e775232634fdea75c6'
   '205487d7025ed9146b670045911ba09c3701a0e72954439a9d60e3e78a04e89b'
-  '149e451c32346dba55f8adab63399a22f0c1e3613b7b0e82151f74ab31bb843b'
+  '7e5765f837ccbde44c598c80be3576bea469d041b318ed558a67e7d1c15d9948'
   '98e5fccf13b8ca8691c19495e5e496d1daa24a5962178e3f7b86706507c56e55'
   'cbd42efea9c34bd8cd661a7f9a4902ee86a3ba2b07db5c2be07dc36ab894df7a'
   '704a6e67b2dcf1754d98a13395b83bfadf4ea064a2961131c0261ebb009c0dba'
