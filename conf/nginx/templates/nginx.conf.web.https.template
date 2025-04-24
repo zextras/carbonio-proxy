@@ -50,6 +50,12 @@ server
       }
     }
 
+    location = /robots.txt
+    {
+      default_type text/plain;
+      return 200 "User-agent: *\nDisallow: /\n";
+    }
+
     location = /favicon.ico
     {
       return 404;
