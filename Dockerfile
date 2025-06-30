@@ -36,7 +36,6 @@ RUN apt update && apt install -y gnupg2 ca-certificates && apt clean \
 -out /opt/zextras/conf/nginx.crt -subj "/CN=example.com" \
 -addext "subjectAltName=DNS:example.com,DNS:*.example.com,IP:10.0.0.1" \
 && mkdir -p /opt/zextras/conf/nginx/includes && touch /opt/zextras/conf/nginx/includes/nginx.conf.main \
-&& echo "daemon off;" >> /opt/zextras/conf/nginx/templates/nginx.conf.template \
 && echo "java $JAVA_ARGS com.zimbra.cs.util.proxyconfgen.ProxyConfGen \"\$@\"" > /usr/bin/zmproxyconfgen
 
 ENTRYPOINT ["./entrypoint.sh"]
