@@ -29,8 +29,4 @@ chmod +x /usr/bin/zmproxyconfgen
 
 /usr/bin/zmproxyconfgen
 
-echo "Testing Nginx configuration"
-/opt/zextras/common/sbin/nginx -t
-echo "Nginx configuration is ok!"
-
 /opt/zextras/common/sbin/nginx -c /opt/zextras/conf/nginx.conf -g "daemon off;"
