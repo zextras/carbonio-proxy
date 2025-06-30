@@ -5,7 +5,7 @@ COPY entrypoint.sh entrypoint.sh
 COPY conf /opt/zextras/conf
 ENV MEMCACHED_BIND_ADDRESS="memcached"
 ENV MEMCACHED_BIND_PORT=11211
-ARG JAVA_ARGS="-Dfile.encoding=UTF-8 -server \
+ARG PROXY_JAVA_ARGS="-Dfile.encoding=UTF-8 -server \
               -Dhttps.protocols=TLSv1.2,TLSv1.3 \
               -Djdk.tls.client.protocols=TLSv1.2,TLSv1.3 \
               -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true \
@@ -36,6 +36,6 @@ RUN apt update && apt install -y gnupg2 ca-certificates && apt clean \
 -out /opt/zextras/conf/nginx.crt -subj "/CN=example.com" \
 -addext "subjectAltName=DNS:example.com,DNS:*.example.com,IP:10.0.0.1" \
 && mkdir -p /opt/zextras/conf/nginx/includes && touch /opt/zextras/conf/nginx/includes/nginx.conf.main \
-&& echo "java $JAVA_ARGS com.zimbra.cs.util.proxyconfgen.ProxyConfGen \"\$@\"" > /usr/bin/zmproxyconfgen
+&& echo "java $PROXY_JAVA_ARGS com.zimbra.cs.util.proxyconfgen.ProxyConfGen \"\$@\"" > /usr/bin/zmproxyconfgen
 
 ENTRYPOINT ["./entrypoint.sh"]
