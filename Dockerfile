@@ -1,5 +1,4 @@
-# TODO: use mailbox container image (be careful it is based on ubuntu noble but we need at least jammy)
-FROM mailbox-local
+FROM registry.dev.zextras.com/dev/carbonio-mailbox:latest
 USER root
 
 RUN apt update && apt install -y gnupg2 ca-certificates && apt clean \
@@ -14,8 +13,8 @@ RUN mkdir -p /opt/zextras/common/conf
 
 # TODO: is a self-signed certificate required?
 RUN openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 \
--nodes -keyout /opt/zextras/conf/nginx-carbonio.key \
--out /opt/zextras/conf/nginx-carbonio.crt -subj "/CN=example.com" \
+-nodes -keyout /opt/zextras/conf/nginx.key \
+-out /opt/zextras/conf/nginx.crt -subj "/CN=example.com" \
 -addext "subjectAltName=DNS:example.com,DNS:*.example.com,IP:10.0.0.1"
 
 COPY conf /opt/zextras/conf
