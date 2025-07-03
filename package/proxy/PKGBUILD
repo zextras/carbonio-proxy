@@ -99,8 +99,6 @@ package() {
   mkdir -p "${pkgdir}/opt/zextras/data/nginx/html/"
 
   cd "${srcdir}/${pkgname}"
-  cp conf/nginx/includes/* \
-      "${pkgdir}/opt/zextras/conf/nginx/includes/"
   cp conf/nginx/templates/*.template \
     "${pkgdir}/opt/zextras/conf/nginx/templates/"
   cp conf/nginx/errors/*.html \
