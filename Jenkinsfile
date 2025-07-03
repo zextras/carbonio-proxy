@@ -54,6 +54,7 @@ pipeline {
                     steps {
                         sh 'cp conf/nginx/errors/* package/proxy'
                         sh 'cp conf/nginx/templates/* package/proxy'
+                        sh 'cp conf/nginx/includes/* package/proxy'
                         stash includes: '**', name: 'staging'
                     }
                 }
