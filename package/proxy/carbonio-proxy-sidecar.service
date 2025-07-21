@@ -3,6 +3,8 @@ Description=NGINX carbonio proxy sidecar
 Documentation=https://docs.zextras.com/
 Requires=network-online.target
 After=network-online.target
+PartOf=carbonio-proxy.target
+
 
 [Service]
 Type=simple
