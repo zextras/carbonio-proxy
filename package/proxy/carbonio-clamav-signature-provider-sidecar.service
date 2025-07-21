@@ -3,7 +3,7 @@ Description=NGINX Carbonio ClamAV signature provider sidecar
 Documentation=https://docs.zextras.com/
 Requires=network-online.target
 After=network-online.target
-PartOf=carbonio-proxy.target
+PartOf=carbonio-mta.target
 
 [Service]
 Type=simple
@@ -21,4 +21,4 @@ TimeoutSec=120
 TimeoutStopSec=120
 
 [Install]
-WantedBy=carbonio-proxy.target
+WantedBy=carbonio-mta.target
