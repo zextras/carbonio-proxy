@@ -5,7 +5,6 @@ Requires=network-online.target
 After=network-online.target
 PartOf=carbonio-proxy.target
 
-
 [Service]
 Type=simple
 ExecStart=/usr/bin/consul connect envoy \
