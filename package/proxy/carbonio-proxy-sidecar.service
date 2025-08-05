@@ -6,19 +6,16 @@ After=network-online.target
 PartOf=carbonio-proxy.target
 
 [Service]
-Type=simple
+User=carbonio-proxy
 ExecStart=/usr/bin/consul connect envoy \
     -token-file /etc/carbonio/proxy/service-discover/token \
     -admin-bind localhost:0 \
     -sidecar-for carbonio-proxy
 Restart=on-failure
 RestartSec=15
-User=carbonio-proxy
-KillMode=process
-KillSignal=SIGKILL
+ExecReload=/usr/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
 LimitNOFILE=65536
-TimeoutSec=120
-TimeoutStopSec=120
 
 [Install]
 WantedBy=carbonio-proxy.target
