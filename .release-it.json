@@ -1,10 +1,11 @@
 {
+  "npm": false,
   "git": {
     "requireUpstream": false,
     "commitMessage": "chore: release ${version}",
     "tagName": "${version}",
-    "tag": false,
-    "push": false
+    "tag": true,
+    "push": true
   },
   "plugins": {
     "@release-it/bumper": {

@@ -1,3 +1,12 @@
+def buildContainer(String title, String description, String dockerfile, String tag) {
+    sh 'docker build ' +
+            '--label org.opencontainers.image.title="' + title + '" ' +
+            '--label org.opencontainers.image.description="' + description + '" ' +
+            '--label org.opencontainers.image.vendor="Zextras" ' +
+            '-f ' + dockerfile + ' -t ' + tag + ' .'
+    sh 'docker push ' + tag
+}
+
 pipeline {
     agent {
         node {
@@ -23,6 +32,19 @@ pipeline {
                 checkout scm
                 script {
                     env.GIT_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                }
+            }
+        }
+        stage('Publish containers - devel') {
+            when {
+                branch 'devel';
+            }
+            steps {
+                container('dind') {
+                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
+                        buildContainer('Carbonio Proxy', 'Carbonio Proxy container',
+                                'Dockerfile', 'registry.dev.zextras.com/dev/carbonio-proxy:latest')
+                    }
                 }
             }
         }

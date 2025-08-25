@@ -1,4 +1,11 @@
+# Changelog
 
+## [4.9.2](https://github.com/zextras/carbonio-proxy/compare/4.9.0...4.9.2) (2025-08-25)
+
+
+### Bug Fixes
+
+* sidecar-units: revert WantedBy for compatibility with older systems ([#148](https://github.com/zextras/carbonio-proxy/issues/148)) ([2ce986f](https://github.com/zextras/carbonio-proxy/commit/2ce986f658acff03a951d6f358c12ac4a480120e))
 
 ## [4.8.1](https://github.com/zextras/carbonio-proxy/compare/4.8.0...4.8.1) (2025-02-17)
 
