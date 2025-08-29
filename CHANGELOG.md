@@ -1,5 +1,7 @@
 # Changelog
 
+## [4.9.3](https://github.com/zextras/carbonio-proxy/compare/4.9.2...4.9.3) (2025-08-29)
+
 ## [4.9.2](https://github.com/zextras/carbonio-proxy/compare/4.9.0...4.9.2) (2025-08-25)
 
 

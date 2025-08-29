@@ -15,7 +15,7 @@
       },
       "out": [
         {
-          "file": "package/proxy/PKGBUILD",
+          "file": "proxy/PKGBUILD",
           "type": "text/plain",
           "path": "pkgrel="
         },
