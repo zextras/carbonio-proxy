@@ -36,6 +36,9 @@ pipeline {
             }
         }
         stage('Publish containers - devel') {
+            when {
+                branch 'devel';
+            }
             steps {
                 container('dind') {
                     withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
