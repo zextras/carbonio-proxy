@@ -31,7 +31,6 @@ depends__yum=(
   "sqlite"
 )
 source=(
-  "${pkgname}::git+${url}/${pkgname}#branch=devel"
   "${pkgname}-setup.sh"
   "${pkgname}-sidecar.service"
   "${pkgname}.hcl"
@@ -49,7 +48,6 @@ source=(
 )
 
 sha256sums=(
-  'SKIP'
   'bb536a6e911924cde7438acdfaffaf88efcc070089319bad5dc9c68f5e7a33e3'
   '7fd2ca93d1c12f23a3fde073fa0f709004a68451625b1fcd50ba75fbf0e0e270'
   '205487d7025ed9146b670045911ba09c3701a0e72954439a9d60e3e78a04e89b'
@@ -63,50 +61,52 @@ sha256sums=(
   '8eedc2664b9d837fd7527410414d6d3b29ddc5acebec9b8a7bb4d35b804151bc'
   '5bf2b4598abd0dbbf7bd9ff94858f2c73c0f88504e9f83e0a3952c5e52b7a968'
   'a015381620f2a4efeb33310e9b8fec40dbf71c3683164806b4f92000f786c18f'
-  '1ae8e720f43dd1744771804e352f999a346893e8b5ee8e9a7a01995848ac2f81'
+  'c8655bcb535fac75689bf64434d03b4f0365f33d4d2d23b2a62e6a9b2da45fba'
 )
 
 package() {
+
+  cd "${srcdir}/.."
   # start install proxy service registration files for consul
-  install -Dm755 "${srcdir}/${pkgname}.sh" \
+  install -Dm755 "${pkgname}.sh" \
     "${pkgdir}/usr/bin/${pkgname}"
 
-  install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
+  install -Dm644 "${pkgname}-sidecar.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
 
-  install -Dm644 "${srcdir}/policies-proxy.json" \
+  install -Dm644 "policies-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/policies.json"
 
-  install -Dm644 "${srcdir}/${pkgname}.hcl" \
+  install -Dm644 "${pkgname}.hcl" \
     "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
 
-  install -Dm644 "${srcdir}/service-protocol-proxy.json" \
+  install -Dm644 "service-protocol-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/service-protocol.json"
 
-  install -Dm755 "${srcdir}/${pkgname}-setup.sh" \
+  install -Dm755 "${pkgname}-setup.sh" \
     "${pkgdir}/etc/zextras/pending-setups.d/${pkgname}-setup.sh"
   # end install proxy service registration files for consul
 
   # start install clamav-signature-provider service registration files for consul
-  install -Dm755 "${srcdir}/carbonio-clamav-signature-provider" \
+  install -Dm755 "carbonio-clamav-signature-provider" \
     "${pkgdir}/usr/bin/carbonio-clamav-signature-provider"
 
-  install -Dm644 "${srcdir}/carbonio-clamav-signature-provider-sidecar.service" \
+  install -Dm644 "carbonio-clamav-signature-provider-sidecar.service" \
     "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 
-  install -Dm644 "${srcdir}/policies-clamav-signature-provider.json" \
+  install -Dm644 "policies-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/policies.json"
 
-  install -Dm644 "${srcdir}/carbonio-clamav-signature-provider.hcl" \
+  install -Dm644 "carbonio-clamav-signature-provider.hcl" \
     "${pkgdir}/etc/zextras/service-discover/carbonio-clamav-signature-provider.hcl"
 
-  install -Dm644 "${srcdir}/intentions-clamav-signature-provider.json" \
+  install -Dm644 "intentions-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/intentions.json"
 
-  install -Dm644 "${srcdir}/service-protocol-clamav-signature-provider.json" \
+  install -Dm644 "service-protocol-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/service-protocol.json"
 
-  install -Dm755 "${srcdir}/carbonio-clamav-signature-provider-setup.sh" \
+  install -Dm755 "carbonio-clamav-signature-provider-setup.sh" \
     "${pkgdir}/etc/zextras/pending-setups.d/carbonio-clamav-signature-provider-setup.sh"
   # end install clamav-signature-provider service registration files for consul
 
@@ -116,7 +116,6 @@ package() {
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/templates_custom/"
   mkdir -p "${pkgdir}/opt/zextras/data/nginx/html/"
 
-  cd "${srcdir}/${pkgname}"
   cp conf/nginx/templates/*.template \
     "${pkgdir}/opt/zextras/conf/nginx/templates/"
   cp conf/nginx/errors/*.html \
@@ -126,7 +125,7 @@ package() {
   # systemd units and target
   mkdir -p "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants"
   mkdir "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants"
-  install -Dm 644 "${srcdir}/${pkgname}.target" \
+  install -Dm 644 "${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target"
   ln -sf "/usr/lib/systemd/system/${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants/${pkgname}.target"

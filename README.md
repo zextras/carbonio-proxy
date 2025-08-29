@@ -9,6 +9,10 @@
 
 NGINX configuration resources for Carbonio
 
+## Building sources locally
+You can build the project locally by running `./build_package.sh`.
+Example: `./build_package.sh ubuntu-jammy`
+
 ## Makefile Overview
 
 For almost every command you need to pass the `HOST` enviroment variable in order to tell which cluster you want to reach.
