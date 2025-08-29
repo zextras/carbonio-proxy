@@ -2,13 +2,13 @@
   "Kind": "service-defaults",
   "Name": "carbonio-proxy",
   "Protocol": "http",
-  "MaxInboundConnections": 65535,
+  "MaxInboundConnections": 65536,
   "UpstreamConfig": {
      "Defaults": {
        "Limits": {
-         "MaxConnections": 65535,
-         "MaxPendingRequests": 65535,
-         "MaxConcurrentRequests": 65535
+         "MaxConnections": 65536,
+         "MaxPendingRequests": 65536,
+         "MaxConcurrentRequests": 65536
        }
      }
   }
