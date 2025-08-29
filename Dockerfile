@@ -2,7 +2,7 @@ FROM registry.dev.zextras.com/dev/carbonio-mailbox:latest
 USER root
 
 COPY entrypoint.sh entrypoint.sh
-COPY conf /opt/zextras/conf
+COPY proxy/conf /opt/zextras/conf
 ENV MEMCACHED_BIND_ADDRESS="memcached"
 ENV MEMCACHED_BIND_PORT=11211
 ARG PROXY_JAVA_ARGS="-Dfile.encoding=UTF-8 -server \
