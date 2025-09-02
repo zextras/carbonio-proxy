@@ -42,7 +42,9 @@ pipeline {
         }
         stage('Stash Nginx build files') {
             steps {
-                stash includes: '**', name: 'staging'
+                sh 'mkdir staging'
+                sh 'cp -r * staging'
+                stash includes: 'staging/**', name: 'staging'
             }
         }
         stage('Publish containers - devel') {
