@@ -43,7 +43,7 @@ pipeline {
         stage('Stash Nginx build files') {
             steps {
                 sh 'mkdir staging'
-                sh 'cp -r * staging'
+                sh 'cp -r proxy* yap.json staging'
                 stash includes: 'staging/**', name: 'staging'
             }
         }
