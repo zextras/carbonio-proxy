@@ -1,4 +1,4 @@
-library identifier: 'mailbox-packages-lib@master', retriever: modernSCM(
+library identifier: 'mailbox-packages-lib@fix/yap-build-directory', retriever: modernSCM(
         [$class: 'GitSCMSource',
          remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
          credentialsId: 'jenkins-integration-with-github-account'])
@@ -42,9 +42,7 @@ pipeline {
         }
         stage('Stash Nginx build files') {
             steps {
-                sh 'mkdir staging'
-                sh 'cp -r proxy* yap.json staging'
-                stash includes: 'staging/**', name: 'staging'
+                stash includes: '**', name: 'staging'
             }
         }
         stage('Publish containers - devel') {
