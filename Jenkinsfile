@@ -61,7 +61,7 @@ pipeline {
         stage ('Build Packages') {
             steps {
                 script {
-                    buildStage(["carbonio-proxy"], 'staging', 'proxy')()
+                    buildStage(["carbonio-proxy"], 'staging', '.')()
                 }
             }
         }
