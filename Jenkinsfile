@@ -1,4 +1,4 @@
-library identifier: 'mailbox-packages-lib@fix/yap-build-directory', retriever: modernSCM(
+library identifier: 'mailbox-packages-lib@master', retriever: modernSCM(
         [$class: 'GitSCMSource',
          remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
          credentialsId: 'jenkins-integration-with-github-account'])
