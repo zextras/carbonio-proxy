@@ -3,14 +3,24 @@ library identifier: 'mailbox-packages-lib@master', retriever: modernSCM(
          remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
          credentialsId: 'jenkins-integration-with-github-account'])
 
-def buildContainer(String title, String description, String dockerfile, String tag) {
+def buildContainer(String title, String description, String dockerfile, String imageName, List<String> versions, String commitHash) {
+    tagsToAdd = []
+    versions.each {
+        version -> tagsToAdd.add("-t " + imageName + ":" + version)
+    }
     sh 'docker build ' +
             '--label org.opencontainers.image.title="' + title + '" ' +
             '--label org.opencontainers.image.description="' + description + '" ' +
             '--label org.opencontainers.image.vendor="Zextras" ' +
-            '-f ' + dockerfile + ' -t ' + tag + ' .'
-    sh 'docker push ' + tag
+            '--label org.opencontainers.image.revision="' + commitHash + '" ' +
+            '-f ' + dockerfile + ' ' + tagsToAdd.join(" ") + ' .'
+    sh 'docker push --all-tags ' + imageName
 }
+
+def isBuildingTag() {
+    return !!env.TAG_NAME
+}
+
 
 pipeline {
     agent {
@@ -45,15 +55,32 @@ pipeline {
                 stash includes: '**', name: 'staging'
             }
         }
-        stage('Publish containers - devel') {
+        stage('Publish containers') {
             when {
-                branch 'devel';
+                expression {
+                    return isBuildingTag() || env.BRANCH_NAME == 'devel'
+                }
             }
             steps {
                 container('dind') {
                     withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
-                        buildContainer('Carbonio Proxy', 'Carbonio Proxy container',
-                                'Dockerfile', 'registry.dev.zextras.com/dev/carbonio-proxy:latest')
+                        script {
+                            def commitHash = env.GIT_COMMIT
+                            def tagVersions = []
+                            if (isBuildingTag()) {
+                                tagVersions.add(env.TAG_NAME)
+                                tagVersions.add("stable")
+                            } else {
+                                tagVersions.add("devel")
+                                tagVersions.add("latest")
+                            }
+                            buildContainer('Carbonio Proxy',
+                                    'Carbonio Proxy container',
+                                    'Dockerfile',
+                                    'registry.dev.zextras.com/dev/carbonio-proxy',
+                                    tagVersions,
+                                    commitHash)
+                        }
                     }
                 }
             }
