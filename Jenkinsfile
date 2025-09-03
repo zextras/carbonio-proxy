@@ -17,6 +17,10 @@ def buildContainer(String title, String description, String dockerfile, String i
     sh 'docker push --all-tags ' + imageName
 }
 
+def isBuildingTag() {
+    return !!env.TAG_NAME
+}
+
 
 pipeline {
     agent {
