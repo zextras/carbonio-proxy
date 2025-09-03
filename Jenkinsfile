@@ -1,21 +1,11 @@
-library identifier: 'mailbox-packages-lib@master', retriever: modernSCM(
-        [$class: 'GitSCMSource',
-         remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
-         credentialsId: 'jenkins-integration-with-github-account'])
-
-def buildContainer(String title, String description, String dockerfile, String imageName, List<String> versions, String commitHash) {
-    tagsToAdd = []
-    versions.each {
-        version -> tagsToAdd.add("-t " + imageName + ":" + version)
-    }
-    sh 'docker build ' +
-            '--label org.opencontainers.image.title="' + title + '" ' +
-            '--label org.opencontainers.image.description="' + description + '" ' +
-            '--label org.opencontainers.image.vendor="Zextras" ' +
-            '--label org.opencontainers.image.revision="' + commitHash + '" ' +
-            '-f ' + dockerfile + ' ' + tagsToAdd.join(" ") + ' .'
-    sh 'docker push --all-tags ' + imageName
-}
+library(
+    identifier: 'jenkins-packages-build-library@chore/IN-930',
+    retriever: modernSCM([
+        $class: 'GitSCMSource',
+        remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
+        credentialsId: 'jenkins-integration-with-github-account'
+    ])
+)
 
 def isBuildingTag() {
     return !!env.TAG_NAME
@@ -23,39 +13,48 @@ def isBuildingTag() {
 
 
 pipeline {
+
     agent {
         node {
             label 'zextras-v1'
         }
     }
+
     environment {
         JAVA_OPTS = '-Dfile.encoding=UTF8'
-        LC_ALL = 'C.UTF-8'
         jenkins_build = 'true'
+        LC_ALL = 'C.UTF-8'
     }
+
     parameters {
-        booleanParam defaultValue: false, description: 'Whether to upload the packages in playground repositories', name: 'PLAYGROUND'
+        booleanParam defaultValue: false, 
+            description: 'Whether to upload the packages in playground repositories', 
+            name: 'PLAYGROUND'
     }
+
     options {
         buildDiscarder(logRotator(numToKeepStr: '25'))
-        timeout(time: 2, unit: 'HOURS')
+        parallelsAlwaysFailFast()
         skipDefaultCheckout()
+        timeout(time: 2, unit: 'HOURS')
     }
+
+    tools {
+        jfrog 'jfrog-cli'
+    }
+
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
                 script {
-                    env.GIT_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                    gitMetadata()
                 }
             }
         }
-        stage('Stash Nginx build files') {
-            steps {
-                stash includes: '**', name: 'staging'
-            }
-        }
-        stage('Publish containers') {
+
+        stage('Publish containers - devel') {
             when {
                 expression {
                     return isBuildingTag() || env.BRANCH_NAME == 'devel'
@@ -65,31 +64,32 @@ pipeline {
                 container('dind') {
                     withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
                         script {
-                            def commitHash = env.GIT_COMMIT
-                            def tagVersions = []
-                            if (isBuildingTag()) {
-                                tagVersions.add(env.TAG_NAME)
-                                tagVersions.add("stable")
-                            } else {
-                                tagVersions.add("devel")
-                                tagVersions.add("latest")
-                            }
-                            buildContainer('Carbonio Proxy',
-                                    'Carbonio Proxy container',
-                                    'Dockerfile',
-                                    'registry.dev.zextras.com/dev/carbonio-proxy',
-                                    tagVersions,
-                                    commitHash)
+                            dockerHelper.buildImage([
+                                title: 'Carbonio Proxy', 
+                                description: 'Carbonio Proxy container',
+                                dockerfile: 'Dockerfile',
+                                imageName: 'registry.dev.zextras.com/dev/carbonio-proxy',
+                                tags: ['latest']
+                            ])
                         }
                     }
                 }
             }
         }
-        stage ('Build Packages') {
+
+        stage('Build deb/rpm') {
             steps {
-                script {
-                    buildStage(["carbonio-proxy"], 'staging', '.')()
-                }
+                echo "Building deb/rpm packages"
+                buildStage()
+            }
+        }
+
+        stage('Upload artifacts')
+        {
+            steps {
+               uploadStage(
+                    packages: yapHelper.getPackageNames()
+                )
             }
         }
     }
