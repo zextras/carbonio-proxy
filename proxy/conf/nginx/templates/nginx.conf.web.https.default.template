@@ -773,6 +773,5 @@ server
         # for custom error pages, internal use only
         internal;
     }
-    include ${core.includes}/extensions/
     include /opt/zextras/conf/nginx/extensions/backend-*.conf;
 }
