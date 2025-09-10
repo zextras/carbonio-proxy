@@ -114,6 +114,7 @@ package() {
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/includes/"
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/templates/"
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/templates_custom/"
+  mkdir -p "${pkgdir}/opt/zextras/conf/nginx/extensions/"
   mkdir -p "${pkgdir}/opt/zextras/data/nginx/html/"
 
   cp conf/nginx/templates/*.template \

@@ -164,5 +164,6 @@ http
     include ${core.includes}/${core.cprefix}.web.carbonio.admin;
     include ${core.includes}/${core.cprefix}.web.carbonio.admin.default;
     include ${core.includes}/${core.cprefix}.web.clamav.signature.provider;
+    include /opt/zextras/conf/nginx/extensions/upstream-*.conf;
 
 }
