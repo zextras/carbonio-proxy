@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-packages-build-library@1.0.0',
+    identifier: 'jenkins-packages-build-library@1.0.1',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
@@ -65,11 +65,13 @@ pipeline {
                     withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
                         script {
                             dockerHelper.buildImage([
-                                title: 'Carbonio Proxy', 
-                                description: 'Carbonio Proxy container',
                                 dockerfile: 'Dockerfile',
                                 imageName: 'registry.dev.zextras.com/dev/carbonio-proxy',
-                                tags: ['latest']
+                                tags: ['latest'],
+                                ocLabels: [
+                                    title: 'Carbonio Proxy', 
+                                    description: 'Carbonio Proxy container',
+                                ]
                             ])
                         }
                     }
