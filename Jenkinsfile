@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-packages-build-library@1.0.2',
+    identifier: 'jenkins-packages-build-library@1.0.3',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
@@ -7,13 +7,7 @@ library(
     ])
 )
 
-def isBuildingTag() {
-    return !!env.TAG_NAME
-}
-
-
 pipeline {
-
     agent {
         node {
             label 'zextras-v1'
@@ -57,7 +51,7 @@ pipeline {
         stage('Publish containers - devel') {
             when {
                 expression {
-                    return isBuildingTag() || env.BRANCH_NAME == 'devel'
+                    return env.TAG_NAME?.trim() || env.BRANCH_NAME == 'devel'
                 }
             }
             steps {
