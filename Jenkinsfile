@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-packages-build-library@1.0.1',
+    identifier: 'jenkins-packages-build-library@1.0.2',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
@@ -69,7 +69,7 @@ pipeline {
                                 imageName: 'registry.dev.zextras.com/dev/carbonio-proxy',
                                 tags: ['latest'],
                                 ocLabels: [
-                                    title: 'Carbonio Proxy', 
+                                    title: 'Carbonio Proxy',
                                     description: 'Carbonio Proxy container',
                                 ]
                             ])
@@ -81,15 +81,17 @@ pipeline {
 
         stage('Build deb/rpm') {
             steps {
-                echo "Building deb/rpm packages"
-                buildStage()
+                echo 'Building deb/rpm packages'
+                buildStage([
+                    buildFlags: ' -s '
+                ])
             }
         }
 
         stage('Upload artifacts')
         {
             steps {
-               uploadStage(
+                uploadStage(
                     packages: yapHelper.getPackageNames()
                 )
             }
