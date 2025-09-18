@@ -28,7 +28,6 @@ pipeline {
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '25'))
-        parallelsAlwaysFailFast()
         skipDefaultCheckout()
         timeout(time: 2, unit: 'HOURS')
     }
