@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-packages-build-library@1.0.1',
+    identifier: 'jenkins-packages-build-library@1.0.4',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
@@ -7,13 +7,7 @@ library(
     ])
 )
 
-def isBuildingTag() {
-    return !!env.TAG_NAME
-}
-
-
 pipeline {
-
     agent {
         node {
             label 'zextras-v1'
@@ -34,7 +28,6 @@ pipeline {
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '25'))
-        parallelsAlwaysFailFast()
         skipDefaultCheckout()
         timeout(time: 2, unit: 'HOURS')
     }
@@ -57,7 +50,7 @@ pipeline {
         stage('Publish containers - devel') {
             when {
                 expression {
-                    return isBuildingTag() || env.BRANCH_NAME == 'devel'
+                    return env.TAG_NAME?.trim() || env.BRANCH_NAME == 'devel'
                 }
             }
             steps {
@@ -69,7 +62,7 @@ pipeline {
                                 imageName: 'registry.dev.zextras.com/dev/carbonio-proxy',
                                 tags: ['latest'],
                                 ocLabels: [
-                                    title: 'Carbonio Proxy', 
+                                    title: 'Carbonio Proxy',
                                     description: 'Carbonio Proxy container',
                                 ]
                             ])
@@ -81,15 +74,17 @@ pipeline {
 
         stage('Build deb/rpm') {
             steps {
-                echo "Building deb/rpm packages"
-                buildStage()
+                echo 'Building deb/rpm packages'
+                buildStage([
+                    buildFlags: ' -s '
+                ])
             }
         }
 
         stage('Upload artifacts')
         {
             steps {
-               uploadStage(
+                uploadStage(
                     packages: yapHelper.getPackageNames()
                 )
             }
