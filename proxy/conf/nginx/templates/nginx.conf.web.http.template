@@ -10,9 +10,13 @@ map $http_cookie $auth_token_cookie {
 server
 {
     server_name             ${vhn};
-    ${core.ipboth.enabled}listen            ${vip}${web.http.port};
-    ${core.ipv4only.enabled}listen            ${vip}${web.http.port};
-    ${core.ipv6only.enabled}listen            ${vip}${web.http.port};
+
+    ${core.ipboth.enabled}listen                  ${vip}${web.http.port} ;
+    ${core.ipv4only.enabled}listen                  ${vip}${web.http.port} ;
+    ${core.ipv6only.enabled}listen                  ${vip}${web.http.port} ;
+
+
+    # no maximum limit imposed on the size of the request body
     client_max_body_size    0;
     include                 ${core.includes}/${core.cprefix}.web.http.mode-${web.mailmode};
 
@@ -303,7 +307,7 @@ server
         proxy_redirect http://$http_host/ https://$http_host/;
 
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ https://$http_host/;
+        proxy_redirect http://$relhost/ http://$http_host/;
 
         return 307 "/carbonio/";
     }
@@ -357,7 +361,7 @@ server
         proxy_redirect http://$http_host/ https://$http_host/;
 
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ https://$http_host/;
+        proxy_redirect http://$relhost/ http://$http_host/;
     }
 
     #For long polling of Microsoft ActiveSync
@@ -412,7 +416,7 @@ server
         proxy_redirect http://$http_host/ https://$http_host/;
 
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ https://$http_host/;
+        proxy_redirect http://$relhost/ http://$http_host/;
     }
 
     location ^~ /zx/ws-
@@ -488,7 +492,7 @@ server
         proxy_redirect http://$http_host/ https://$http_host/;
 
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ https://$http_host/;
+        proxy_redirect http://$relhost/ http://$http_host/;
 
         # We need to set a lower temporary filesize to force nginx to ask data more
         # frequently to jetty.
@@ -550,7 +554,7 @@ server
         proxy_redirect http://$http_host/ https://$http_host/;
 
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ https://$http_host/;
+        proxy_redirect http://$relhost/ http://$http_host/;
     }
 
     # For WaitSetRequest
@@ -605,7 +609,7 @@ server
         proxy_redirect http://$http_host/ https://$http_host/;
 
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ https://$http_host/;
+        proxy_redirect http://$relhost/ http://$http_host/;
     }
 
     location ^~ /autodiscover
@@ -662,7 +666,7 @@ server
         proxy_redirect http://$http_host/ https://$http_host/;
 
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ https://$http_host/;
+        proxy_redirect http://$relhost/ http://$http_host/;
     }
 
     location ^~ /nginx_status {
@@ -700,7 +704,7 @@ server
     ${web.ews.upstream.disable}     proxy_redirect http://$http_host/ https://$http_host/;
     ${web.ews.upstream.disable}
     ${web.ews.upstream.disable}     # Fudge inter-mailbox redirects (kludge)
-    ${web.ews.upstream.disable}     proxy_redirect http://$relhost/ https://$http_host/;
+    ${web.ews.upstream.disable}     proxy_redirect http://$relhost/ http://$http_host/;
     ${web.ews.upstream.disable} }
 
     location ~* /(service|principals|dav|\.well-known|home|shf|user|certauth|spnegoauth)/
@@ -759,7 +763,7 @@ server
         proxy_redirect http://$http_host/ https://$http_host/;
 
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ https://$http_host/;
+        proxy_redirect http://$relhost/ http://$http_host/;
     }
 
     location ~* ^/zmerror_.*\.html$ {
