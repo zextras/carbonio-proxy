@@ -13,6 +13,7 @@ server
     ${core.ipv6only.enabled}listen    [::]:${web.http.port} default;
     server_name             ${web.server_name.default}.default;
     client_max_body_size    0;
+    include                 ${core.includes}/${core.cprefix}.web.http.mode-${web.mailmode};
 
     # nginx compression
     ${proxy.http.compression}
