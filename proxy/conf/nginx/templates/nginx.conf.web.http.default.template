@@ -1,56 +1,120 @@
 # HTTP Proxy Default Configuration
 #
+
+map $http_cookie $auth_token_cookie {
+    default       0;
+    "~ZM_AUTH_TOKEN="  1;
+}
+
 server
 {
     ${core.ipboth.enabled}listen    [::]:${web.http.port} default;
     ${core.ipv4only.enabled}listen    ${web.http.port} default;
     ${core.ipv6only.enabled}listen    [::]:${web.http.port} default;
     server_name             ${web.server_name.default}.default;
-    client_max_body_size 0;
-    include                 ${core.includes}/${core.cprefix}.web.http.mode-${web.mailmode};
+    client_max_body_size    0;
+
+    # nginx compression
+    ${proxy.http.compression}
+
+    # response headers
+    ${web.add.headers.default}
 
     set $login_upstream     ${web.upstream.login.target};
     if ($http_cookie ~ "ZM_AUTH_TOKEN=") {
         set $login_upstream    ${web.upstream.webclient.target};
     }
 
-    location = ${web.login.upstream.url}/
+    # if to loginOp is logout, all the requests should be routed to login server so that updated assets can be loaded
+    # Marked for removal: will be removed in 23.10.0 and logout will be handled at ~/logout
+    if ($arg_loginOp = "logout") {
+        set $login_upstream    ${web.upstream.login.target};
+    }
+
+    # Same as above for relogin loginOp
+    # Marked for removal: will be removed in 23.10.0
+    if ($arg_loginOp = "relogin") {
+        set $login_upstream    ${web.upstream.login.target};
+    }
+
+    # the mobile client has been discontinued in Zimbra9, hence if the client is mobile, rerouting the requests to user's
+    # server - which could be an old one and not yet upgraded
+    if ($arg_client = "mobile") {
+        set $login_upstream    https://zimbra_ssl_webclient;
+    }
+
+    location = /robots.txt
     {
-        if ($http_cookie !~ "ZM_AUTH_TOKEN=") {
-            return 307 "/static/login/";
-        }
+      default_type text/plain;
+      return 200 "User-agent: *\nDisallow: /\n";
+    }
+
+    location = /favicon.ico
+    {
+      return 404;
+    }
+
+    location ~/logout
+    {
+        add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        ${web.carbonio.webui.logout.redirect.default};
     }
 
     location ~/static/(.*)
     {
+        ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/web/$1;
     }
 
     location ~/.well-known/(.*)
     {
+        ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/.well-known/$1;
-    }
-
-    location /carbonio
-    {
-        try_files index.html /carbonio/;
-        add_header Content-Type "text/html";
-        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
     }
 
     location /meeting
     {
         try_files index.html /meeting/;
-        add_header Content-Type "text/html";
+        ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
         alias /opt/zextras/web/iris/carbonio-chats-ui/current/meeting/;
     }
 
+    location /files/public/link/access/assets/
+    {
+        ${web.add.headers.default}
+        alias /opt/zextras/web/carbonio-files-public-folder-ui/assets/;
+    }
+
+    location /files/public/link/access/
+    {
+        ${web.add.headers.default}
+        try_files index.html /carbonio-files-public-folder-ui/;
+        alias /opt/zextras/web/carbonio-files-public-folder-ui/;
+    }
+
     location /services/files/
     {
+        set $public_link 0;
+        set $AUTH_COOKIE_MISSING 0;
+        if ($uri ~* "^/services/files/(link|public)/.*$")  {
+        set $public_link 1;
+        }
+        if ($http_cookie !~ "ZM_AUTH_TOKEN=") {
+        set $AUTH_COOKIE_MISSING 1;
+        }
+        set $require_login $public_link:$AUTH_COOKIE_MISSING;
+        if ( $require_login ~* "0:1") {
+            return 307 "/static/login/";
+        }
         proxy_request_buffering off;
         proxy_pass http://files/;
         proxy_http_version 1.1;
@@ -63,14 +127,25 @@ server
         proxy_set_header Connection "upgrade";
         proxy_set_header Host $http_host;
         proxy_request_buffering off;
-        proxy_pass http://chats/events;
+        proxy_pass http://ws-collaboration/events;
         proxy_http_version 1.1;
     }
 
     location /services/chats/
     {
         proxy_request_buffering off;
-        proxy_pass http://chats/;
+        proxy_pass http://ws-collaboration/;
+        proxy_http_version 1.1;
+    }
+
+    location /services/messaging/ws-xmpp
+    {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $http_host;
+        proxy_request_buffering off;
+        proxy_pass http://message-dispatcher-http/ws-xmpp;
         proxy_http_version 1.1;
     }
 
@@ -92,20 +167,87 @@ server
         proxy_http_version 1.1;
     }
 
-    location /services/messaging/ws-xmpp
+    location /services/tasks/
+    {
+        proxy_request_buffering off;
+        proxy_pass http://tasks/;
+        proxy_http_version 1.1;
+    }
+
+    location /services/storages/
+    {
+        proxy_request_buffering off;
+        proxy_pass http://carbonio-storages/;
+        proxy_http_version 1.1;
+    }
+
+    location /services/catalog/
+    {
+        proxy_request_buffering off;
+        proxy_pass http://carbonio-catalog/;
+        proxy_http_version 1.1;
+    }
+
+    location /services/mobile/tokens
+    {
+        proxy_request_buffering off;
+        proxy_pass http://carbonio-notification-push/tokens;
+        proxy_http_version 1.1;
+    }
+
+    location /services/certificate-manager/
+    {
+        proxy_request_buffering off;
+        proxy_pass http://carbonio-certificate-manager/;
+        proxy_http_version 1.1;
+    }
+
+    location ^~ /zx/login/
     {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
         proxy_set_header Host $http_host;
-        proxy_request_buffering off;
-        proxy_pass http://chats-messaging-http/ws-xmpp;
         proxy_http_version 1.1;
+        proxy_pass http://carbonio-auth/zx/login/;
+    }
+
+    location ^~ /zx/auth/
+    {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $http_host;
+        proxy_http_version 1.1;
+        proxy_pass http://carbonio-auth/zx/auth/;
+    }
+
+    location ~ ^/carbonio/focus-mode/meetings(/|$)
+    {
+        try_files index.html /carbonio/focus-mode/meetings/;
+        ${web.add.headers.default}
+        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
+        alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
+    }
+
+    location ~ ^/carbonio(/|$)
+    {
+        if ($auth_token_cookie = 0) {
+            return 307 ${web.carbonio.webui.login.url.default};
+        }
+
+        try_files index.html /carbonio/;
+        ${web.add.headers.default}
+        add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
+        alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
+
     }
 
     location = /
     {
-
+        # End user session and redirect them to logout URL.
+        # Defaults to /static/login/
+        # Marked for removal: will be removed in 23.10.0 and logout will be handled at ~/logout
         if ($query_string ~ loginOp=logout) {
             add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
             add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
@@ -114,23 +256,13 @@ server
             add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
             add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
             add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            return 307 "/static/login/";
+            ${web.carbonio.webui.logout.redirect.default};
         }
 
-        if ($http_cookie !~ "ZM_AUTH_TOKEN=") {
-            return 307 "/static/login/";
-        }
-
-        if ($http_cookie !~ "UI") {
-           return 307 "/carbonio/";
-        }
-
-        if ($cookie_UI = "iris"){
-           return 307 "/carbonio/";
-        }
-
-        if ($cookie_UI = "") {
-           return 307 "/carbonio/";
+        # Redirect user to login URL.
+        # Defaults to /static/login/
+        if ($auth_token_cookie = 0) {
+            return 307 ${web.carbonio.webui.login.url.default};
         }
 
         # Begin stray redirect hack
@@ -181,51 +313,8 @@ server
 
         # Fudge inter-mailbox redirects (kludge)
         proxy_redirect http://$relhost/ https://$http_host/;
-    }
 
-    location /
-    {
-        # Begin stray redirect hack
-        #
-        # In some cases, we may get a stray redirect out of the mailhost,
-        # which attempts to send us to $host:$mailhostport, where:
-        #
-        # $host is the host portion (excluding port) of the proxy URL
-        # $mailhostport is the zimbraMailPort as applies to the mailhost
-        #   server being redirected to
-        #
-        # This is the case when one mailhost in the upstream cluster is
-        # trying to redirect to another mailhost in the same cluster
-        # In this case, we need to trap and fudge this location header
-        #
-        # NOTE that this will only work in the cases where each mailhost
-        # within the cluster has the same mailhostport (Limitation)
-        #
-
-        set $mailhostport ${web.http.uport};   # replace this with *the* mailhost port
-        set $relhost $host;
-
-        if ($mailhostport != 80) {   # standard HTTP port, do not replace
-            set $relhost $host:$mailhostport;
-        }
-
-        # End stray redirect hack
-
-        # Proxy to Zimbra Upstream
-        proxy_pass ${web.upstream.webclient.target};
-
-        # For audit
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-        # For Virtual Hosting
-        set $virtual_host $http_host;
-        if ($virtual_host = '') {
-            set $virtual_host $server_addr:$server_port;
-        }
-        proxy_set_header Host            $virtual_host;
-
-        # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ http://$http_host/;
+        return 307 "/carbonio/";
     }
 
     #For long polling of Microsoft ActiveSync
@@ -258,10 +347,9 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream
-        proxy_pass ${web.upstream.target};
-
-        proxy_read_timeout ${web.upstream.polling.timeout};
-        proxy_buffering    off;
+        proxy_pass          ${web.upstream.target};
+        proxy_read_timeout  ${web.upstream.polling.timeout};
+        proxy_buffering     off;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -273,8 +361,15 @@ server
         }
         proxy_set_header Host            $virtual_host;
 
+        # Location header fudging
+        # Because NGINX SSL speaks plain HTTP to upstream, therefore any
+        # redirects to http:// coming from the upstream need to be fudged
+        # to https://
+        #
+        proxy_redirect http://$http_host/ https://$http_host/;
+
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ http://$http_host/;
+        proxy_redirect http://$relhost/ https://$http_host/;
     }
 
     location ^~ /zx/ws-
@@ -285,6 +380,11 @@ server
       proxy_set_header Connection "upgrade";
       proxy_set_header Host $http_host;
       proxy_http_version 1.1;
+    }
+
+    location ^~ /zx/powerstore/
+    {
+        return 404;
     }
 
     location ^~ /zx/
@@ -385,10 +485,9 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream
-        proxy_pass ${web.upstream.target};
-
-        proxy_read_timeout ${web.upstream.noop.timeout};
-        proxy_buffering    off;
+        proxy_pass          ${web.upstream.target};
+        proxy_read_timeout  ${web.upstream.noop.timeout};
+        proxy_buffering     off;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -400,8 +499,15 @@ server
         }
         proxy_set_header Host            $virtual_host;
 
+        # Location header fudging
+        # Because NGINX SSL speaks plain HTTP to upstream, therefore any
+        # redirects to http:// coming from the upstream need to be fudged
+        # to https://
+        #
+        proxy_redirect http://$http_host/ https://$http_host/;
+
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ http://$http_host/;
+        proxy_redirect http://$relhost/ https://$http_host/;
     }
 
     # For WaitSetRequest
@@ -434,10 +540,9 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream
-        proxy_pass ${web.upstream.target};
-
-        proxy_read_timeout ${web.upstream.waitset.timeout};
-        proxy_buffering    off;
+        proxy_pass          ${web.upstream.target};
+        proxy_read_timeout  ${web.upstream.waitset.timeout};
+        proxy_buffering     off;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -449,8 +554,15 @@ server
         }
         proxy_set_header Host            $virtual_host;
 
+        # Location header fudging
+        # Because NGINX SSL speaks plain HTTP to upstream, therefore any
+        # redirects to http:// coming from the upstream need to be fudged
+        # to https://
+        #
+        proxy_redirect http://$http_host/ https://$http_host/;
+
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ http://$http_host/;
+        proxy_redirect http://$relhost/ https://$http_host/;
     }
 
     location ^~ /autodiscover
@@ -486,8 +598,8 @@ server
 
         # End stray redirect hack
 
-        # Proxy to Zimbra Upstream
-        proxy_pass $autodiscover_upstream;
+        # Proxy to Zimbra Mailbox Upstream
+        proxy_pass       $autodiscover_upstream;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -499,8 +611,15 @@ server
         }
         proxy_set_header Host            $virtual_host;
 
+        # Location header fudging
+        # Because NGINX SSL speaks plain HTTP to upstream, therefore any
+        # redirects to http:// coming from the upstream need to be fudged
+        # to https://
+        #
+        proxy_redirect http://$http_host/ https://$http_host/;
+
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ http://$http_host/;
+        proxy_redirect http://$relhost/ https://$http_host/;
     }
 
     location ^~ /nginx_status {
@@ -512,24 +631,6 @@ server
         allow ::1;
         deny all;
     }
-
-    ${web.xmpp.bosh.upstream.disable} location ^~ ${web.xmpp.local.bind.url}
-    ${web.xmpp.bosh.upstream.disable} {
-    ${web.xmpp.bosh.upstream.disable}     # Proxy to external XMPP server
-    ${web.xmpp.bosh.upstream.disable}     proxy_pass          ${web.xmpp.upstream.proto}://${web.xmpp.bosh.hostname}:${web.xmpp.bosh.port}${web.xmpp.remote.bind.url};
-    ${web.xmpp.bosh.upstream.disable}     proxy_read_timeout  ${web.xmpp.bosh.timeout};
-    ${web.xmpp.bosh.upstream.disable}     proxy_buffering     off;
-    ${web.xmpp.bosh.upstream.disable}
-    ${web.xmpp.bosh.upstream.disable}     # For audit
-    ${web.xmpp.bosh.upstream.disable}     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    ${web.xmpp.bosh.upstream.disable}
-    ${web.xmpp.bosh.upstream.disable}     # For Virtual Hosting
-    ${web.xmpp.bosh.upstream.disable}     set $virtual_host $http_host;
-    ${web.xmpp.bosh.upstream.disable}     if ($virtual_host = '') {
-    ${web.xmpp.bosh.upstream.disable}         set $virtual_host $server_addr:$server_port;
-    ${web.xmpp.bosh.upstream.disable}     }
-    ${web.xmpp.bosh.upstream.disable}     proxy_set_header Host            $virtual_host;
-    ${web.xmpp.bosh.upstream.disable} }
 
     ${web.ews.upstream.disable} location ~* ^/ews/Exchange.asmx
     ${web.ews.upstream.disable} {
@@ -544,15 +645,22 @@ server
     ${web.ews.upstream.disable}     # For Virtual Hosting
     ${web.ews.upstream.disable}     set $virtual_host $http_host;
     ${web.ews.upstream.disable}     if ($virtual_host = '') {
-    ${web.ews.upstream.disable}         set $virtual_host $server_addr:$server_port;
+    ${web.ews.upstream.disable}        set $virtual_host $server_addr:$server_port;
     ${web.ews.upstream.disable}     }
     ${web.ews.upstream.disable}     proxy_set_header Host            $virtual_host;
     ${web.ews.upstream.disable}
+    ${web.ews.upstream.disable}     # Location header fudging
+    ${web.ews.upstream.disable}     # Because NGINX SSL speaks plain HTTP to upstream, therefore any
+    ${web.ews.upstream.disable}     # redirects to http:// coming from the upstream need to be fudged
+    ${web.ews.upstream.disable}     # to https://
+    ${web.ews.upstream.disable}     #
+    ${web.ews.upstream.disable}     proxy_redirect http://$http_host/ https://$http_host/;
+    ${web.ews.upstream.disable}
     ${web.ews.upstream.disable}     # Fudge inter-mailbox redirects (kludge)
-    ${web.ews.upstream.disable}     proxy_redirect http://$relhost/ http://$http_host/;
+    ${web.ews.upstream.disable}     proxy_redirect http://$relhost/ https://$http_host/;
     ${web.ews.upstream.disable} }
 
-    location ~* /(service|principals|dav|\.well-known|home|octopus|shf|user|certauth|spnegoauth|(zimbra/home)|(zimbra/user))/
+    location ~* /(service|principals|dav|\.well-known|home|shf|user|certauth|spnegoauth)/
     {
         # Memcached poisoning with unauthenticated request
         if ($request_uri ~* "%0A|%0D") {
@@ -585,11 +693,13 @@ server
 
         # End stray redirect hack
 
-        # Proxy to Zimbra Upstream
-        proxy_pass ${web.upstream.target};
+        # Proxy to Zimbra Mailbox Upstream
+        proxy_pass       ${web.upstream.target};
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        proxy_set_header X-Forwarded-Proto $scheme;
 
         # For Virtual Hosting
         set $virtual_host $http_host;
@@ -598,8 +708,15 @@ server
         }
         proxy_set_header Host            $virtual_host;
 
+        # Location header fudging
+        # Because NGINX SSL speaks plain HTTP to upstream, therefore any
+        # redirects to http:// coming from the upstream need to be fudged
+        # to https://
+        #
+        proxy_redirect http://$http_host/ https://$http_host/;
+
         # Fudge inter-mailbox redirects (kludge)
-        proxy_redirect http://$relhost/ http://$http_host/;
+        proxy_redirect http://$relhost/ https://$http_host/;
     }
 
     location ~* ^/zmerror_.*\.html$ {
@@ -611,4 +728,5 @@ server
         # for custom error pages, internal use only
         internal;
     }
+    include /opt/zextras/conf/nginx/extensions/backend-*.conf;
 }
