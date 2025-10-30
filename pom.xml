@@ -13,16 +13,6 @@
   <groupId>com.zextras</groupId>
   <artifactId>proxyconfgen</artifactId>
   <version>${revision}${changelist}</version>
-  <distributionManagement>
-    <repository>
-      <id>artifactory</id>
-      <url>https://zextras.jfrog.io/artifactory/public-maven-repo</url>
-    </repository>
-    <snapshotRepository>
-      <id>artifactory</id>
-      <url>https://zextras.jfrog.io/artifactory/maven-snapshot</url>
-    </snapshotRepository>
-  </distributionManagement>
   <profiles>
     <profile>
       <id>prod</id>
