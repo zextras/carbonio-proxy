@@ -68,7 +68,7 @@ package() {
 
   cd "$(dirname "$(find / -name "yap.json" -print -quit)")"
 
-  install -D target/proxyconfgen*.jar \
+  install -D target/proxyconfgen.jar \
      "${pkgdir}/opt/zextras/proxyconfgen/proxyconfgen.jar"
 
   cd "${srcdir}/.."

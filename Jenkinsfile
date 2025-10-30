@@ -62,7 +62,7 @@ pipeline {
                             -DskipTests=true \
                             clean install
                     """
-                    stash includes: 'target/proxyconfgen*.jar', name: 'staging'
+                    stash includes: 'target/proxyconfgen.jar', name: 'staging'
                 }
             }
         }
