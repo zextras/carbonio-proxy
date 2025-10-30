@@ -3,3 +3,4 @@
 .idea
 
 artifacts/
+/.flattened-pom.xml

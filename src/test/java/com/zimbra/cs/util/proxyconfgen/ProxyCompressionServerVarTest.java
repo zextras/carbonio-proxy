@@ -7,11 +7,24 @@ import static org.mockito.Mockito.when;
 import com.zimbra.common.account.ZAttrProvisioning;
 import com.zimbra.cs.account.Entry;
 import com.zimbra.cs.account.Server;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-// TODO: missing LDAP connection
 public class ProxyCompressionServerVarTest {
 
+ private static LdapEnvironment ldapEnvironment;
+
+ @BeforeAll
+ static void setUpBeforeClass() throws Exception {
+  ldapEnvironment = new LdapEnvironment();
+  ldapEnvironment.setup();
+ }
+
+ @AfterAll
+ static void tearDownAfterClass() {
+  ldapEnvironment.tearDown();
+ }
  /**
   * test default behavior when {@code ZAttrProvisioning.A_zimbraHttpCompressionEnabled} is set to
   * true (default) returned value must contain defined directive definition
