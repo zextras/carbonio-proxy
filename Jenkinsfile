@@ -66,6 +66,15 @@ pipeline {
                 }
             }
         }
+        stage('Docker build') {
+            steps {
+                container('dind') {
+                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
+                        sh 'docker build .'
+                    }
+                }
+            }
+        }
 
         stage('Tests') {
             steps {
