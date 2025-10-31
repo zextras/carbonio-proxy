@@ -35,6 +35,7 @@ map $http_cookie $auth_token_cookie {
 map $http_x_forwarded_proto $original_scheme {
     default $scheme;
     https https;
+    http  http;
 }
 
 server
