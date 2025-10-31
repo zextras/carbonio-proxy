@@ -139,7 +139,7 @@ server
         }
         set $require_login $public_link:$AUTH_COOKIE_MISSING;
         if ( $require_login ~* "0:1") {
-            return 307 $original_scheme://$host//static/login/;
+            return 307 $original_scheme://$host/static/login/;
         }
         proxy_request_buffering off;
         proxy_pass http://files/;

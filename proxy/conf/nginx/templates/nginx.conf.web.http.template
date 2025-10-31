@@ -113,7 +113,7 @@ server
         }
         set $require_login $public_link:$AUTH_COOKIE_MISSING;
         if ( $require_login ~* "0:1") {
-            return 307 $original_scheme://$host//static/login/;
+            return 307 $original_scheme://$host/static/login/;
         }
         proxy_request_buffering off;
         proxy_pass http://files/;
@@ -314,7 +314,7 @@ server
         # Fudge inter-mailbox redirects (kludge)
         proxy_redirect http://$relhost/ http://$http_host/;
 
-        return 307 $original_scheme://$host//carbonio/;
+        return 307 $original_scheme://$host/carbonio/;
     }
 
     location /
