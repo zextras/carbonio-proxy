@@ -21,6 +21,30 @@
       </properties>
     </profile>
   </profiles>
+  <repositories>
+    <repository>
+      <id>zextras-public-release</id>
+      <name>Zextras public maven release repository</name>
+      <url>https://zextras.jfrog.io/artifactory/public-maven-repo</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>zextras-public-snapshots</id>
+      <name>Zextras public maven snapshot repository</name>
+      <url>https://zextras.jfrog.io/artifactory/maven-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -293,7 +317,8 @@
           <finalName>proxyconfgen</finalName>
           <!-- Main class to run -->
           <transformers>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+            <transformer
+              implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
               <mainClass>com.zimbra.cs.util.proxyconfgen.ProxyConfGen</mainClass>
             </transformer>
           </transformers>
