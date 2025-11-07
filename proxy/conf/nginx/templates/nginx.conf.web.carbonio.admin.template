@@ -1,12 +1,6 @@
 !{explode domain(vhn)}
 # HTTPS Proxy Configuration
 #
-map $http_x_forwarded_proto $original_scheme {
-    default $scheme;
-    https https;
-    http  http;
-}
-
 server
 {
     server_name             ${vhn};
@@ -43,9 +37,9 @@ server
     location /
     {
         if ($http_cookie !~ "ZM_ADMIN_AUTH_TOKEN=") {
-            return 307 $original_scheme://$host/${web.carbonio.admin.login.url.vhost};
+            return 307 ${web.carbonio.admin.login.url.vhost};
         }
-        return 307 $original_scheme://$host/carbonioAdmin;
+        return 307 "/carbonioAdmin";
     }
 
     location /services/storages/
