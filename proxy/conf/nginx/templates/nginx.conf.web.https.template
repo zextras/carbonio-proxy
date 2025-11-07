@@ -6,11 +6,6 @@ map $http_cookie $auth_token_cookie {
     default       0;
     "~ZM_AUTH_TOKEN="  1;
 }
-map $http_x_forwarded_proto $original_scheme {
-    default $scheme;
-    https https;
-    http  http;
-}
 
 server
 {
@@ -51,7 +46,7 @@ server
     location = ${web.login.upstream.url}/
     {
       if ($auth_token_cookie = 0) {
-        return 307 $original_scheme://$host/${web.carbonio.webui.login.url.vhost};
+        return 307 ${web.carbonio.webui.login.url.vhost};
       }
     }
 
@@ -125,7 +120,7 @@ server
         }
         set $require_login $public_link:$AUTH_COOKIE_MISSING;
         if ( $require_login ~* "0:1") {
-            return 307 $original_scheme://$host/static/login/;
+            return 307 "/static/login/";
         }
         proxy_request_buffering off;
         proxy_pass http://files/;
@@ -245,7 +240,7 @@ server
     location ~ ^/carbonio(/|$)
     {
         if ($auth_token_cookie = 0) {
-            return 307 $original_scheme://$host/${web.carbonio.webui.login.url.vhost};
+            return 307 ${web.carbonio.webui.login.url.vhost};
         }
 
         try_files index.html /carbonio/;
@@ -274,7 +269,7 @@ server
         # Redirect user to login URL.
         # Defaults to /static/login/
         if ($auth_token_cookie = 0) {
-          return 307 $original_scheme://$host/${web.carbonio.webui.login.url.vhost};
+          return 307 ${web.carbonio.webui.login.url.vhost};
         }
 
         # Begin stray redirect hack
@@ -326,7 +321,7 @@ server
         # Fudge inter-mailbox redirects (kludge)
         proxy_redirect http://$relhost/ https://$http_host/;
 
-        return 307 $original_scheme://$host/$original_scheme://$host/carbonio/;
+        return 307 "/carbonio/";
     }
 
     location /
