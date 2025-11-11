@@ -46,7 +46,7 @@ pipeline {
             }
         }
 
-        stage('Build artifacts') {
+        stage('Publish docker images') {
             steps {
                 dockerStage([
                     dockerfile: 'Dockerfile',
@@ -56,12 +56,20 @@ pipeline {
                         description: 'Carbonio Proxy container',
                     ]
                 ])
+            }
+        }
 
+        stage('Build artifacts') {
+            steps {
                 echo 'Building deb/rpm packages'
                 buildStage([
                     buildFlags: ' -s '
                 ])
+            }
+        }
 
+        stage('Upload artifacts') {
+            steps {
                 uploadStage(
                     packages: yapHelper.resolvePackageNames()
                 )
