@@ -1,9 +1,9 @@
 library(
-    identifier: 'jenkins-packages-build-library@1.0.4',
+    identifier: 'jenkins-lib-common@feat/docker-stage',
     retriever: modernSCM([
         $class: 'GitSCMSource',
-        remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
-        credentialsId: 'jenkins-integration-with-github-account'
+        credentialsId: 'jenkins-integration-with-github-account',
+        remote: 'git@github.com:zextras/jenkins-lib-common.git'
     ])
 )
 
