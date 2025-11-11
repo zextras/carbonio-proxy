@@ -53,7 +53,7 @@ pipeline {
                     imageName: 'carbonio-proxy',
                     ocLabels: [
                         title: 'Carbonio Proxy',
-                        descriptionFile: 'Carbonio Proxy container',
+                        description: 'Carbonio Proxy container',
                     ]
                 ])
 
