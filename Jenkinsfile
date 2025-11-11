@@ -49,11 +49,11 @@ pipeline {
         stage('Build artifacts') {
             steps {
                 dockerStage([
-                    dockerfile: 'docker/mta/Dockerfile',
-                    imageName: 'carbonio-mta',
+                    dockerfile: 'docker/proxy/Dockerfile',
+                    imageName: 'carbonio-proxy',
                     ocLabels: [
-                        title: 'Carbonio MTA',
-                        descriptionFile: 'docker/mta/description.md',
+                        title: 'Carbonio Proxy',
+                        descriptionFile: 'Carbonio Proxy container',
                     ]
                 ])
 
