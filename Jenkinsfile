@@ -37,7 +37,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -47,45 +46,24 @@ pipeline {
             }
         }
 
-        stage('Publish containers - devel') {
-            when {
-                expression {
-                    return env.TAG_NAME?.trim() || env.BRANCH_NAME == 'devel'
-                }
-            }
+        stage('Build artifacts') {
             steps {
-                container('dind') {
-                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
-                        script {
-                            dockerHelper.buildImage([
-                                dockerfile: 'Dockerfile',
-                                imageName: 'registry.dev.zextras.com/dev/carbonio-proxy',
-                                tags: ['latest'],
-                                ocLabels: [
-                                    title: 'Carbonio Proxy',
-                                    description: 'Carbonio Proxy container',
-                                ]
-                            ])
-                        }
-                    }
-                }
-            }
-        }
+                dockerStage([
+                    dockerfile: 'docker/mta/Dockerfile',
+                    imageName: 'carbonio-mta',
+                    ocLabels: [
+                        title: 'Carbonio MTA',
+                        descriptionFile: 'docker/mta/description.md',
+                    ]
+                ])
 
-        stage('Build deb/rpm') {
-            steps {
                 echo 'Building deb/rpm packages'
                 buildStage([
                     buildFlags: ' -s '
                 ])
-            }
-        }
 
-        stage('Upload artifacts')
-        {
-            steps {
                 uploadStage(
-                    packages: yapHelper.getPackageNames()
+                    packages: yapHelper.resolvePackageNames()
                 )
             }
         }
