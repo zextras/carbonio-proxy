@@ -9,7 +9,7 @@ ${upstream.fair.shm.size}
     # Define the collection of upstream HTTP webclient servers to which we will proxy
     # Define each server:port against a server directive
     #
-    upstream ${web.upstream.webclient.name}
+    upstream mailbox_webclient
     {
         ${web.upstream.webclient.:servers}
         zmauth;
@@ -18,7 +18,7 @@ ${upstream.fair.shm.size}
     #  Define the collection of upstream HTTP servers to which we will proxy
     #  Define each server:port against a server directive
     #
-    upstream ${web.upstream.name}
+    upstream mailbox
     {
         ${web.upstream.:servers}
         zmauth;
@@ -27,7 +27,7 @@ ${upstream.fair.shm.size}
     #  Define the collection of upstream HTTPS webclient servers to which we will proxy
     #  Define each server:port against a server directive
     #
-    upstream ssl_webclient
+    upstream mailbox_ssl_webclient
     {
         ${web.ssl.upstream.webclient.:servers}
         zmauth;
@@ -35,7 +35,7 @@ ${upstream.fair.shm.size}
 
     #  Define the collection of upstream HTTPS servers to which we will proxy
     #  Define each server:port against a server directive
-    upstream ${web.ssl.upstream.name}
+    upstream mailbox_ssl
     {
         ${web.ssl.upstream.:servers}
         zmauth;
