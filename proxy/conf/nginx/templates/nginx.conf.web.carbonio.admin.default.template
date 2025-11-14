@@ -58,7 +58,7 @@ server
     location ^~ /service
     {
         # Proxy to Zimbra Upstream
-        proxy_pass          https://${web.admin.upstream.name};
+        proxy_pass          https://admin;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

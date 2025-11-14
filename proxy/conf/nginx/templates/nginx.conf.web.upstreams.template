@@ -67,7 +67,7 @@ ${upstream.fair.shm.size}
     #  Define the collection of upstream admin console servers to which we will
     #  proxy. Define each server:port against a server directive
     #
-    upstream ${web.admin.upstream.name}
+    upstream admin
     {
         ${web.admin.upstream.:servers}
         zmauth_admin;
