@@ -94,7 +94,7 @@ ${upstream.fair.shm.size}
     #  Define the collection of upstream HTTP Login servers to which we will
     #  proxy login request. Define each server:port against a server directive
     #
-    ${web.login.upstream.disable} upstream ${web.login.upstream.name}
+    ${web.login.upstream.disable} upstream login
     ${web.login.upstream.disable} {
     ${web.login.upstream.disable}    ${web.upstream.loginserver.:servers}
     ${web.login.upstream.disable}    zmauth;
@@ -103,7 +103,7 @@ ${upstream.fair.shm.size}
     #  Define the collection of upstream HTTPS Login servers to which we will
     #  proxy login request. Define each server:port against a server directive
     #
-    ${web.login.upstream.disable} upstream ${web.ssl.login.upstream.name}
+    ${web.login.upstream.disable} upstream login_ssl
     ${web.login.upstream.disable} {
     ${web.login.upstream.disable}    ${web.ssl.upstream.loginserver.:servers}
     ${web.login.upstream.disable}    zmauth;
