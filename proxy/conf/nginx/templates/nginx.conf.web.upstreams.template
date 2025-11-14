@@ -1,6 +1,6 @@
 ${upstream.fair.shm.size}
 
-# Define whether nginx will match exact server version against the
+    # Define whether nginx will match exact server version against the
     # version received in the client request. Defaults to 'on'
     # Setting this to off will make nginx compare only the major and minor
     # server versions (eg. all 8.5.x will be treated same by nginx)
