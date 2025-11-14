@@ -27,7 +27,7 @@ ${upstream.fair.shm.size}
     #  Define the collection of upstream HTTPS webclient servers to which we will proxy
     #  Define each server:port against a server directive
     #
-    upstream ${web.ssl.upstream.webclient.name}
+    upstream ssl_webclient
     {
         ${web.ssl.upstream.webclient.:servers}
         zmauth;
