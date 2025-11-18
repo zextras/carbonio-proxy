@@ -3,3 +3,6 @@
 .idea
 
 artifacts/
+/.flattened-pom.xml
+/target/
+/dependency-reduced-pom.xml
