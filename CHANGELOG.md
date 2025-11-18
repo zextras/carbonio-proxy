@@ -1,5 +1,25 @@
 # Changelog
 
+# [4.10.0](https://github.com/zextras/carbonio-proxy/compare/4.9.3...4.10.0) (2025-11-17)
+
+
+### Bug Fixes
+
+* **root:** add catalog host sed to entrypoint ([22425b2](https://github.com/zextras/carbonio-proxy/commit/22425b28ef12b228446d564f028777a95d15d0f0))
+
+
+### Features
+
+* [CO-2301] add support for nginx extensions on https and web files ([#160](https://github.com/zextras/carbonio-proxy/issues/160)) ([7a18ba2](https://github.com/zextras/carbonio-proxy/commit/7a18ba2d26991b5fb99fc6e7184aa29e7d92e340))
+* [CO-2324] add protocol using X-Forwarded-Proto when provided in redirect ([#169](https://github.com/zextras/carbonio-proxy/issues/169)) ([55479fe](https://github.com/zextras/carbonio-proxy/commit/55479fe7b03e3085e94aa49ac3d9764c846ca140))
+* [CO-2324] add support http support on Nginx ([#167](https://github.com/zextras/carbonio-proxy/issues/167)) ([33f99d6](https://github.com/zextras/carbonio-proxy/commit/33f99d6e80fb74d4ce9fbafcbba66cba26736637)), closes [#46](https://github.com/zextras/carbonio-proxy/issues/46)
+
+
+### Reverts
+
+* "fix(root): add catalog host sed to entrypoint" ([#166](https://github.com/zextras/carbonio-proxy/issues/166)) ([5f468a6](https://github.com/zextras/carbonio-proxy/commit/5f468a6a120cce483efc384ff20e5cb5ca7af5c7))
+* [CO-2324] add protocol using X-Forwarded-Proto when provided in redirect ([#169](https://github.com/zextras/carbonio-proxy/issues/169)) ([b5c70d3](https://github.com/zextras/carbonio-proxy/commit/b5c70d33dec3929999ca9e45dfc136b6355fffe8))
+
 ## [4.9.3](https://github.com/zextras/carbonio-proxy/compare/4.9.2...4.9.3) (2025-08-29)
 
 ## [4.9.2](https://github.com/zextras/carbonio-proxy/compare/4.9.0...4.9.2) (2025-08-25)

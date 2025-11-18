@@ -1,5 +1,5 @@
 pkgname="carbonio-proxy"
-pkgver="4.9.3"
+pkgver="4.10.0"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 arch=('x86_64')
@@ -31,12 +31,12 @@ depends__yum=(
   "sqlite"
 )
 source=(
-  "${pkgname}-setup.sh"
+  "211-carbonio-clamav-signature-provider-setup.sh"
+  "311-${pkgname}-setup.sh"
   "${pkgname}-sidecar.service"
   "${pkgname}.hcl"
   "${pkgname}.target"
   "${pkgname}.sh"
-  "carbonio-clamav-signature-provider-setup.sh"
   "carbonio-clamav-signature-provider-sidecar.service"
   "carbonio-clamav-signature-provider.hcl"
   "carbonio-clamav-signature-provider"
@@ -48,12 +48,12 @@ source=(
 )
 
 sha256sums=(
+  'cbd42efea9c34bd8cd661a7f9a4902ee86a3ba2b07db5c2be07dc36ab894df7a'
   'bb536a6e911924cde7438acdfaffaf88efcc070089319bad5dc9c68f5e7a33e3'
   '7fd2ca93d1c12f23a3fde073fa0f709004a68451625b1fcd50ba75fbf0e0e270'
   '205487d7025ed9146b670045911ba09c3701a0e72954439a9d60e3e78a04e89b'
   '7e5765f837ccbde44c598c80be3576bea469d041b318ed558a67e7d1c15d9948'
   '98e5fccf13b8ca8691c19495e5e496d1daa24a5962178e3f7b86706507c56e55'
-  'cbd42efea9c34bd8cd661a7f9a4902ee86a3ba2b07db5c2be07dc36ab894df7a'
   '6784bc6fb696c968808745abe3387d434e70ff48235b861516eb196d06473990'
   'e31069c73e7326c68188381fd485866c8d083466a576ee9141b9fdbefbb2c157'
   '9cb0f1b78f9a93dc8c05d7dc3db1514ef9af5a4f165416a497b543a3d620438d'
@@ -83,8 +83,8 @@ package() {
   install -Dm644 "service-protocol-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/service-protocol.json"
 
-  install -Dm755 "${pkgname}-setup.sh" \
-    "${pkgdir}/etc/zextras/pending-setups.d/${pkgname}-setup.sh"
+  install -Dm755 "311-${pkgname}-setup.sh" \
+    "${pkgdir}/etc/zextras/pending-setups.d/311-${pkgname}-setup.sh"
   # end install proxy service registration files for consul
 
   # start install clamav-signature-provider service registration files for consul
@@ -106,14 +106,15 @@ package() {
   install -Dm644 "service-protocol-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/service-protocol.json"
 
-  install -Dm755 "carbonio-clamav-signature-provider-setup.sh" \
-    "${pkgdir}/etc/zextras/pending-setups.d/carbonio-clamav-signature-provider-setup.sh"
+  install -Dm755 "211-carbonio-clamav-signature-provider-setup.sh" \
+    "${pkgdir}/etc/zextras/pending-setups.d/211-carbonio-clamav-signature-provider-setup.sh"
   # end install clamav-signature-provider service registration files for consul
 
   # start install template and errors files
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/includes/"
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/templates/"
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/templates_custom/"
+  mkdir -p "${pkgdir}/opt/zextras/conf/nginx/extensions/"
   mkdir -p "${pkgdir}/opt/zextras/data/nginx/html/"
 
   cp conf/nginx/templates/*.template \
