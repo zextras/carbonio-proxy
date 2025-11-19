@@ -66,17 +66,17 @@ import org.apache.commons.io.IOUtils;
 
 public class ProxyConfGen {
 
-  static final String USER = "zextras";
-  static final String USER_UPSTREAM_NAME = "mailbox";
-  static final String USER_UPSTREAM_WEBCLIENT_NAME = "mailbox_webclient";
-  static final String USER_SSL_UPSTREAM_NAME = "mailbox_ssl";
-  static final String USER_SSL_UPSTREAM_WEBCLIENT_NAME = "mailbox_ssl_webclient";
-  static final String ADMIN_CONSOLE_UPSTREAM_NAME = "admin";
-  static final String ADMIN_CONSOLE_CLIENT_UPSTREAM_NAME = "adminclient";
+  static final String ZIMBRA_USER = "zextras";
+  static final String ZIMBRA_UPSTREAM_NAME = "zimbra";
+  static final String ZIMBRA_UPSTREAM_WEBCLIENT_NAME = "zimbra_webclient";
+  static final String ZIMBRA_SSL_UPSTREAM_NAME = "zimbra_ssl";
+  static final String ZIMBRA_SSL_UPSTREAM_WEBCLIENT_NAME = "zimbra_ssl_webclient";
+  static final String ZIMBRA_ADMIN_CONSOLE_UPSTREAM_NAME = "zimbra_admin";
+  static final String ZIMBRA_ADMIN_CONSOLE_CLIENT_UPSTREAM_NAME = "zimbra_adminclient";
   static final String ZIMBRA_UPSTREAM_EWS_NAME = "zimbra_ews";
   static final String ZIMBRA_SSL_UPSTREAM_EWS_NAME = "zimbra_ews_ssl";
-  static final String UPSTREAM_LOGIN_NAME = "login";
-  static final String SSL_UPSTREAM_LOGIN_NAME = "login_ssl";
+  static final String ZIMBRA_UPSTREAM_LOGIN_NAME = "zimbra_login";
+  static final String ZIMBRA_SSL_UPSTREAM_LOGIN_NAME = "zimbra_login_ssl";
   static final String ZIMBRA_UPSTREAM_ZX_NAME = "zx";
   static final String ZIMBRA_SSL_UPSTREAM_ZX_NAME = "zx_ssl";
   static final int ZIMBRA_UPSTREAM_ZX_PORT = 8742;
@@ -955,7 +955,7 @@ public class ProxyConfGen {
         new ProxyConfVar(
             "main.user",
             null,
-            USER,
+            ZIMBRA_USER,
             ProxyConfValueType.STRING,
             ProxyConfOverride.NONE,
             "The user as which the worker processes will run"));
@@ -964,7 +964,7 @@ public class ProxyConfGen {
         new ProxyConfVar(
             "main.group",
             null,
-            USER,
+            ZIMBRA_USER,
             ProxyConfValueType.STRING,
             ProxyConfOverride.NONE,
             "The group as which the worker processes will run"));
@@ -1496,7 +1496,7 @@ public class ProxyConfGen {
         new ProxyConfVar(
             "web.upstream.name",
             null,
-            USER_UPSTREAM_NAME,
+            ZIMBRA_UPSTREAM_NAME,
             ProxyConfValueType.STRING,
             ProxyConfOverride.CONFIG,
             "Symbolic name for HTTP upstream cluster"));
@@ -1505,7 +1505,7 @@ public class ProxyConfGen {
         new ProxyConfVar(
             "web.upstream.webclient.name",
             null,
-            USER_UPSTREAM_WEBCLIENT_NAME,
+            ZIMBRA_UPSTREAM_WEBCLIENT_NAME,
             ProxyConfValueType.STRING,
             ProxyConfOverride.CONFIG,
             "Symbolic name for HTTP upstream webclient cluster"));
@@ -1514,7 +1514,7 @@ public class ProxyConfGen {
         new ProxyConfVar(
             "web.ssl.upstream.name",
             null,
-            USER_SSL_UPSTREAM_NAME,
+            ZIMBRA_SSL_UPSTREAM_NAME,
             ProxyConfValueType.STRING,
             ProxyConfOverride.CONFIG,
             "Symbolic name for HTTPS upstream cluster"));
@@ -1523,7 +1523,7 @@ public class ProxyConfGen {
         new ProxyConfVar(
             "web.ssl.upstream.webclient.name",
             null,
-            USER_SSL_UPSTREAM_WEBCLIENT_NAME,
+            ZIMBRA_SSL_UPSTREAM_WEBCLIENT_NAME,
             ProxyConfValueType.STRING,
             ProxyConfOverride.CONFIG,
             "Symbolic name for HTTPS upstream webclient cluster"));
@@ -1795,7 +1795,7 @@ public class ProxyConfGen {
         new ProxyConfVar(
             "web.admin.upstream.name",
             null,
-            ADMIN_CONSOLE_UPSTREAM_NAME,
+            ZIMBRA_ADMIN_CONSOLE_UPSTREAM_NAME,
             ProxyConfValueType.STRING,
             ProxyConfOverride.CONFIG,
             "Symbolic name for admin console upstream cluster"));
@@ -1804,7 +1804,7 @@ public class ProxyConfGen {
         new ProxyConfVar(
             "web.admin.upstream.adminclient.name",
             null,
-            ADMIN_CONSOLE_CLIENT_UPSTREAM_NAME,
+            ZIMBRA_ADMIN_CONSOLE_CLIENT_UPSTREAM_NAME,
             ProxyConfValueType.STRING,
             ProxyConfOverride.CONFIG,
             "Symbolic name for admin client console upstream cluster"));
@@ -1868,7 +1868,7 @@ public class ProxyConfGen {
         new ProxyConfVar(
             "web.login.upstream.name",
             null,
-            UPSTREAM_LOGIN_NAME,
+            ZIMBRA_UPSTREAM_LOGIN_NAME,
             ProxyConfValueType.STRING,
             ProxyConfOverride.CONFIG,
             "Symbolic name for upstream login server cluster"));
@@ -1877,7 +1877,7 @@ public class ProxyConfGen {
         new ProxyConfVar(
             "web.ssl.login.upstream.name",
             null,
-            SSL_UPSTREAM_LOGIN_NAME,
+            ZIMBRA_SSL_UPSTREAM_LOGIN_NAME,
             ProxyConfValueType.STRING,
             ProxyConfOverride.CONFIG,
             "Symbolic name for https upstream login server cluster"));

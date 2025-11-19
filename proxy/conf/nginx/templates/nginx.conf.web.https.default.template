@@ -85,7 +85,7 @@ server
     # the mobile client has been discontinued in Zimbra9, hence if the client is mobile, rerouting the requests to user's
     # server - which could be an old one and not yet upgraded
     if ($arg_client = "mobile") {
-        set $login_upstream    https://mailbox_ssl_webclient;
+        set $login_upstream    https://zimbra_ssl_webclient;
     }
 
     location = /robots.txt

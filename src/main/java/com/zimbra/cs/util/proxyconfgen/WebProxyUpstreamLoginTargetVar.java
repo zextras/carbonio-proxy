@@ -18,9 +18,9 @@ class WebProxyUpstreamLoginTargetVar extends ProxyConfVar {
   public String format(Object o) throws ProxyConfException {
     Boolean value = (Boolean) o;
     if (Boolean.FALSE.equals(value)) {
-      return "http://" + ProxyConfGen.UPSTREAM_LOGIN_NAME;
+      return "http://" + ProxyConfGen.ZIMBRA_UPSTREAM_LOGIN_NAME;
     } else {
-      return "https://" + ProxyConfGen.SSL_UPSTREAM_LOGIN_NAME;
+      return "https://" + ProxyConfGen.ZIMBRA_SSL_UPSTREAM_LOGIN_NAME;
     }
   }
 }
