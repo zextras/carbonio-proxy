@@ -7,6 +7,12 @@ library(
     ])
 )
 
+boolean isBuildingTag() {
+    return env.TAG_NAME ? true : false
+}
+
+String profile = isBuildingTag() ? '-Pprod' : ''
+
 pipeline {
     agent {
         node {
@@ -15,6 +21,7 @@ pipeline {
     }
 
     environment {
+        MVN_OPTS = "-Ddebug=0 -Dis-production=1 ${profile}"
         JAVA_OPTS = '-Dfile.encoding=UTF8'
         jenkins_build = 'true'
         LC_ALL = 'C.UTF-8'
@@ -35,6 +42,38 @@ pipeline {
                     gitMetadata()
                     properties(defaultPipelineProperties())
                 }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                container('jdk-17') {
+                    sh """
+                        mvn ${MVN_OPTS} \
+                            -DskipTests=true \
+                            clean install
+                    """
+                    stash includes: 'target/proxyconfgen.jar', name: 'staging'
+                }
+            }
+        }
+        stage('Docker build') {
+            steps {
+                container('dind') {
+                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
+                        sh 'docker build .'
+                    }
+                }
+            }
+        }
+
+        stage('Tests') {
+            steps {
+                container('jdk-17') {
+                    sh "mvn ${MVN_OPTS} verify"
+                }
+                junit allowEmptyResults: true,
+                        testResults: '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
             }
         }
 
