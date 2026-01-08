@@ -45,6 +45,7 @@ source=(
   "policies-proxy.json"
   "service-protocol-clamav-signature-provider.json"
   "service-protocol-proxy.json"
+  "systemd-sysuser.conf"
   "systemd-tmpfile.conf"
 )
 
@@ -63,6 +64,7 @@ sha256sums=(
   '5bf2b4598abd0dbbf7bd9ff94858f2c73c0f88504e9f83e0a3952c5e52b7a968'
   'a015381620f2a4efeb33310e9b8fec40dbf71c3683164806b4f92000f786c18f'
   'c8655bcb535fac75689bf64434d03b4f0365f33d4d2d23b2a62e6a9b2da45fba'
+  '2819b3c6a29f00be525dde989c536e141a26bfa9c6d9b6aa4cbb62b3252ce2db'
   'a696b9d12ad498c4f33d1f7a7c95e85b079b1b29f905041462b2e80333c92dd7'
 )
 
@@ -134,6 +136,10 @@ package() {
   install -Dm644 "${srcdir}/systemd-tmpfile.conf" \
     "${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
 
+  # systemd sysusers.d
+  install -Dm644 "${srcdir}/systemd-sysuser.conf" \
+    "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
+
   # systemd units and target
   mkdir -p "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants"
   mkdir "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants"
@@ -153,10 +159,8 @@ package() {
 
 postinst__apt() {
   # start Proxy consul registration
-  getent group 'carbonio-proxy' >/dev/null \
-    || groupadd -r 'carbonio-proxy'
-  getent passwd 'carbonio-proxy' >/dev/null \
-    || useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+  # Create users and groups via systemd-sysusers
+  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf
 
   mkdir -p '/etc/carbonio/proxy/service-discover/'
   chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
@@ -176,10 +180,6 @@ postinst__apt() {
   # end Proxy consul registration
 
   # start ClamAV signature provider consul registration
-  getent group 'carbonio-clamav-sig-provider' >/dev/null \
-    || groupadd -r 'carbonio-clamav-sig-provider'
-  getent passwd 'carbonio-clamav-sig-provider' >/dev/null \
-    || useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -196,10 +196,8 @@ postinst__apt() {
 
 postinst__ubuntu_noble() {
   # start Proxy consul registration
-  getent group 'carbonio-proxy' >/dev/null \
-    || groupadd -r 'carbonio-proxy'
-  getent passwd 'carbonio-proxy' >/dev/null \
-    || useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+  # Create users and groups via systemd-sysusers
+  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf
 
   mkdir -p '/etc/carbonio/proxy/service-discover/'
   chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
@@ -219,10 +217,6 @@ postinst__ubuntu_noble() {
   # end Proxy consul registration
 
   # start ClamAV signature provider consul registration
-  getent group 'carbonio-clamav-sig-provider' >/dev/null \
-    || groupadd -r 'carbonio-clamav-sig-provider'
-  getent passwd 'carbonio-clamav-sig-provider' >/dev/null \
-    || useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -240,10 +234,8 @@ postinst__ubuntu_noble() {
 
 postinst__rocky_8() {
   # start Proxy consul registration
-  getent group 'carbonio-proxy' >/dev/null \
-    || groupadd -r 'carbonio-proxy'
-  getent passwd 'carbonio-proxy' >/dev/null \
-    || useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+  # Create users and groups via systemd-sysusers
+  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf
 
   mkdir -p '/etc/carbonio/proxy/service-discover/'
   chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
@@ -263,10 +255,6 @@ postinst__rocky_8() {
   # end Proxy consul registration
 
   # start ClamAV signature provider consul registration
-  getent group 'carbonio-clamav-sig-provider' >/dev/null \
-    || groupadd -r 'carbonio-clamav-sig-provider'
-  getent passwd 'carbonio-clamav-sig-provider' >/dev/null \
-    || useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -283,10 +271,8 @@ postinst__rocky_8() {
 
 postinst__rocky_9() {
   # start Proxy consul registration
-  getent group 'carbonio-proxy' >/dev/null \
-    || groupadd -r 'carbonio-proxy'
-  getent passwd 'carbonio-proxy' >/dev/null \
-    || useradd -r -M -g 'carbonio-proxy' -s /sbin/nologin 'carbonio-proxy'
+  # Create users and groups via systemd-sysusers
+  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf
 
   mkdir -p '/etc/carbonio/proxy/service-discover/'
   chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
@@ -312,10 +298,6 @@ postinst__rocky_9() {
   # end Proxy consul registration
 
   # start ClamAV signature provider consul registration
-  getent group 'carbonio-clamav-sig-provider' >/dev/null \
-    || groupadd -r 'carbonio-clamav-sig-provider'
-  getent passwd 'carbonio-clamav-sig-provider' >/dev/null \
-    || useradd -r -M -g 'carbonio-clamav-sig-provider' -s /sbin/nologin 'carbonio-clamav-sig-provider'
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
