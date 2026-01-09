@@ -65,7 +65,7 @@ sha256sums=(
   'a015381620f2a4efeb33310e9b8fec40dbf71c3683164806b4f92000f786c18f'
   'c8655bcb535fac75689bf64434d03b4f0365f33d4d2d23b2a62e6a9b2da45fba'
   '2819b3c6a29f00be525dde989c536e141a26bfa9c6d9b6aa4cbb62b3252ce2db'
-  'a696b9d12ad498c4f33d1f7a7c95e85b079b1b29f905041462b2e80333c92dd7'
+  '3db7ac60237b16fc8d3cc2cb4ad03e481dd22cdaf4020a58f2f91d8586c6c549'
 )
 
 package() {
@@ -160,18 +160,14 @@ package() {
 postinst__apt() {
   # start Proxy consul registration
   # Create users and groups via systemd-sysusers
-  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf
+  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf >/dev/null 2>&1 || :
+  # Create directories and set ownership via tmpfiles.d
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf >/dev/null 2>&1 || :
 
-  mkdir -p '/etc/carbonio/proxy/service-discover/'
-  chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
-
-  chown -R zextras:zextras /opt/zextras/conf/nginx
+  # Note: chmod resets capabilities, so setcap must run after chmod
   chown root:zextras /opt/zextras/common/sbin/nginx
   chmod 750 /opt/zextras/common/sbin/nginx
-
   setcap CAP_NET_BIND_SERVICE=+ep /opt/zextras/common/sbin/nginx
-
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf
 
   echo "======================================================"
   echo "Carbonio Proxy installed successfully!"
@@ -197,18 +193,14 @@ postinst__apt() {
 postinst__ubuntu_noble() {
   # start Proxy consul registration
   # Create users and groups via systemd-sysusers
-  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf
+  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf >/dev/null 2>&1 || :
+  # Create directories and set ownership via tmpfiles.d
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf >/dev/null 2>&1 || :
 
-  mkdir -p '/etc/carbonio/proxy/service-discover/'
-  chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
-
-  chown -R zextras:zextras /opt/zextras/conf/nginx
+  # Note: chmod resets capabilities, so setcap must run after chmod
   chown root:zextras /opt/zextras/common/sbin/nginx
   chmod 750 /opt/zextras/common/sbin/nginx
-
   setcap CAP_NET_BIND_SERVICE=+ep /opt/zextras/common/sbin/nginx
-
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf
 
   echo "======================================================"
   echo "Carbonio Proxy installed successfully!"
@@ -235,18 +227,14 @@ postinst__ubuntu_noble() {
 postinst__rocky_8() {
   # start Proxy consul registration
   # Create users and groups via systemd-sysusers
-  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf
+  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf >/dev/null 2>&1 || :
+  # Create directories and set ownership via tmpfiles.d
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf >/dev/null 2>&1 || :
 
-  mkdir -p '/etc/carbonio/proxy/service-discover/'
-  chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
-
-  chown -R zextras:zextras /opt/zextras/conf/nginx
+  # Note: chmod resets capabilities, so setcap must run after chmod
   chown root:zextras /opt/zextras/common/sbin/nginx
   chmod 750 /opt/zextras/common/sbin/nginx
-
   setcap CAP_NET_BIND_SERVICE=+ep /opt/zextras/common/sbin/nginx
-
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf
 
   echo "======================================================"
   echo "Carbonio Proxy installed successfully!"
@@ -272,10 +260,9 @@ postinst__rocky_8() {
 postinst__rocky_9() {
   # start Proxy consul registration
   # Create users and groups via systemd-sysusers
-  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf
-
-  mkdir -p '/etc/carbonio/proxy/service-discover/'
-  chown 'carbonio-proxy:carbonio-proxy' '/etc/carbonio/proxy/service-discover/'
+  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf >/dev/null 2>&1 || :
+  # Create directories and set ownership via tmpfiles.d
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf >/dev/null 2>&1 || :
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -283,13 +270,10 @@ postinst__rocky_9() {
     systemctl enable carbonio-proxy-sidecar.service &>/dev/null || :
   fi
 
-  chown -R zextras:zextras /opt/zextras/conf/nginx
+  # Note: chmod resets capabilities, so setcap must run after chmod
   chown root:zextras /opt/zextras/common/sbin/nginx
   chmod 750 /opt/zextras/common/sbin/nginx
-
   setcap CAP_NET_BIND_SERVICE=+ep /opt/zextras/common/sbin/nginx
-
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf
 
   echo "======================================================"
   echo "Carbonio Proxy installed successfully!"
