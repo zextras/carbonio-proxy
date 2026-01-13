@@ -48,7 +48,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                container('jdk-17') {
+                container('jdk-21') {
                     sh """
                         mvn ${MVN_OPTS} \
                             -DskipTests=true \
@@ -70,7 +70,7 @@ pipeline {
 
         stage('Tests') {
             steps {
-                container('jdk-17') {
+                container('jdk-21') {
                     sh "mvn ${MVN_OPTS} verify"
                 }
                 junit allowEmptyResults: true,
