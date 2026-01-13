@@ -60,14 +60,14 @@
         <version>5.12.0</version>
       </dependency>
       <dependency>
-        <groupId>zextras</groupId>
+        <groupId>com.zextras</groupId>
         <artifactId>zm-mailbox</artifactId>
         <version>${mailbox.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>zextras</groupId>
+        <groupId>com.zextras</groupId>
         <artifactId>zm-store</artifactId>
         <version>${mailbox.version}</version>
         <classifier>tests</classifier>
@@ -116,15 +116,15 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>zextras</groupId>
+      <groupId>com.zextras</groupId>
       <artifactId>zm-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>zextras</groupId>
+      <groupId>com.zextras</groupId>
       <artifactId>zm-store</artifactId>
     </dependency>
     <dependency>
-      <groupId>zextras</groupId>
+      <groupId>com.zextras</groupId>
       <artifactId>zm-store</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -350,6 +350,6 @@
     <ldap.dir>${project.basedir}/src/ldap</ldap.dir>
     <ldap.generated.dir>${ldap.dir}/generated</ldap.generated.dir>
     <ldap.config.dir>${ldap.dir}/config</ldap.config.dir>
-    <mailbox.version>25.12.0-SNAPSHOT</mailbox.version>
+    <mailbox.version>4.23.5-SNAPSHOT</mailbox.version>
   </properties>
 </project>
