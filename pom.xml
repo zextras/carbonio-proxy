@@ -146,8 +146,13 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>${sonar.version}</version>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
           <version>3.14.1</version>
         </plugin>
         <!-- Testing -->
@@ -351,5 +356,6 @@
     <ldap.generated.dir>${ldap.dir}/generated</ldap.generated.dir>
     <ldap.config.dir>${ldap.dir}/config</ldap.config.dir>
     <mailbox.version>4.23.5-SNAPSHOT</mailbox.version>
+    <sonar.version>5.5.0.6356</sonar.version>
   </properties>
 </project>
