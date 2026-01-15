@@ -58,15 +58,6 @@ pipeline {
                 }
             }
         }
-        stage('Docker build') {
-            steps {
-                container('dind') {
-                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
-                        sh 'docker build .'
-                    }
-                }
-            }
-        }
 
         stage('Tests') {
             steps {
@@ -75,6 +66,30 @@ pipeline {
                 }
                 junit allowEmptyResults: true,
                         testResults: '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
+            }
+        }
+
+        stage('Sonarqube Analysis') {
+            steps {
+                container('jdk-21') {
+                    withSonarQubeEnv(credentialsId: 'sonarqube-user-token', installationName: 'SonarQube instance') {
+                        sh """
+                            mvn ${MVN_OPTS} \
+                                sonar:sonar \
+                                -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Docker build') {
+            steps {
+                container('dind') {
+                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
+                        sh 'docker build .'
+                    }
+                }
             }
         }
 
