@@ -350,6 +350,6 @@
     <ldap.dir>${project.basedir}/src/ldap</ldap.dir>
     <ldap.generated.dir>${ldap.dir}/generated</ldap.generated.dir>
     <ldap.config.dir>${ldap.dir}/config</ldap.config.dir>
-    <mailbox.version>25.12.0-SNAPSHOT</mailbox.version>
+    <mailbox.version>25.12.0</mailbox.version>
   </properties>
 </project>
