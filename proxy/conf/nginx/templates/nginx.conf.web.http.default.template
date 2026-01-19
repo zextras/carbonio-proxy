@@ -4,9 +4,9 @@ ${web.strict.servername}# Strict servername enforcing block
 ${web.strict.servername}# Enabled/disabled through the 'zimbraReverseProxyStrictServerName' configuration item
 ${web.strict.servername}# The $\{listen.:addresses\} is NOT demarcated with web.strict.servername on purpose.
 ${web.strict.servername}server {
-${web.strict.servername}    ${core.ipboth.enabled}listen                  [::]:${web.http.port} default_server ipv6only=off;
-${web.strict.servername}    ${core.ipv4only.enabled}listen                ${web.http.port} default_server ;
-${web.strict.servername}    ${core.ipv6only.enabled}listen                [::]:${web.http.port} default_server ;
+${web.strict.servername}    ${core.ipboth.enabled}listen                  [::]:${web.http.port} default_server ipv6only=off so_keepalive=on;
+${web.strict.servername}    ${core.ipv4only.enabled}listen                ${web.http.port} default_server so_keepalive=on;
+${web.strict.servername}    ${core.ipv6only.enabled}listen                [::]:${web.http.port} default_server so_keepalive=on;
 ${web.strict.servername}    server_name _;
 ${web.strict.servername}
 ${web.strict.servername}    # Listen addresses extracted from `zimbraVirtualIPAddress` on each domain
@@ -25,10 +25,10 @@ server
 {
     server_name             ${web.server_name.default}; # add aliases and perhaps public
 
-    ${core.ipboth.enabled}listen                  ${web.http.port} default_server ;
-    ${core.ipboth.enabled}listen                  [::]:${web.http.port} default_server ;
-    ${core.ipv4only.enabled}listen                ${web.http.port} default_server ;
-    ${core.ipv6only.enabled}listen                [::]:${web.http.port} default_server ;
+    ${core.ipboth.enabled}listen                  ${web.http.port} default_server so_keepalive=on;
+    ${core.ipboth.enabled}listen                  [::]:${web.http.port} default_server so_keepalive=on;
+    ${core.ipv4only.enabled}listen                ${web.http.port} default_server so_keepalive=on;
+    ${core.ipv6only.enabled}listen                [::]:${web.http.port} default_server so_keepalive=on;
 
 
     # no maximum limit imposed on the size of the request body
@@ -77,14 +77,14 @@ server
 
     location ~/logout
     {
-        add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-        add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-        add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-        add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-        add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-        add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-        add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-        add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+        add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+        add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+        add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+        add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+        add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+        add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+        add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+        add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
         ${web.carbonio.webui.logout.redirect.default};
     }
 
@@ -140,6 +140,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://files/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/chats/events
@@ -158,6 +159,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://ws-collaboration/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/messaging/ws-xmpp
@@ -176,6 +178,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://docs-connector/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/docs/editor/
@@ -194,6 +197,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://tasks/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/storages/
@@ -201,6 +205,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://carbonio-storages/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/catalog/
@@ -208,6 +213,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://carbonio-catalog/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/mobile/tokens
@@ -215,6 +221,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://carbonio-notification-push/tokens;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/certificate-manager/
@@ -222,6 +229,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://carbonio-certificate-manager/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location ^~ /zx/login/
@@ -231,6 +239,7 @@ server
         proxy_set_header X-Forwarded-Port $server_port;
         proxy_set_header Host $http_host;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
         proxy_pass http://carbonio-auth/zx/login/;
     }
 
@@ -241,6 +250,7 @@ server
         proxy_set_header X-Forwarded-Port $server_port;
         proxy_set_header Host $http_host;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
         proxy_pass http://carbonio-auth/zx/auth/;
     }
 
@@ -271,14 +281,14 @@ server
         # Defaults to /static/login/
         # Marked for removal: will be removed in 23.10.0 and logout will be handled at ~/logout
         if ($query_string ~ loginOp=logout) {
-            add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
-            add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
+            add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+            add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+            add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+            add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+            add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+            add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+            add_header Set-Cookie "Y=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
+            add_header Set-Cookie "ADMIN_AUTH_KEY=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
             ${web.carbonio.webui.logout.redirect.default};
         }
 

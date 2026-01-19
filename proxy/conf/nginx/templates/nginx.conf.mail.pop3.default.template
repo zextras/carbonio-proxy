@@ -2,9 +2,9 @@
 #
 server
 {
-    ${core.ipboth.enabled}listen                  [::]:${mail.pop3.port};
-    ${core.ipv4only.enabled}listen                ${mail.pop3.port};
-    ${core.ipv6only.enabled}listen                [::]:${mail.pop3.port};
+    ${core.ipboth.enabled}listen                  [::]:${mail.pop3.port} so_keepalive=on;
+    ${core.ipv4only.enabled}listen                ${mail.pop3.port} so_keepalive=on;
+    ${core.ipv6only.enabled}listen                [::]:${mail.pop3.port} so_keepalive=on;
     ${web.ssl.dhparam.enabled}ssl_dhparam         ${web.ssl.dhparam.file};
     protocol                pop3;
     proxy                   on;

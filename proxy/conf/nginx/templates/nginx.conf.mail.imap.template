@@ -4,9 +4,9 @@
 server
 {
     server_name             ${vhn};
-    ${core.ipboth.enabled}listen                  ${vip}${mail.imap.port};
-    ${core.ipv4only.enabled}listen                  ${vip}${mail.imap.port};
-    ${core.ipv6only.enabled}listen                  ${vip}${mail.imap.port};
+    ${core.ipboth.enabled}listen                  ${vip}${mail.imap.port} so_keepalive=on;
+    ${core.ipv4only.enabled}listen                  ${vip}${mail.imap.port} so_keepalive=on;
+    ${core.ipv6only.enabled}listen                  ${vip}${mail.imap.port} so_keepalive=on;
     protocol                imap;
     proxy                   on;
     timeout                 ${mail.imap.timeout};

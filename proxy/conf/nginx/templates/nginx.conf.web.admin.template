@@ -5,9 +5,9 @@ server
 {
     server_name             ${vhn};
 
-    ${core.ipboth.enabled}listen                    ${vip}${web.admin.port} ssl;
-    ${core.ipv4only.enabled}listen                  ${vip}${web.admin.port} ssl;
-    ${core.ipv6only.enabled}listen                  ${vip}${web.admin.port} ssl;
+    ${core.ipboth.enabled}listen                    ${vip}${web.admin.port} ssl so_keepalive=on;
+    ${core.ipv4only.enabled}listen                  ${vip}${web.admin.port} ssl so_keepalive=on;
+    ${core.ipv6only.enabled}listen                  ${vip}${web.admin.port} ssl so_keepalive=on;
 
     ssl_protocols           ${web.ssl.protocols};
     ssl_prefer_server_ciphers ${web.ssl.preferserverciphers};
