@@ -140,6 +140,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://files/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/chats/events
@@ -158,6 +159,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://ws-collaboration/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/messaging/ws-xmpp
@@ -176,6 +178,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://docs-connector/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/docs/editor/
@@ -194,6 +197,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://tasks/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/storages/
@@ -201,6 +205,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://carbonio-storages/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/catalog/
@@ -208,6 +213,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://carbonio-catalog/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/mobile/tokens
@@ -215,6 +221,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://carbonio-notification-push/tokens;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/certificate-manager/
@@ -222,6 +229,7 @@ server
         proxy_request_buffering off;
         proxy_pass http://carbonio-certificate-manager/;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location ^~ /zx/login/
@@ -231,6 +239,7 @@ server
         proxy_set_header X-Forwarded-Port $server_port;
         proxy_set_header Host $http_host;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
         proxy_pass http://carbonio-auth/zx/login/;
     }
 
@@ -241,6 +250,7 @@ server
         proxy_set_header X-Forwarded-Port $server_port;
         proxy_set_header Host $http_host;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
         proxy_pass http://carbonio-auth/zx/auth/;
     }
 
