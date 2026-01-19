@@ -11,9 +11,9 @@ server
 {
     server_name             ${vhn};
 
-    ${core.ipboth.enabled}listen                  ${vip}${web.http.port} ;
-    ${core.ipv4only.enabled}listen                  ${vip}${web.http.port} ;
-    ${core.ipv6only.enabled}listen                  ${vip}${web.http.port} ;
+    ${core.ipboth.enabled}listen                  ${vip}${web.http.port} so_keepalive=on;
+    ${core.ipv4only.enabled}listen                  ${vip}${web.http.port} so_keepalive=on;
+    ${core.ipv6only.enabled}listen                  ${vip}${web.http.port} so_keepalive=on;
 
 
     # no maximum limit imposed on the size of the request body

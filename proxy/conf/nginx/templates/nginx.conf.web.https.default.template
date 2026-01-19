@@ -4,9 +4,9 @@ ${web.strict.servername}# Strict servername enforcing block
 ${web.strict.servername}# Enabled/disabled through the 'zimbraReverseProxyStrictServerName' configuration item
 ${web.strict.servername}# The $\{listen.:addresses\} is NOT demarcated with web.strict.servername on purpose.
 ${web.strict.servername}server {
-${web.strict.servername}    ${core.ipboth.enabled}listen                  [::]:${web.https.port} default_server ipv6only=off ssl;
-${web.strict.servername}    ${core.ipv4only.enabled}listen                ${web.https.port} default_server ssl;
-${web.strict.servername}    ${core.ipv6only.enabled}listen                [::]:${web.https.port} default_server ssl;
+${web.strict.servername}    ${core.ipboth.enabled}listen                  [::]:${web.https.port} default_server ipv6only=off ssl so_keepalive=on;
+${web.strict.servername}    ${core.ipv4only.enabled}listen                ${web.https.port} default_server ssl so_keepalive=on;
+${web.strict.servername}    ${core.ipv6only.enabled}listen                [::]:${web.https.port} default_server ssl so_keepalive=on;
 ${web.strict.servername}    server_name _;
 ${web.strict.servername}
 ${web.strict.servername}    # Listen addresses extracted from `zimbraVirtualIPAddress` on each domain
@@ -36,10 +36,10 @@ server
 {
     server_name             ${web.server_name.default}; # add aliases and perhaps public
 
-    ${core.ipboth.enabled}listen                  ${web.https.port} default_server ssl;
-    ${core.ipboth.enabled}listen                  [::]:${web.https.port} default_server ssl;
-    ${core.ipv4only.enabled}listen                ${web.https.port} default_server ssl;
-    ${core.ipv6only.enabled}listen                [::]:${web.https.port} default_server ssl;
+    ${core.ipboth.enabled}listen                  ${web.https.port} default_server ssl so_keepalive=on;
+    ${core.ipboth.enabled}listen                  [::]:${web.https.port} default_server ssl so_keepalive=on;
+    ${core.ipv4only.enabled}listen                ${web.https.port} default_server ssl so_keepalive=on;
+    ${core.ipv6only.enabled}listen                [::]:${web.https.port} default_server ssl so_keepalive=on;
     http2 on;
 
     ssl_protocols           ${web.ssl.protocols};

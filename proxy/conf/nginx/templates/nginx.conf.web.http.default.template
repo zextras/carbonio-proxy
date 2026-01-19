@@ -4,9 +4,9 @@ ${web.strict.servername}# Strict servername enforcing block
 ${web.strict.servername}# Enabled/disabled through the 'zimbraReverseProxyStrictServerName' configuration item
 ${web.strict.servername}# The $\{listen.:addresses\} is NOT demarcated with web.strict.servername on purpose.
 ${web.strict.servername}server {
-${web.strict.servername}    ${core.ipboth.enabled}listen                  [::]:${web.http.port} default_server ipv6only=off;
-${web.strict.servername}    ${core.ipv4only.enabled}listen                ${web.http.port} default_server ;
-${web.strict.servername}    ${core.ipv6only.enabled}listen                [::]:${web.http.port} default_server ;
+${web.strict.servername}    ${core.ipboth.enabled}listen                  [::]:${web.http.port} default_server ipv6only=off so_keepalive=on;
+${web.strict.servername}    ${core.ipv4only.enabled}listen                ${web.http.port} default_server so_keepalive=on;
+${web.strict.servername}    ${core.ipv6only.enabled}listen                [::]:${web.http.port} default_server so_keepalive=on;
 ${web.strict.servername}    server_name _;
 ${web.strict.servername}
 ${web.strict.servername}    # Listen addresses extracted from `zimbraVirtualIPAddress` on each domain
@@ -25,10 +25,10 @@ server
 {
     server_name             ${web.server_name.default}; # add aliases and perhaps public
 
-    ${core.ipboth.enabled}listen                  ${web.http.port} default_server ;
-    ${core.ipboth.enabled}listen                  [::]:${web.http.port} default_server ;
-    ${core.ipv4only.enabled}listen                ${web.http.port} default_server ;
-    ${core.ipv6only.enabled}listen                [::]:${web.http.port} default_server ;
+    ${core.ipboth.enabled}listen                  ${web.http.port} default_server so_keepalive=on;
+    ${core.ipboth.enabled}listen                  [::]:${web.http.port} default_server so_keepalive=on;
+    ${core.ipv4only.enabled}listen                ${web.http.port} default_server so_keepalive=on;
+    ${core.ipv6only.enabled}listen                [::]:${web.http.port} default_server so_keepalive=on;
 
 
     # no maximum limit imposed on the size of the request body
