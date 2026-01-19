@@ -15,6 +15,7 @@ url="https://github.com/zextras"
 section="mail"
 priority="optional"
 depends__apt=(
+  "carbonio-catalog"
   "carbonio-certbot"
   "carbonio-core"
   "carbonio-memcached"
@@ -23,6 +24,7 @@ depends__apt=(
   "sqlite3"
 )
 depends__yum=(
+  "carbonio-catalog"
   "carbonio-certbot"
   "carbonio-core"
   "carbonio-memcached"
