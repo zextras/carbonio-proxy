@@ -33,6 +33,7 @@ source=(
   "311-${pkgname}-setup.sh"
   "${pkgname}-sidecar.service"
   "${pkgname}.hcl"
+  "${pkgname}.slice"
   "${pkgname}.target"
   "${pkgname}.sh"
   "carbonio-clamav-signature-provider-sidecar.service"
@@ -50,11 +51,12 @@ source=(
 sha256sums=(
   'cbd42efea9c34bd8cd661a7f9a4902ee86a3ba2b07db5c2be07dc36ab894df7a'
   'bb536a6e911924cde7438acdfaffaf88efcc070089319bad5dc9c68f5e7a33e3'
-  '7fd2ca93d1c12f23a3fde073fa0f709004a68451625b1fcd50ba75fbf0e0e270'
+  '4a57b91e35ae5e130909514544ace070195c8cb390a533d789a3c168d59ca2d6'
   'd503d1f4b4d966999a546b00523a746ba2277495a840135e1878f7855c00114f'
+  '6dcc4241831a097f48ef834e40ea6acdecccaf4dcc874125fab83ec3547cbfda'
   '7e5765f837ccbde44c598c80be3576bea469d041b318ed558a67e7d1c15d9948'
   '98e5fccf13b8ca8691c19495e5e496d1daa24a5962178e3f7b86706507c56e55'
-  '6784bc6fb696c968808745abe3387d434e70ff48235b861516eb196d06473990'
+  'fe853cbaecd68a776d1b5a9da0f8c7be7663e0e43f88fb5c01d9580c1adf1fa7'
   'e31069c73e7326c68188381fd485866c8d083466a576ee9141b9fdbefbb2c157'
   '9cb0f1b78f9a93dc8c05d7dc3db1514ef9af5a4f165416a497b543a3d620438d'
   '5b9d7a1598959eec4d81994d8a3d9c912d77f0b75de84529d3b65a19ee13c724'
@@ -141,6 +143,8 @@ package() {
   # systemd units and target
   mkdir -p "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants"
   mkdir "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants"
+  install -Dm 644 "${pkgname}.slice" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.slice"
   install -Dm 644 "${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target"
   ln -sf "/usr/lib/systemd/system/${pkgname}.target" \
