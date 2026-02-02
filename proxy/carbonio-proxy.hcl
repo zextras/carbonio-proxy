@@ -77,7 +77,12 @@ services {
             destination_name   = "carbonio-advanced"
             local_bind_port    = 20013
             local_bind_address = "127.78.0.1"
-          }
+          },
+          {
+            destination_name   = "carbonio-memcached"
+            local_bind_port    = 20014
+            local_bind_address = "127.78.0.1"
+          },
         ]
       }
     }

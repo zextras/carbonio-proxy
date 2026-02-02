@@ -1,4 +1,4 @@
-  ${upstream.fair.shm.size}
+    ${upstream.fair.shm.size}
 
     # Define whether nginx will match exact server version against the
     # version received in the client request. Defaults to 'on'
@@ -111,67 +111,56 @@
 
 
     upstream files
-        {
-            server 127.78.0.1:20000 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20000 fail_timeout=10s;
+    }
 
     upstream ws-collaboration
-        {
-            server 127.78.0.1:20001 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20001 fail_timeout=10s;
+    }
 
     upstream docs-connector
-        {
-            server 127.78.0.1:20002 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20002 fail_timeout=10s;
+    }
 
     upstream docs-editor
-        {
-            server 127.78.0.1:20003 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20003 fail_timeout=10s;
+    }
 
     upstream message-dispatcher-http
-        {
-            server 127.78.0.1:20004 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20004 fail_timeout=10s;
+    }
 
     upstream tasks
-        {
-            server 127.78.0.1:20007 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20007 fail_timeout=10s;
+    }
 
     upstream carbonio-auth
-        {
-            server 127.78.0.1:20008 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20008 fail_timeout=10s;
+    }
 
     upstream carbonio-storages
-        {
-            server 127.78.0.1:20009 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20009 fail_timeout=10s;
+    }
 
     upstream carbonio-notification-push
-        {
-            server 127.78.0.1:20010 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20010 fail_timeout=10s;
+    }
 
     upstream carbonio-certificate-manager
-        {
-            server 127.78.0.1:20011 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20011 fail_timeout=10s;
+    }
 
     upstream carbonio-catalog
-        {
-            server 127.78.0.1:20012 fail_timeout=10s;
-            keepalive 32;
-        }
+    {
+        server 127.78.0.1:20012 fail_timeout=10s;
+    }

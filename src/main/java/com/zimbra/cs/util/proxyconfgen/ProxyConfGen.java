@@ -1013,7 +1013,6 @@ public class ProxyConfGen {
             ProxyConfValueType.STRING,
             ProxyConfOverride.LOCALCONFIG,
             "Path to kerberos keytab file used for GSSAPI authentication"));
-    mConfVars.put("memcache.:servers", new MemcacheServersVar());
     mConfVars.put(
         "memcache.timeout",
         new ProxyConfVar(
