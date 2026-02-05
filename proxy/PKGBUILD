@@ -32,10 +32,12 @@ source=(
   "211-carbonio-clamav-signature-provider-setup.sh"
   "311-${pkgname}-setup.sh"
   "${pkgname}-sidecar.service"
+  "${pkgname}-sidecar-legacy.service"
   "${pkgname}.hcl"
   "${pkgname}.target"
   "${pkgname}.sh"
   "carbonio-clamav-signature-provider-sidecar.service"
+  "carbonio-clamav-signature-provider-sidecar-legacy.service"
   "carbonio-clamav-signature-provider.hcl"
   "carbonio-clamav-signature-provider"
   "intentions-clamav-signature-provider.json"
@@ -50,11 +52,13 @@ source=(
 sha256sums=(
   'cbd42efea9c34bd8cd661a7f9a4902ee86a3ba2b07db5c2be07dc36ab894df7a'
   'bb536a6e911924cde7438acdfaffaf88efcc070089319bad5dc9c68f5e7a33e3'
-  '7fd2ca93d1c12f23a3fde073fa0f709004a68451625b1fcd50ba75fbf0e0e270'
+  'e7823ac7925801b9d8f58c30e9767a1f76187216412a04b249ce19c9f168aef1'
+  '54d1260932b8113d3ac13a7a2002b126398b1c971ef08025417bc0ad2a6933c7'
   'd503d1f4b4d966999a546b00523a746ba2277495a840135e1878f7855c00114f'
   '7e5765f837ccbde44c598c80be3576bea469d041b318ed558a67e7d1c15d9948'
   '98e5fccf13b8ca8691c19495e5e496d1daa24a5962178e3f7b86706507c56e55'
-  '6784bc6fb696c968808745abe3387d434e70ff48235b861516eb196d06473990'
+  'c420b181199c739d540ed967ead2c2978488523c25c8e90d1f91213939e1edd3'
+  '9e6d5473036305706c9b25a7c13d690caf56ea83755dca007f9414edbc657c6c'
   'e31069c73e7326c68188381fd485866c8d083466a576ee9141b9fdbefbb2c157'
   '9cb0f1b78f9a93dc8c05d7dc3db1514ef9af5a4f165416a497b543a3d620438d'
   '5b9d7a1598959eec4d81994d8a3d9c912d77f0b75de84529d3b65a19ee13c724'
@@ -66,8 +70,7 @@ sha256sums=(
   'cb0d5c96f4d9488f84df1f15c193d90f2513432c78dbfd5b49ef27438a5f7cec'
 )
 
-package() {
-
+_package() {
   cd "$(dirname "$(find / -name "yap.json" -print -quit)")"
 
   install -D target/proxyconfgen.jar \
@@ -77,9 +80,6 @@ package() {
   # start install proxy service registration files for consul
   install -Dm755 "${pkgname}.sh" \
     "${pkgdir}/usr/bin/${pkgname}"
-
-  install -Dm644 "${pkgname}-sidecar.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
 
   install -Dm644 "policies-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/policies.json"
@@ -97,9 +97,6 @@ package() {
   # start install clamav-signature-provider service registration files for consul
   install -Dm755 "carbonio-clamav-signature-provider" \
     "${pkgdir}/usr/bin/carbonio-clamav-signature-provider"
-
-  install -Dm644 "carbonio-clamav-signature-provider-sidecar.service" \
-    "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 
   install -Dm644 "policies-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/policies.json"
@@ -137,26 +134,18 @@ package() {
   # systemd sysusers.d
   install -Dm644 "${srcdir}/systemd-sysuser.conf" \
     "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
+}
 
+_package_systemd() {
   # systemd units and target
   mkdir -p "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants"
-  mkdir "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants"
   install -Dm 644 "${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target"
   ln -sf "/usr/lib/systemd/system/${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants/${pkgname}.target"
-  ln -sf "/usr/lib/systemd/system/carbonio-configd.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-configd.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-memcached.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-memcached.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-nginx.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-nginx.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-stats.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-stats.service"
 }
 
-postinst__apt() {
-  # start Proxy consul registration
+_postinst() {
   # Create users and groups via systemd-sysusers
   systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf >/dev/null 2>&1 || :
   # Create directories and set ownership via tmpfiles.d
@@ -171,160 +160,129 @@ postinst__apt() {
   echo "Carbonio Proxy installed successfully!"
   echo "You must run pending-setups to configure it correctly."
   echo "======================================================"
-  # end Proxy consul registration
-
-  # start ClamAV signature provider consul registration
-
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload &>/dev/null || :
-    systemctl enable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
-    systemctl enable carbonio-proxy-sidecar.service &>/dev/null || :
-  fi
 
   echo "======================================================"
   echo "Carbonio ClamAV signature provider installed successfully!"
   echo "You must run pending-setups to configure it correctly."
   echo "======================================================"
-  # end ClamAV signature provider consul registration
 }
 
-postinst__ubuntu_noble() {
-  # start Proxy consul registration
-  # Create users and groups via systemd-sysusers
-  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf >/dev/null 2>&1 || :
-  # Create directories and set ownership via tmpfiles.d
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf >/dev/null 2>&1 || :
+_postinst_legacy() {
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload &>/dev/null || :
+    systemctl enable carbonio-proxy-sidecar.service &>/dev/null || :
+    systemctl enable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+  fi
+}
 
-  # Note: chmod resets capabilities, so setcap must run after chmod
-  chown root:zextras /opt/zextras/common/sbin/nginx
-  chmod 750 /opt/zextras/common/sbin/nginx
-  setcap CAP_NET_BIND_SERVICE=+ep /opt/zextras/common/sbin/nginx
-
-  echo "======================================================"
-  echo "Carbonio Proxy installed successfully!"
-  echo "You must run pending-setups to configure it correctly."
-  echo "======================================================"
-  # end Proxy consul registration
-
-  # start ClamAV signature provider consul registration
-
+_postinst_systemd() {
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
     systemctl enable carbonio-proxy.target &>/dev/null || :
     systemctl enable carbonio-proxy-sidecar.service &>/dev/null || :
     systemctl enable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
   fi
+}
 
-  echo "======================================================"
-  echo "Carbonio ClamAV signature provider installed successfully!"
-  echo "You must run pending-setups to configure it correctly."
-  echo "======================================================"
-  # end ClamAV signature provider consul registration
+_prerm_legacy() {
+  if [ -d /run/systemd/system ]; then
+    systemctl --no-reload disable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+    systemctl --no-reload disable carbonio-proxy-sidecar.service &>/dev/null || :
+    systemctl stop carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+    systemctl stop carbonio-proxy-sidecar.service &>/dev/null || :
+  fi
+}
+
+_prerm_systemd() {
+  if [ -d /run/systemd/system ]; then
+    systemctl --no-reload disable --now carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
+    systemctl --no-reload disable --now carbonio-proxy.target &>/dev/null || :
+    systemctl --no-reload disable --now carbonio-proxy-sidecar.service &>/dev/null || :
+  fi
+}
+
+package() {
+  _package
+  _package_systemd
+
+  install -Dm644 "${srcdir}/../${pkgname}-sidecar.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
+  install -Dm644 "${srcdir}/../carbonio-clamav-signature-provider-sidecar.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
+}
+
+package__rocky_8() {
+  _package
+
+  install -Dm644 "${srcdir}/../${pkgname}-sidecar-legacy.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
+  install -Dm644 "${srcdir}/../carbonio-clamav-signature-provider-sidecar-legacy.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
+}
+
+package__rocky_9() {
+  _package
+  _package_systemd
+
+  install -Dm644 "${srcdir}/../${pkgname}-sidecar.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
+  install -Dm644 "${srcdir}/../carbonio-clamav-signature-provider-sidecar.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
+}
+
+package__ubuntu_jammy() {
+  _package
+
+  install -Dm644 "${srcdir}/../${pkgname}-sidecar-legacy.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
+  install -Dm644 "${srcdir}/../carbonio-clamav-signature-provider-sidecar-legacy.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
+}
+
+package__ubuntu_noble() {
+  _package
+  _package_systemd
+
+  install -Dm644 "${srcdir}/../${pkgname}-sidecar.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
+  install -Dm644 "${srcdir}/../carbonio-clamav-signature-provider-sidecar.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 }
 
 postinst__rocky_8() {
-  # start Proxy consul registration
-  # Create users and groups via systemd-sysusers
-  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf >/dev/null 2>&1 || :
-  # Create directories and set ownership via tmpfiles.d
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf >/dev/null 2>&1 || :
-
-  # Note: chmod resets capabilities, so setcap must run after chmod
-  chown root:zextras /opt/zextras/common/sbin/nginx
-  chmod 750 /opt/zextras/common/sbin/nginx
-  setcap CAP_NET_BIND_SERVICE=+ep /opt/zextras/common/sbin/nginx
-
-  echo "======================================================"
-  echo "Carbonio Proxy installed successfully!"
-  echo "You must run pending-setups to configure it correctly."
-  echo "======================================================"
-  # end Proxy consul registration
-
-  # start ClamAV signature provider consul registration
-
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload &>/dev/null || :
-    systemctl enable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
-    systemctl enable carbonio-proxy-sidecar.service &>/dev/null || :
-  fi
-
-  echo "======================================================"
-  echo "Carbonio ClamAV signature provider installed successfully!"
-  echo "You must run pending-setups to configure it correctly."
-  echo "======================================================"
-  # end ClamAV signature provider consul registration
+  _postinst
+  _postinst_legacy
 }
 
 postinst__rocky_9() {
-  # start Proxy consul registration
-  # Create users and groups via systemd-sysusers
-  systemd-sysusers /usr/lib/sysusers.d/carbonio-proxy.conf >/dev/null 2>&1 || :
-  # Create directories and set ownership via tmpfiles.d
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-proxy.conf >/dev/null 2>&1 || :
-
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload &>/dev/null || :
-    systemctl enable carbonio-proxy.target &>/dev/null || :
-    systemctl enable carbonio-proxy-sidecar.service &>/dev/null || :
-  fi
-
-  # Note: chmod resets capabilities, so setcap must run after chmod
-  chown root:zextras /opt/zextras/common/sbin/nginx
-  chmod 750 /opt/zextras/common/sbin/nginx
-  setcap CAP_NET_BIND_SERVICE=+ep /opt/zextras/common/sbin/nginx
-
-  echo "======================================================"
-  echo "Carbonio Proxy installed successfully!"
-  echo "You must run pending-setups to configure it correctly."
-  echo "======================================================"
-  # end Proxy consul registration
-
-  # start ClamAV signature provider consul registration
-
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload &>/dev/null || :
-    systemctl enable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
-  fi
-
-  echo "======================================================"
-  echo "Carbonio ClamAV signature provider installed successfully!"
-  echo "You must run pending-setups to configure it correctly."
-  echo "======================================================"
-  # end ClamAV signature provider consul registration
+  _postinst
+  _postinst_systemd
 }
 
-prerm__apt() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
-    systemctl --no-reload disable carbonio-proxy-sidecar.service &>/dev/null || :
-    systemctl stop carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
-    systemctl stop carbonio-proxy-sidecar.service &>/dev/null || :
-  fi
+postinst__ubuntu_jammy() {
+  _postinst
+  _postinst_legacy
 }
 
-prerm__ubuntu_noble() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable --now carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
-    systemctl --no-reload disable --now carbonio-proxy.target &>/dev/null || :
-    systemctl --no-reload disable --now carbonio-proxy-sidecar.service &>/dev/null || :
-  fi
+postinst__ubuntu_noble() {
+  _postinst
+  _postinst_systemd
 }
 
 prerm__rocky_8() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
-    systemctl --no-reload disable carbonio-proxy-sidecar.service &>/dev/null || :
-    systemctl stop carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
-    systemctl stop carbonio-proxy-sidecar.service &>/dev/null || :
-  fi
+  _prerm_legacy
 }
 
 prerm__rocky_9() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable --now carbonio-clamav-signature-provider-sidecar.service &>/dev/null || :
-    systemctl --no-reload disable --now carbonio-proxy.target &>/dev/null || :
-    systemctl --no-reload disable --now carbonio-proxy-sidecar.service &>/dev/null || :
-  fi
+  _prerm_systemd
+}
+
+prerm__ubuntu_jammy() {
+  _prerm_legacy
+}
+
+prerm__ubuntu_noble() {
+  _prerm_systemd
 }
 
 postrm() {
