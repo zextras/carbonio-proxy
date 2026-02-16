@@ -1,0 +1,30 @@
+[Unit]
+Description=Carbonio Proxy Slice
+Documentation=man:systemd.slice(5)
+Before=slices.target
+PartOf=carbonio-proxy.target
+StopWhenUnneeded=yes
+
+[Slice]
+# Proxy tier: nginx (reverse proxy), memcached (session cache)
+# SSL termination is CPU intensive, minimal disk I/O
+#
+# Scaling guide:
+#   Small  (8GB RAM):   ~480MB effective (6% of 8GB)
+#   Medium (32GB RAM):  ~1.9GB effective (6% of 32GB)
+#   Large  (64GB RAM):  ~3.8GB effective (6% of 64GB)
+#
+# Note: nginx + memcached have low memory footprint
+
+# Memory controls - percentage-based for automatic scaling
+MemoryMax=6%
+MemoryHigh=5%
+
+# CPU weight: high priority (SSL termination is user-facing)
+CPUWeight=90
+
+# I/O weight: low (mostly network, minimal disk)
+IOWeight=30
+
+# Process/thread limit (nginx workers + memcached threads)
+TasksMax=512
