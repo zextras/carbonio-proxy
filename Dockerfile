@@ -1,5 +1,7 @@
-FROM registry.dev.zextras.com/dev/carbonio-mailbox:latest
+FROM registry.dev.zextras.com/dev/carbonio-mailbox:devel
 USER root
+
+COPY target/proxyconfgen.jar /opt/zextras/proxyconfgen/proxyconfgen.jar
 
 COPY entrypoint.sh entrypoint.sh
 COPY proxy/conf /opt/zextras/conf
@@ -32,7 +34,7 @@ ARG PROXY_JAVA_ARGS="-Dfile.encoding=UTF-8 -server \
               -Dzimbra.config=/localconfig/localconfig.xml \
               -Dzimbra.native.required=false \
               -Dlog4j.configurationFile=/opt/zextras/conf/log4j.properties \
-              -cp /opt/zextras/mailbox/jars/mailbox.jar:/opt/zextras/mailbox/jars/*"
+              -cp /opt/zextras/proxyconfgen/proxyconfgen.jar"
 
 
 RUN apt update && apt install -y gnupg2 ca-certificates && apt clean \

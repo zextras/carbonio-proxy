@@ -1,9 +1,9 @@
 [Unit]
-Description=NGINX Carbonio ClamAV signature provider sidecar
+Description=Carbonio ClamAV Signature Provider Sidecar
 Documentation=https://docs.zextras.com/
 Requires=network-online.target
 After=network-online.target
-PartOf=carbonio-proxy.target
+PartOf=carbonio-mta.target carbonio-proxy.target
 
 [Service]
 User=carbonio-clamav-sig-provider
@@ -12,10 +12,10 @@ ExecStart=/usr/bin/consul connect envoy \
     -admin-bind localhost:0 \
     -sidecar-for carbonio-clamav-signature-provider
 Restart=on-failure
-RestartSec=15
+RestartSec=15s
 ExecReload=/usr/bin/kill -HUP $MAINPID
 KillSignal=SIGINT
 LimitNOFILE=65536
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=carbonio-mta.target carbonio-proxy.target

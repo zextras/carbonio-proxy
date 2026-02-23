@@ -1,11 +1,19 @@
 library(
-    identifier: 'jenkins-packages-build-library@1.0.4',
+    identifier: 'jenkins-lib-common@1.3.1',
     retriever: modernSCM([
         $class: 'GitSCMSource',
-        remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
-        credentialsId: 'jenkins-integration-with-github-account'
+        credentialsId: 'jenkins-integration-with-github-account',
+        remote: 'git@github.com:zextras/jenkins-lib-common.git',
     ])
 )
+
+properties(defaultPipelineProperties())
+
+boolean isBuildingTag() {
+    return env.TAG_NAME ? true : false
+}
+
+String profile = isBuildingTag() ? '-Pprod' : ''
 
 pipeline {
     agent {
@@ -15,15 +23,10 @@ pipeline {
     }
 
     environment {
+        MVN_OPTS = "-Ddebug=0 -Dis-production=1 ${profile}"
         JAVA_OPTS = '-Dfile.encoding=UTF8'
         jenkins_build = 'true'
         LC_ALL = 'C.UTF-8'
-    }
-
-    parameters {
-        booleanParam defaultValue: false, 
-            description: 'Whether to upload the packages in playground repositories', 
-            name: 'PLAYGROUND'
     }
 
     options {
@@ -32,13 +35,9 @@ pipeline {
         timeout(time: 2, unit: 'HOURS')
     }
 
-    tools {
-        jfrog 'jfrog-cli'
-    }
-
     stages {
 
-        stage('Checkout') {
+        stage('Setup') {
             steps {
                 checkout scm
                 script {
@@ -47,28 +46,63 @@ pipeline {
             }
         }
 
-        stage('Publish containers - devel') {
-            when {
-                expression {
-                    return env.TAG_NAME?.trim() || env.BRANCH_NAME == 'devel'
+        stage('Build') {
+            steps {
+                container('jdk-21') {
+                    sh """
+                        mvn ${MVN_OPTS} \
+                            -DskipTests=true \
+                            clean install
+                    """
+                    stash includes: 'target/proxyconfgen.jar', name: 'staging'
                 }
             }
+        }
+
+        stage('Tests') {
+            steps {
+                container('jdk-21') {
+                    sh "mvn ${MVN_OPTS} verify"
+                }
+                junit allowEmptyResults: true,
+                        testResults: '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
+            }
+        }
+
+        stage('Sonarqube Analysis') {
+            steps {
+                container('jdk-21') {
+                    withSonarQubeEnv(credentialsId: 'sonarqube-user-token', installationName: 'SonarQube instance') {
+                        sh """
+                            mvn ${MVN_OPTS} \
+                                sonar:sonar \
+                                -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Docker build') {
             steps {
                 container('dind') {
                     withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
-                        script {
-                            dockerHelper.buildImage([
-                                dockerfile: 'Dockerfile',
-                                imageName: 'registry.dev.zextras.com/dev/carbonio-proxy',
-                                tags: ['latest'],
-                                ocLabels: [
-                                    title: 'Carbonio Proxy',
-                                    description: 'Carbonio Proxy container',
-                                ]
-                            ])
-                        }
+                        sh 'docker build .'
                     }
                 }
+            }
+        }
+
+        stage('Publish containers - devel') {
+            steps {
+                dockerStage([
+                    dockerfile: 'Dockerfile',
+                    imageName: 'carbonio-proxy',
+                    ocLabels: [
+                        title: 'Carbonio Proxy',
+                        description: 'Carbonio Proxy container',
+                    ]
+                ])
             }
         }
 
@@ -83,9 +117,12 @@ pipeline {
 
         stage('Upload artifacts')
         {
+            tools {
+                jfrog 'jfrog-cli'
+            }
             steps {
                 uploadStage(
-                    packages: yapHelper.getPackageNames()
+                    packages: yapHelper.resolvePackageNames()
                 )
             }
         }

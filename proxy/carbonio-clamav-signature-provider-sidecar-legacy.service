@@ -1,0 +1,20 @@
+[Unit]
+Description=Carbonio ClamAV Signature Provider Sidecar
+Documentation=https://docs.zextras.com/
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User=carbonio-clamav-sig-provider
+ExecStart=/usr/bin/consul connect envoy \
+    -token-file /etc/carbonio/clamav-signature-provider/service-discover/token \
+    -admin-bind localhost:0 \
+    -sidecar-for carbonio-clamav-signature-provider
+Restart=on-failure
+RestartSec=15s
+ExecReload=/usr/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

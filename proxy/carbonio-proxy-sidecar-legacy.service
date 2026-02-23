@@ -1,0 +1,20 @@
+[Unit]
+Description=Carbonio Proxy Sidecar
+Documentation=https://docs.zextras.com/
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User=carbonio-proxy
+ExecStart=/usr/bin/consul connect envoy \
+    -token-file /etc/carbonio/proxy/service-discover/token \
+    -admin-bind localhost:0 \
+    -sidecar-for carbonio-proxy
+Restart=on-failure
+RestartSec=15s
+ExecReload=/usr/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

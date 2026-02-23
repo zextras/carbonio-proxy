@@ -3,3 +3,10 @@
 .idea
 
 artifacts/
+/.flattened-pom.xml
+/target/
+/dependency-reduced-pom.xml
+
+.metals
+.vscode
+node_modules
