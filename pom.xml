@@ -347,7 +347,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Maven revision: https://maven.apache.org/maven-ci-friendly.html -->
     <changelist>-SNAPSHOT</changelist>
-    <revision>4.9.3</revision>
+    <revision>4.10.1</revision>
     <maven-exec-plugin.version>3.1.0</maven-exec-plugin.version>
     <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
     <generated-resources>${project.build.directory}/generated-resources</generated-resources>
