@@ -1,10 +1,4 @@
-FROM docker.io/envoyproxy/envoy:v1.27-latest
-COPY --from=docker.io/hashicorp/consul:1.17 /bin/consul /usr/local/bin/consul
-RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
-
-# Fake service-discover binary — returns a predefined bootstrap token
-RUN printf '#!/bin/sh\necho "00000000-0000-0000-0000-000000000000"\n' > /usr/local/bin/service-discover \
-    && chmod +x /usr/local/bin/service-discover
+FROM registry.dev.zextras.com/dev/carbonio-sidecar:latest
 
 # Service registration (registered via consul services register)
 COPY proxy/carbonio-proxy.hcl /consul/config/
