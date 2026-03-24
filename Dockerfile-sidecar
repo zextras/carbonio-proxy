@@ -1,23 +1,12 @@
-FROM registry.dev.zextras.com/dev/carbonio-sidecar:latest
+FROM localhost/carbonio-sidecar-base:latest
 
-# Service registration (registered via consul services register)
+# Service registration
 COPY proxy/carbonio-proxy.hcl /consul/config/
 
-# Setup script (runs as-is from the package)
+# Setup script
 COPY proxy/carbonio-proxy.sh /usr/local/bin/carbonio-proxy
 RUN chmod +x /usr/local/bin/carbonio-proxy
 
 ENV SERVICE_NAME=carbonio-proxy
-
-ENTRYPOINT ["/bin/sh", "-c", "\
-  echo '[sidecar] Waiting for consul agent...' && \
-  until consul members >/dev/null 2>&1; do sleep 1; done && \
-  echo '[sidecar] Consul agent ready.' && \
-  consul services register /consul/config/*.hcl && \
-  (carbonio-proxy setup || true) && \
-  echo '[sidecar] Starting envoy for $SERVICE_NAME' && \
-  exec consul connect envoy \
-    -sidecar-for=$SERVICE_NAME \
-    -grpc-addr=localhost:8502 \
-    -admin-bind=localhost:0 \
-"]
+ENV SETUP_SCRIPT="carbonio-proxy setup"
+ENV ENVOY_EXTRA_ARGS="-grpc-addr=localhost:8502"
