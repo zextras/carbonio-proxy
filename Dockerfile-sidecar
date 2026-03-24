@@ -3,11 +3,14 @@ FROM registry.dev.zextras.com/dev/carbonio-sidecar:latest
 # Service registration
 COPY proxy/carbonio-proxy.hcl /consul/config/
 
+# Setup files
+COPY proxy/service-protocol-proxy.json /etc/carbonio/proxy/service-discover/service-protocol.json
+COPY proxy/policies-proxy.json /etc/carbonio/proxy/service-discover/policies.json
+
 # Setup script
 COPY proxy/carbonio-proxy.sh /usr/local/bin/carbonio-proxy
 RUN chmod +x /usr/local/bin/carbonio-proxy
 
 ENV SERVICE_NAME=carbonio-proxy
 ENV SETUP_SCRIPT="carbonio-proxy setup"
-ENV ENVOY_EXTRA_ARGS="-grpc-addr=localhost:8502"
 ENV TOKEN_FILE=/etc/carbonio/proxy/service-discover/token
