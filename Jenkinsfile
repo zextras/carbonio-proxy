@@ -91,11 +91,20 @@ pipeline {
 
         stage('Docker build') {
             steps {
-                container('dind') {
-                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
-                        sh 'docker build .'
-                    }
-                }
+                dockerStage([
+                        dockerfile: 'Dockerfile',
+                        imageName : 'carbonio-proxy',
+                        ocLabels  : [
+                                title : 'Carbonio Proxy'
+                        ]
+                ])
+                dockerStage([
+                        dockerfile: 'Dockerfile-sidecar',
+                        imageName : 'carbonio-proxy-sidecar',
+                        ocLabels  : [
+                                title : 'Carbonio Proxy Sidecar'
+                        ]
+                ])
             }
         }
 
