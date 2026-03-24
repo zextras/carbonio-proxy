@@ -10,3 +10,4 @@ RUN chmod +x /usr/local/bin/carbonio-proxy
 ENV SERVICE_NAME=carbonio-proxy
 ENV SETUP_SCRIPT="carbonio-proxy setup"
 ENV ENVOY_EXTRA_ARGS="-grpc-addr=localhost:8502"
+ENV TOKEN_FILE=/etc/carbonio/proxy/service-discover/token
