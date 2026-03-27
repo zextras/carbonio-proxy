@@ -2,9 +2,9 @@
 #
 server
 {
-    ${core.ipboth.enabled}listen                  [::]:${mail.imap.port};
-    ${core.ipv4only.enabled}listen                ${mail.imap.port};
-    ${core.ipv6only.enabled}listen                [::]:${mail.imap.port};
+    ${core.ipboth.enabled}listen                  [::]:${mail.imap.port} so_keepalive=on;
+    ${core.ipv4only.enabled}listen                ${mail.imap.port} so_keepalive=on;
+    ${core.ipv6only.enabled}listen                [::]:${mail.imap.port} so_keepalive=on;
     ${web.ssl.dhparam.enabled}ssl_dhparam         ${web.ssl.dhparam.file};
     protocol                imap;
     proxy                   on;

@@ -1,4 +1,4 @@
-FROM registry.dev.zextras.com/dev/carbonio-mailbox:latest
+FROM registry.dev.zextras.com/dev/carbonio-mailbox:devel
 USER root
 
 COPY target/proxyconfgen.jar /opt/zextras/proxyconfgen/proxyconfgen.jar

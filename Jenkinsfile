@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-lib-common@1.1.2',
+    identifier: 'jenkins-lib-common@1.4.0',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -7,10 +7,16 @@ library(
     ])
 )
 
+
+
 properties(defaultPipelineProperties())
 
 boolean isBuildingTag() {
     return env.TAG_NAME ? true : false
+}
+
+boolean isCommitTagged() {
+    return env.GIT_TAG ? true : false
 }
 
 String profile = isBuildingTag() ? '-Pprod' : ''
@@ -48,7 +54,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                container('jdk-17') {
+                container('jdk-21') {
                     sh """
                         mvn ${MVN_OPTS} \
                             -DskipTests=true \
@@ -58,23 +64,47 @@ pipeline {
                 }
             }
         }
-        stage('Docker build') {
+
+        stage('Tests') {
             steps {
-                container('dind') {
-                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
-                        sh 'docker build .'
+                container('jdk-21') {
+                    sh "mvn ${MVN_OPTS} verify"
+                }
+                junit allowEmptyResults: true,
+                        testResults: '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
+            }
+        }
+
+        stage('Sonarqube Analysis') {
+            steps {
+                container('jdk-21') {
+                    withSonarQubeEnv(credentialsId: 'sonarqube-user-token', installationName: 'SonarQube instance') {
+                        sh """
+                            mvn ${MVN_OPTS} \
+                                sonar:sonar \
+                                -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
+                        """
                     }
                 }
             }
         }
 
-        stage('Tests') {
+        stage('Docker build') {
             steps {
-                container('jdk-17') {
-                    sh "mvn ${MVN_OPTS} verify"
-                }
-                junit allowEmptyResults: true,
-                        testResults: '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
+                dockerStage([
+                        dockerfile: 'Dockerfile',
+                        imageName : 'carbonio-proxy',
+                        ocLabels  : [
+                                title : 'Carbonio Proxy'
+                        ]
+                ])
+                dockerStage([
+                        dockerfile: 'Dockerfile-sidecar',
+                        imageName : 'carbonio-proxy-sidecar',
+                        ocLabels  : [
+                                title : 'Carbonio Proxy Sidecar'
+                        ]
+                ])
             }
         }
 
@@ -109,6 +139,14 @@ pipeline {
                 uploadStage(
                     packages: yapHelper.resolvePackageNames()
                 )
+            }
+        }
+
+        stage('Bump version') {
+            steps {
+                script {
+                    dt2_semanticRelease()
+                }
             }
         }
     }

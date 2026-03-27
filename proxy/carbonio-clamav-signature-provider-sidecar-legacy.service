@@ -3,7 +3,6 @@ Description=Carbonio ClamAV Signature Provider Sidecar
 Documentation=https://docs.zextras.com/
 Requires=network-online.target
 After=network-online.target
-PartOf=carbonio-mta.target carbonio-proxy.target
 
 [Service]
 User=carbonio-clamav-sig-provider
@@ -18,4 +17,4 @@ KillSignal=SIGINT
 LimitNOFILE=65536
 
 [Install]
-WantedBy=carbonio-mta.target carbonio-proxy.target
+WantedBy=multi-user.target
