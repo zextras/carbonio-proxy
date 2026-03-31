@@ -2,8 +2,8 @@
 Description=Carbonio Proxy Sidecar
 Documentation=https://docs.zextras.com/
 Requires=network-online.target
-After=network-online.target
-PartOf=carbonio-mta.target carbonio-proxy.target
+After=network-online.target service-discover.service carbonio-nginx.service
+PartOf=service-discover.target
 
 [Service]
 User=carbonio-proxy
@@ -11,11 +11,30 @@ ExecStart=/usr/bin/consul connect envoy \
     -token-file /etc/carbonio/proxy/service-discover/token \
     -admin-bind localhost:0 \
     -sidecar-for carbonio-proxy
+ExecReload=/usr/bin/kill -HUP $MAINPID
 Restart=on-failure
 RestartSec=15s
-ExecReload=/usr/bin/kill -HUP $MAINPID
 KillSignal=SIGINT
 LimitNOFILE=65536
 
+# Hardening
+PrivateTmp=yes
+ProtectSystem=strict
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectHome=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+ProtectHostname=yes
+ProtectClock=yes
+MemoryDenyWriteExecute=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
 [Install]
-WantedBy=carbonio-mta.target carbonio-proxy.target
+WantedBy=service-discover.target
