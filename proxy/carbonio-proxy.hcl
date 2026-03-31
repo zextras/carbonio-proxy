@@ -83,6 +83,11 @@ services {
             local_bind_port    = 20014
             local_bind_address = "127.78.0.1"
           },
+          {
+            destination_name   = "carbonio-user-management"
+            local_bind_port    = 20015
+            local_bind_address = "127.78.0.1"
+          },
         ]
       }
     }
