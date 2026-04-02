@@ -7,7 +7,9 @@ PartOf=service-discover.target
 
 [Service]
 User=carbonio-proxy
-ExecStart=/usr/bin/consul connect envoy \
+Type=notify
+NotifyAccess=all
+ExecStart=/usr/bin/consul-envoy-wrapper.sh \
     -token-file /etc/carbonio/proxy/service-discover/token \
     -admin-bind localhost:0 \
     -sidecar-for carbonio-proxy

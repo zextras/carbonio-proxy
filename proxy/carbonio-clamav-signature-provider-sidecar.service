@@ -7,7 +7,9 @@ PartOf=service-discover.target
 
 [Service]
 User=carbonio-clamav-sig-provider
-ExecStart=/usr/bin/consul connect envoy \
+Type=notify
+NotifyAccess=all
+ExecStart=/usr/bin/consul-envoy-wrapper.sh \
     -token-file /etc/carbonio/clamav-signature-provider/service-discover/token \
     -admin-bind localhost:0 \
     -sidecar-for carbonio-clamav-signature-provider
