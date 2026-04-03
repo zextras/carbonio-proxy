@@ -4,7 +4,6 @@ Documentation=man:systemd.special(7)
 Requires=multi-user.target
 After=multi-user.target
 PartOf=carbonio.target
-AllowIsolate=yes
 
 [Install]
 WantedBy=carbonio.target multi-user.target
