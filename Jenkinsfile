@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-lib-common@1.4.0',
+    identifier: 'jenkins-lib-common@1.5.0',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -125,7 +125,7 @@ pipeline {
             steps {
                 echo 'Building deb/rpm packages'
                 buildStage([
-                    buildFlags: ' -s '
+                    buildFlags: ' -ds '
                 ])
             }
         }
