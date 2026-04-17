@@ -52,29 +52,6 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                container('jdk-21') {
-                    sh """
-                        mvn ${MVN_OPTS} \
-                            -DskipTests=true \
-                            clean install
-                    """
-                    stash includes: 'target/proxyconfgen.jar', name: 'staging'
-                }
-            }
-        }
-
-        stage('Tests') {
-            steps {
-                container('jdk-21') {
-                    sh "mvn ${MVN_OPTS} verify"
-                }
-                junit allowEmptyResults: true,
-                        testResults: '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
-            }
-        }
-
         stage('Sonarqube Analysis') {
             steps {
                 container('jdk-21') {

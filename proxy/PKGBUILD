@@ -73,9 +73,6 @@ sha256sums=(
 _package() {
   cd "$(dirname "$(find / -name "yap.json" -print -quit)")"
 
-  install -D target/proxyconfgen.jar \
-    "${pkgdir}/opt/zextras/lib/jars/proxyconfgen.jar"
-
   cd "${srcdir}/.."
   # start install proxy service registration files for consul
   install -Dm755 "${pkgname}.sh" \
