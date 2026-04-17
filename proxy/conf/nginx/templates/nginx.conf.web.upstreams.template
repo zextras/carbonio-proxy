@@ -164,3 +164,8 @@
     {
         server 127.78.0.1:20012 fail_timeout=10s;
     }
+
+    upstream carbonio-mcp
+    {
+        server 127.78.0.1:20015 fail_timeout=10s;
+    }
