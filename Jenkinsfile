@@ -11,16 +11,6 @@ library(
 
 properties(defaultPipelineProperties())
 
-boolean isBuildingTag() {
-    return env.TAG_NAME ? true : false
-}
-
-boolean isCommitTagged() {
-    return env.GIT_TAG ? true : false
-}
-
-String profile = isBuildingTag() ? '-Pprod' : ''
-
 pipeline {
     agent {
         node {
@@ -29,7 +19,6 @@ pipeline {
     }
 
     environment {
-        MVN_OPTS = "-Ddebug=0 -Dis-production=1 ${profile}"
         JAVA_OPTS = '-Dfile.encoding=UTF8'
         jenkins_build = 'true'
         LC_ALL = 'C.UTF-8'
@@ -52,40 +41,16 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Maven') {
             steps {
-                container('jdk-21') {
-                    sh """
-                        mvn ${MVN_OPTS} \
-                            -DskipTests=true \
-                            clean install
-                    """
-                    stash includes: 'target/proxyconfgen.jar', name: 'staging'
+                script {
+                    mavenStage(
+                        profile: env.TAG_NAME ? '-Pprod' : '',
+                        mvnOpts: ['Ddebug': '0', 'Dis-production': '1'],
+                        extraSonarArgs: '-Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports'
+                    )
                 }
-            }
-        }
-
-        stage('Tests') {
-            steps {
-                container('jdk-21') {
-                    sh "mvn ${MVN_OPTS} verify"
-                }
-                junit allowEmptyResults: true,
-                        testResults: '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
-            }
-        }
-
-        stage('Sonarqube Analysis') {
-            steps {
-                container('jdk-21') {
-                    withSonarQubeEnv(credentialsId: 'sonarqube-user-token', installationName: 'SonarQube instance') {
-                        sh """
-                            mvn ${MVN_OPTS} \
-                                sonar:sonar \
-                                -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
-                        """
-                    }
-                }
+                stash includes: 'target/proxyconfgen.jar', name: 'staging'
             }
         }
 
