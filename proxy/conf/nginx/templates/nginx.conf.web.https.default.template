@@ -239,6 +239,14 @@ server
         proxy_set_header Connection "";
     }
 
+    location /services/mcp/
+    {
+        proxy_request_buffering off;
+        proxy_pass http://carbonio-mcp/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+
     location /services/mobile/tokens
     {
         proxy_request_buffering off;
