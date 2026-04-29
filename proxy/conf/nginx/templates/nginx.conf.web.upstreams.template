@@ -13,6 +13,7 @@
     {
         ${web.upstream.webclient.:servers}
         zmauth;
+        keepalive 0;
     }
 
     #  Define the collection of upstream HTTP servers to which we will proxy
@@ -22,6 +23,7 @@
     {
         ${web.upstream.:servers}
         zmauth;
+        keepalive 0;
     }
 
     #  Define the collection of upstream HTTPS webclient servers to which we will proxy
@@ -31,6 +33,7 @@
     {
         ${web.ssl.upstream.webclient.:servers}
         zmauth;
+        keepalive 0;
     }
 
     #  Define the collection of upstream HTTPS servers to which we will proxy
@@ -39,6 +42,7 @@
     {
         ${web.ssl.upstream.:servers}
         zmauth;
+        keepalive 0;
     }
 
     #  Define the collection of upstream HTTP servers to dedicated zx port of jetty
@@ -46,6 +50,7 @@
     {
         ${web.upstream.zx.:servers}
         zmauth_zx;
+        keepalive 0;
     }
 
     #  Define the collection of upstream HTTPS servers to dedicated zx ssl port of jetty
@@ -53,6 +58,7 @@
     {
         ${web.ssl.upstream.zx.:servers}
         zmauth_zx;
+        keepalive 0;
     }
 
     #  Define the collection of upstream admin client servers to which we will
@@ -62,6 +68,7 @@
     {
         ${web.admin.upstream.adminclient.:servers}
         zmauth_admin;
+        keepalive 0;
     }
 
     #  Define the collection of upstream admin console servers to which we will
@@ -71,6 +78,7 @@
     {
         ${web.admin.upstream.:servers}
         zmauth_admin;
+        keepalive 0;
     }
 
     #  Define the collection of upstream HTTP EWS servers to which we will
@@ -80,6 +88,7 @@
     ${web.ews.upstream.disable} {
     ${web.ews.upstream.disable}    ${web.upstream.ewsserver.:servers}
     ${web.ews.upstream.disable}    zmauth;
+    ${web.ews.upstream.disable}    keepalive 0;
     ${web.ews.upstream.disable} }
 
     #  Define the collection of upstream HTTPS EWS servers to which we will
@@ -89,6 +98,7 @@
     ${web.ews.upstream.disable} {
     ${web.ews.upstream.disable}    ${web.ssl.upstream.ewsserver.:servers}
     ${web.ews.upstream.disable}    zmauth;
+    ${web.ews.upstream.disable}    keepalive 0;
     ${web.ews.upstream.disable} }
 
     #  Define the collection of upstream HTTP Login servers to which we will
@@ -98,6 +108,7 @@
     ${web.login.upstream.disable} {
     ${web.login.upstream.disable}    ${web.upstream.loginserver.:servers}
     ${web.login.upstream.disable}    zmauth;
+    ${web.login.upstream.disable}    keepalive 0;
     ${web.login.upstream.disable} }
 
     #  Define the collection of upstream HTTPS Login servers to which we will
@@ -107,6 +118,7 @@
     ${web.login.upstream.disable} {
     ${web.login.upstream.disable}    ${web.ssl.upstream.loginserver.:servers}
     ${web.login.upstream.disable}    zmauth;
+    ${web.login.upstream.disable}    keepalive 0;
     ${web.login.upstream.disable} }
 
 
