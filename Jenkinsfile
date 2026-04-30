@@ -54,6 +54,24 @@ pipeline {
             }
         }
 
+        stage('Fetch carbonio-nginx from Artifactory') {
+            steps {
+                script {
+                    def server = Artifactory.server('zextras-artifactory')
+                    server.download(spec: '''{
+                        "files": [{
+                            "pattern": "ubuntu-devel/pool/carbonio-nginx_*jammy_amd64.deb",
+                            "target": "local-debs/",
+                            "flat": "true",
+                            "sortBy": ["created"],
+                            "sortOrder": "desc",
+                            "limit": 1
+                        }]
+                    }''')
+                }
+            }
+        }
+
         stage('Docker build') {
             steps {
                 dockerStage([
