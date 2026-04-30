@@ -39,7 +39,10 @@ ARG PROXY_JAVA_ARGS="-Dfile.encoding=UTF-8 -server \
 
 COPY local-debs/carbonio-nginx_*.deb /tmp/
 
-RUN apt update && apt install -y openssl netcat curl ca-certificates /tmp/carbonio-nginx_*.deb && apt clean \
+RUN apt update && apt install -y gnupg2 ca-certificates && apt clean \
+&& apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 52FD40243E584A21 \
+&& echo deb https://repo.zextras.io/release/ubuntu jammy main > /etc/apt/sources.list.d/zextras.list \
+&& apt update && apt install -y openssl netcat curl /tmp/carbonio-nginx_*.deb && apt clean \
 && rm /tmp/carbonio-nginx_*.deb \
 && mkdir -p /opt/zextras/conf \
 && mkdir -p /opt/zextras/data/tmp/nginx/client \
