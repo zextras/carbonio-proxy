@@ -58,7 +58,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(
-                        credentialsId: 'zextras-jfrog',
+                        credentialsId: 'artifactory-jenkins-gradle-properties-splitted',
                         usernameVariable: 'USERNAME',
                         passwordVariable: 'SECRET'
                     )]) {
