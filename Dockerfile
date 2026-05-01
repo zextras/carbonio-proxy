@@ -41,6 +41,8 @@ RUN --mount=type=bind,source=auth.conf,target=/etc/apt/auth.conf \
         echo 'deb [trusted=yes] https://zextras.jfrog.io/artifactory/ubuntu-devel jammy main' \
     > /etc/apt/sources.list.d/zextras.list \
  && apt update \
+ && dpkg-divert --local --rename --add /usr/sbin/resolvconf \
+ && ln -sf /bin/true /usr/sbin/resolvconf \
  && apt install -y gnupg2 \
         ca-certificates openssl netcat curl carbonio-nginx \
  && apt clean \
