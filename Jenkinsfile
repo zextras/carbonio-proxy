@@ -54,53 +54,42 @@ pipeline {
             }
         }
 
-        stage('Fetch carbonio-nginx from Artifactory') {
+        stage('Publish containers') {
             steps {
                 script {
-                    def server = Artifactory.server('zextras-artifactory')
-                    server.download(spec: '''{
-                        "files": [{
-                            "pattern": "ubuntu-devel/pool/carbonio-nginx_*jammy_amd64.deb",
-                            "target": "local-debs/",
-                            "flat": "true",
-                            "sortBy": ["created"],
-                            "sortOrder": "desc",
-                            "limit": 1
-                        }]
-                    }''')
+                    withCredentials([usernamePassword(
+                        credentialsId: 'zextras-jfrog',
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'SECRET'
+                    )]) {
+                        sh '''
+set +x
+cat > auth.conf <<EOF
+machine zextras.jfrog.io
+login $USERNAME
+password $SECRET
+EOF
+'''
+                        try {
+                            dockerStage([
+                                    dockerfile: 'Dockerfile',
+                                    imageName : 'carbonio-proxy',
+                                    ocLabels  : [
+                                            title : 'Carbonio Proxy'
+                                    ]
+                            ])
+                            dockerStage([
+                                    dockerfile: 'Dockerfile-sidecar',
+                                    imageName : 'carbonio-proxy-sidecar',
+                                    ocLabels  : [
+                                            title : 'Carbonio Proxy Sidecar'
+                                    ]
+                            ])
+                        } finally {
+                            sh 'rm -f auth.conf'
+                        }
+                    }
                 }
-            }
-        }
-
-        stage('Docker build') {
-            steps {
-                dockerStage([
-                        dockerfile: 'Dockerfile',
-                        imageName : 'carbonio-proxy',
-                        ocLabels  : [
-                                title : 'Carbonio Proxy'
-                        ]
-                ])
-                dockerStage([
-                        dockerfile: 'Dockerfile-sidecar',
-                        imageName : 'carbonio-proxy-sidecar',
-                        ocLabels  : [
-                                title : 'Carbonio Proxy Sidecar'
-                        ]
-                ])
-            }
-        }
-
-        stage('Publish containers - devel') {
-            steps {
-                dockerStage([
-                    dockerfile: 'Dockerfile',
-                    imageName: 'carbonio-proxy',
-                    ocLabels: [
-                        title: 'Carbonio Proxy',
-                        description: 'Carbonio Proxy container',
-                    ]
-                ])
             }
         }
 

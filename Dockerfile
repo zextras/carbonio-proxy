@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 FROM registry.dev.zextras.com/dev/carbonio-mailbox:devel
 USER root
 
@@ -36,23 +37,23 @@ ARG PROXY_JAVA_ARGS="-Dfile.encoding=UTF-8 -server \
               -Dlog4j.configurationFile=/opt/zextras/conf/log4j.properties \
               -cp /opt/zextras/proxyconfgen/proxyconfgen.jar"
 
-
-COPY local-debs/carbonio-nginx_*.deb /tmp/
-
-RUN apt update && apt install -y gnupg2 ca-certificates && apt clean \
-&& apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 52FD40243E584A21 \
-&& echo deb https://repo.zextras.io/release/ubuntu jammy main > /etc/apt/sources.list.d/zextras.list \
-&& apt update && apt install -y openssl netcat curl /tmp/carbonio-nginx_*.deb && apt clean \
-&& rm /tmp/carbonio-nginx_*.deb \
-&& mkdir -p /opt/zextras/conf \
-&& mkdir -p /opt/zextras/data/tmp/nginx/client \
-&& mkdir -p /run/carbonio \
-&& mkdir -p /opt/zextras/common/conf \
-&& openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 \
--nodes -keyout /opt/zextras/conf/nginx.key \
--out /opt/zextras/conf/nginx.crt -subj "/CN=example.com" \
--addext "subjectAltName=DNS:example.com,DNS:*.example.com,IP:10.0.0.1" \
-&& mkdir -p /opt/zextras/conf/nginx/includes && touch /opt/zextras/conf/nginx/includes/nginx.conf.main \
-&& echo "java $PROXY_JAVA_ARGS com.zimbra.cs.util.proxyconfgen.ProxyConfGen \"\$@\"" > /usr/bin/zmproxyconfgen
+RUN --mount=type=bind,source=auth.conf,target=/etc/apt/auth.conf \
+        echo 'deb [trusted=yes] https://zextras.jfrog.io/artifactory/ubuntu-devel jammy main' \
+    > /etc/apt/sources.list.d/zextras.list \
+ && apt update \
+ && apt install -y gnupg2 \
+        ca-certificates openssl netcat curl carbonio-nginx \
+ && apt clean \
+ && mkdir -p /opt/zextras/conf \
+ && mkdir -p /opt/zextras/data/tmp/nginx/client \
+ && mkdir -p /run/carbonio \
+ && mkdir -p /opt/zextras/common/conf \
+ && openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 \
+        -nodes -keyout /opt/zextras/conf/nginx.key \
+        -out /opt/zextras/conf/nginx.crt -subj "/CN=example.com" \
+        -addext "subjectAltName=DNS:example.com,DNS:*.example.com,IP:10.0.0.1" \
+ && mkdir -p /opt/zextras/conf/nginx/includes \
+ && touch /opt/zextras/conf/nginx/includes/nginx.conf.main \
+ && echo "java $PROXY_JAVA_ARGS com.zimbra.cs.util.proxyconfgen.ProxyConfGen \"\$@\"" > /usr/bin/zmproxyconfgen
 
 ENTRYPOINT ["./entrypoint.sh"]
