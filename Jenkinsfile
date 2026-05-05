@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-lib-common@1.3.1',
+    identifier: 'jenkins-lib-common@1.7.2',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -11,16 +11,6 @@ library(
 
 properties(defaultPipelineProperties())
 
-boolean isBuildingTag() {
-    return env.TAG_NAME ? true : false
-}
-
-boolean isCommitTagged() {
-    return env.GIT_TAG ? true : false
-}
-
-String profile = isBuildingTag() ? '-Pprod' : ''
-
 pipeline {
     agent {
         node {
@@ -29,7 +19,6 @@ pipeline {
     }
 
     environment {
-        MVN_OPTS = "-Ddebug=0 -Dis-production=1 ${profile}"
         JAVA_OPTS = '-Dfile.encoding=UTF8'
         jenkins_build = 'true'
         LC_ALL = 'C.UTF-8'
@@ -52,50 +41,35 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Maven') {
             steps {
-                container('jdk-21') {
-                    sh """
-                        mvn ${MVN_OPTS} \
-                            -DskipTests=true \
-                            clean install
-                    """
-                    stash includes: 'target/proxyconfgen.jar', name: 'staging'
+                script {
+                    mavenStage(
+                        profile: env.TAG_NAME ? '-Pprod' : '',
+                        mvnOpts: ['Ddebug': '0', 'Dis-production': '1'],
+                        extraSonarArgs: '-Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports'
+                    )
                 }
-            }
-        }
-
-        stage('Tests') {
-            steps {
-                container('jdk-21') {
-                    sh "mvn ${MVN_OPTS} verify"
-                }
-                junit allowEmptyResults: true,
-                        testResults: '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
-            }
-        }
-
-        stage('Sonarqube Analysis') {
-            steps {
-                container('jdk-21') {
-                    withSonarQubeEnv(credentialsId: 'sonarqube-user-token', installationName: 'SonarQube instance') {
-                        sh """
-                            mvn ${MVN_OPTS} \
-                                sonar:sonar \
-                                -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
-                        """
-                    }
-                }
+                stash includes: 'target/proxyconfgen.jar', name: 'staging'
             }
         }
 
         stage('Docker build') {
             steps {
-                container('dind') {
-                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
-                        sh 'docker build .'
-                    }
-                }
+                dockerStage([
+                        dockerfile: 'Dockerfile',
+                        imageName : 'carbonio-proxy',
+                        ocLabels  : [
+                                title : 'Carbonio Proxy'
+                        ]
+                ])
+                dockerStage([
+                        dockerfile: 'Dockerfile-sidecar',
+                        imageName : 'carbonio-proxy-sidecar',
+                        ocLabels  : [
+                                title : 'Carbonio Proxy Sidecar'
+                        ]
+                ])
             }
         }
 
@@ -116,7 +90,7 @@ pipeline {
             steps {
                 echo 'Building deb/rpm packages'
                 buildStage([
-                    buildFlags: ' -s '
+                    buildFlags: ' -ds '
                 ])
             }
         }
@@ -134,36 +108,9 @@ pipeline {
         }
 
         stage('Bump version') {
-            agent {
-                node {
-                    label 'nodejs-v1'
-                }
-            }
-            when {
-                allOf {
-                    branch 'main'
-                    expression { !isCommitTagged() }
-                }
-            }
             steps {
                 script {
-                    checkout scm
-                    gitMetadata()
-                    container('nodejs-20') {
-                        withCredentials([usernamePassword(credentialsId: 'jenkins-integration-with-github-account', usernameVariable: 'GH_USERNAME', passwordVariable: 'GH_TOKEN')]) {
-                            sh 'apt-get update && apt-get install -y jq openssh-client'
-                            sh """
-                            npx \
-                            --package semantic-release \
-                            --package @semantic-release/commit-analyzer \
-                            --package @semantic-release/release-notes-generator \
-                            --package @semantic-release/exec \
-                            --package @semantic-release/git \
-                            --package conventional-changelog-conventionalcommits \
-                            semantic-release
-                        """
-                        }
-                    }
+                    dt2_semanticRelease()
                 }
             }
         }

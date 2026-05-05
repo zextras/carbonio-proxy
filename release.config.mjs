@@ -69,7 +69,7 @@ export default {
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "sed -i 's/^pkgver=.*/pkgver=\"${nextRelease.version}\"/' proxy/PKGBUILD"
+        "prepareCmd": "sed -i 's|<revision>.*</revision>|<revision>${nextRelease.version}</revision>|' pom.xml && sed -i 's/^pkgver=.*/pkgver=\"${nextRelease.version}\"/' proxy/PKGBUILD"
       }
     ],
     [

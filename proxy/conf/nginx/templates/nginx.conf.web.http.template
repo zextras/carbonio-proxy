@@ -53,7 +53,6 @@ server
     {
         add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
         add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
-        add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
         add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
         add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
         add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
@@ -257,7 +256,6 @@ server
         if ($query_string ~ loginOp=logout) {
             add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
             add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
-            add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
             add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
             add_header Set-Cookie "AUTH_TOKEN_TYPE=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
             add_header Set-Cookie "T=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
@@ -300,6 +298,8 @@ server
 
         # Proxy to Login Upstream
         proxy_pass       $login_upstream;
+        proxy_http_version 1.0;
+        proxy_set_header  Connection close;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -354,6 +354,8 @@ server
 
         # Proxy to Zimbra Webclient Upstream
         proxy_pass       ${web.upstream.webclient.target};
+        proxy_http_version 1.0;
+        proxy_set_header  Connection close;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -407,6 +409,8 @@ server
 
         # Proxy to Zimbra Upstream
         proxy_pass          ${web.upstream.target};
+        proxy_http_version 1.0;
+        proxy_set_header  Connection close;
         proxy_read_timeout  ${web.upstream.polling.timeout};
         proxy_buffering     off;
 
@@ -453,6 +457,8 @@ server
         proxy_set_header X-Forwarded-Port $server_port;
         proxy_set_header Host $http_host;
         proxy_pass ${web.upstream.zx};
+        proxy_http_version 1.0;
+        proxy_set_header  Connection close;
     }
 
     location ~* /service/extension/drive/(.*)/(.*)$
@@ -484,6 +490,8 @@ server
 
         # Proxy to Zimbra Upstream servers, with large buffers
         proxy_pass          ${web.upstream.target};
+        proxy_http_version 1.0;
+        proxy_set_header  Connection close;
         proxy_read_timeout  ${web.upstream.noop.timeout};
 
         # For audit
@@ -545,6 +553,8 @@ server
 
         # Proxy to Zimbra Upstream
         proxy_pass          ${web.upstream.target};
+        proxy_http_version 1.0;
+        proxy_set_header  Connection close;
         proxy_read_timeout  ${web.upstream.noop.timeout};
         proxy_buffering     off;
 
@@ -600,6 +610,8 @@ server
 
         # Proxy to Zimbra Upstream
         proxy_pass          ${web.upstream.target};
+        proxy_http_version 1.0;
+        proxy_set_header  Connection close;
         proxy_read_timeout  ${web.upstream.waitset.timeout};
         proxy_buffering     off;
 
@@ -659,6 +671,8 @@ server
 
         # Proxy to Zimbra Mailbox Upstream
         proxy_pass       $autodiscover_upstream;
+        proxy_http_version 1.0;
+        proxy_set_header  Connection close;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -695,6 +709,8 @@ server
     ${web.ews.upstream.disable} {
     ${web.ews.upstream.disable}     # Proxy to Zimbra Upstream
     ${web.ews.upstream.disable}     proxy_pass          ${web.upstream.ews.target};
+    ${web.ews.upstream.disable}     proxy_http_version 1.0;
+    ${web.ews.upstream.disable}     proxy_set_header  Connection close;
     ${web.ews.upstream.disable}     proxy_read_timeout  ${web.upstream.polling.timeout};
     ${web.ews.upstream.disable}     proxy_buffering     off;
     ${web.ews.upstream.disable}
@@ -754,6 +770,8 @@ server
 
         # Proxy to Zimbra Mailbox Upstream
         proxy_pass       ${web.upstream.target};
+        proxy_http_version 1.0;
+        proxy_set_header  Connection close;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
