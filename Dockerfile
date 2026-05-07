@@ -43,7 +43,7 @@ RUN --mount=type=bind,source=auth.conf,target=/etc/apt/auth.conf \
  && apt update \
  && echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-selections \
  && apt install -y gnupg2 \
-        ca-certificates openssl netcat curl carbonio-nginx \
+        ca-certificates openssl jq wget unzip netcat curl carbonio-nginx \
  && apt clean \
  && mkdir -p /opt/zextras/conf \
  && mkdir -p /opt/zextras/data/tmp/nginx/client \
