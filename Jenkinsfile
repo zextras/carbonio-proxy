@@ -54,35 +54,42 @@ pipeline {
             }
         }
 
-        stage('Docker build') {
+        stage('Publish containers') {
             steps {
-                dockerStage([
-                        dockerfile: 'Dockerfile',
-                        imageName : 'carbonio-proxy',
-                        ocLabels  : [
-                                title : 'Carbonio Proxy'
-                        ]
-                ])
-                dockerStage([
-                        dockerfile: 'Dockerfile-sidecar',
-                        imageName : 'carbonio-proxy-sidecar',
-                        ocLabels  : [
-                                title : 'Carbonio Proxy Sidecar'
-                        ]
-                ])
-            }
-        }
-
-        stage('Publish containers - devel') {
-            steps {
-                dockerStage([
-                    dockerfile: 'Dockerfile',
-                    imageName: 'carbonio-proxy',
-                    ocLabels: [
-                        title: 'Carbonio Proxy',
-                        description: 'Carbonio Proxy container',
-                    ]
-                ])
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'artifactory-jenkins-gradle-properties-splitted',
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'SECRET'
+                    )]) {
+                        sh '''
+set +x
+cat > auth.conf <<EOF
+machine zextras.jfrog.io
+login $USERNAME
+password $SECRET
+EOF
+'''
+                        try {
+                            dockerStage([
+                                    dockerfile: 'Dockerfile',
+                                    imageName : 'carbonio-proxy',
+                                    ocLabels  : [
+                                            title : 'Carbonio Proxy'
+                                    ]
+                            ])
+                            dockerStage([
+                                    dockerfile: 'Dockerfile-sidecar',
+                                    imageName : 'carbonio-proxy-sidecar',
+                                    ocLabels  : [
+                                            title : 'Carbonio Proxy Sidecar'
+                                    ]
+                            ])
+                        } finally {
+                            sh 'rm -f auth.conf'
+                        }
+                    }
+                }
             }
         }
 
