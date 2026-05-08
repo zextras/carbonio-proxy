@@ -67,11 +67,13 @@ EOF
                                 dockerStage([
                                         dockerfile: 'Dockerfile',
                                         imageName : 'carbonio-proxy',
+                                        platforms : ['linux/amd64', 'linux/arm64'] as Set,
                                         ocLabels  : [title: 'Carbonio Proxy'],
                                 ])
                                 dockerStage([
                                         dockerfile: 'Dockerfile-sidecar',
                                         imageName : 'carbonio-proxy-sidecar',
+                                        platforms : ['linux/amd64', 'linux/arm64'] as Set,
                                         ocLabels  : [title: 'Carbonio Proxy Sidecar'],
                                 ])
                             } finally {
