@@ -167,11 +167,6 @@
         server 127.78.0.1:20010 fail_timeout=10s;
     }
 
-    upstream carbonio-certificate-manager
-    {
-        server 127.78.0.1:20011 fail_timeout=10s;
-    }
-
     upstream carbonio-catalog
     {
         server 127.78.0.1:20012 fail_timeout=10s;
