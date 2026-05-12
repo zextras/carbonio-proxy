@@ -64,11 +64,6 @@ services {
             local_bind_address = "127.78.0.1"
           },
           {
-            destination_name   = "carbonio-certificate-manager"
-            local_bind_port    = 20011
-            local_bind_address = "127.78.0.1"
-          },
-          {
             destination_name   = "carbonio-catalog"
             local_bind_port    = 20012
             local_bind_address = "127.78.0.1"
