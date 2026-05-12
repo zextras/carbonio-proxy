@@ -44,6 +44,14 @@ RUN --mount=type=bind,source=auth.conf,target=/etc/apt/auth.conf \
  && echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-selections \
  && apt install -y gnupg2 \
         ca-certificates openssl jq wget unzip netcat curl carbonio-nginx \
+ && apt install -y --no-install-recommends build-essential git \
+ && git clone --depth 1 --branch v2.1 https://github.com/LuaJIT/LuaJIT.git /tmp/luajit \
+ && cd /tmp/luajit \
+ && make XCFLAGS="-DLUAJIT_ENABLE_GC64" -j"$(nproc)" \
+ && cp src/libluajit.so /lib/x86_64-linux-gnu/libluajit-5.1.so.2.1.0 \
+ && ldconfig \
+ && rm -rf /tmp/luajit \
+ && apt purge -y build-essential git && apt autoremove -y \
  && apt clean \
  && mkdir -p /opt/zextras/conf \
  && mkdir -p /opt/zextras/data/tmp/nginx/client \
