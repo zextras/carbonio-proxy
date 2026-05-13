@@ -354,7 +354,7 @@
     <ldap.dir>${project.basedir}/src/ldap</ldap.dir>
     <ldap.generated.dir>${ldap.dir}/generated</ldap.generated.dir>
     <ldap.config.dir>${ldap.dir}/config</ldap.config.dir>
-    <mailbox.version>4.23.5-SNAPSHOT</mailbox.version>
+    <mailbox.version>4.26.0</mailbox.version>
     <sonar.version>5.5.0.6356</sonar.version>
   </properties>
 </project>
