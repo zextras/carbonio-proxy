@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# /run is tmpfs — ensure required dirs exist at container start
+mkdir -p /run/carbonio
+
 sed -i -e "s#LDAP_URL#${LDAP_URL}#g" /localconfig/localconfig.xml
 sed -i -e "s/LDAP_ROOT_PASSWORD/${LDAP_ROOT_PASSWORD}/g" /localconfig/localconfig.xml
 sed -i -e "s/LDAP_ADMIN_PASSWORD/${LDAP_ADMIN_PASSWORD}/g" /localconfig/localconfig.xml
