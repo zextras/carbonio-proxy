@@ -71,46 +71,43 @@ sha256sums=(
 )
 
 _package() {
-  cd "$(dirname "$(find / -name "yap.json" -print -quit)")"
-
-  install -D target/proxyconfgen.jar \
+  install -D "${repodir}/target/proxyconfgen.jar" \
     "${pkgdir}/opt/zextras/lib/jars/proxyconfgen.jar"
 
-  cd "${srcdir}/.."
   # start install proxy service registration files for consul
-  install -Dm755 "${pkgname}.sh" \
+  install -Dm755 "${srcdir}/${pkgname}.sh" \
     "${pkgdir}/usr/bin/${pkgname}"
 
-  install -Dm644 "policies-proxy.json" \
+  install -Dm644 "${srcdir}/policies-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/policies.json"
 
-  install -Dm644 "${pkgname}.hcl" \
+  install -Dm644 "${srcdir}/${pkgname}.hcl" \
     "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
 
-  install -Dm644 "service-protocol-proxy.json" \
+  install -Dm644 "${srcdir}/service-protocol-proxy.json" \
     "${pkgdir}/etc/carbonio/proxy/service-discover/service-protocol.json"
 
-  install -Dm755 "311-${pkgname}-setup.sh" \
+  install -Dm755 "${srcdir}/311-${pkgname}-setup.sh" \
     "${pkgdir}/etc/zextras/pending-setups.d/311-${pkgname}-setup.sh"
   # end install proxy service registration files for consul
 
   # start install clamav-signature-provider service registration files for consul
-  install -Dm755 "carbonio-clamav-signature-provider" \
+  install -Dm755 "${srcdir}/carbonio-clamav-signature-provider" \
     "${pkgdir}/usr/bin/carbonio-clamav-signature-provider"
 
-  install -Dm644 "policies-clamav-signature-provider.json" \
+  install -Dm644 "${srcdir}/policies-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/policies.json"
 
-  install -Dm644 "carbonio-clamav-signature-provider.hcl" \
+  install -Dm644 "${srcdir}/carbonio-clamav-signature-provider.hcl" \
     "${pkgdir}/etc/zextras/service-discover/carbonio-clamav-signature-provider.hcl"
 
-  install -Dm644 "intentions-clamav-signature-provider.json" \
+  install -Dm644 "${srcdir}/intentions-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/intentions.json"
 
-  install -Dm644 "service-protocol-clamav-signature-provider.json" \
+  install -Dm644 "${srcdir}/service-protocol-clamav-signature-provider.json" \
     "${pkgdir}/etc/carbonio/clamav-signature-provider/service-discover/service-protocol.json"
 
-  install -Dm755 "211-carbonio-clamav-signature-provider-setup.sh" \
+  install -Dm755 "${srcdir}/211-carbonio-clamav-signature-provider-setup.sh" \
     "${pkgdir}/etc/zextras/pending-setups.d/211-carbonio-clamav-signature-provider-setup.sh"
   # end install clamav-signature-provider service registration files for consul
 
@@ -121,9 +118,9 @@ _package() {
   mkdir -p "${pkgdir}/opt/zextras/conf/nginx/extensions/"
   mkdir -p "${pkgdir}/opt/zextras/data/nginx/html/"
 
-  cp conf/nginx/templates/*.template \
+  cp "${repodir}/proxy/conf/nginx/templates/"*.template \
     "${pkgdir}/opt/zextras/conf/nginx/templates/"
-  cp conf/nginx/errors/*.html \
+  cp "${repodir}/proxy/conf/nginx/errors/"*.html \
     "${pkgdir}/opt/zextras/data/nginx/html/"
   # end install template and errors files
 
@@ -138,7 +135,7 @@ _package() {
 
 _package_systemd() {
   # systemd units and target
-  install -Dm 644 "${pkgname}.target" \
+  install -Dm644 "${srcdir}/${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target"
 }
 
@@ -202,18 +199,18 @@ package() {
   _package
   _package_systemd
 
-  install -Dm644 "${srcdir}/../${pkgname}-sidecar.service" \
+  install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
-  install -Dm644 "${srcdir}/../carbonio-clamav-signature-provider-sidecar.service" \
+  install -Dm644 "${srcdir}/carbonio-clamav-signature-provider-sidecar.service" \
     "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 }
 
 package__rocky_8() {
   _package
 
-  install -Dm644 "${srcdir}/../${pkgname}-sidecar-legacy.service" \
+  install -Dm644 "${srcdir}/${pkgname}-sidecar-legacy.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
-  install -Dm644 "${srcdir}/../carbonio-clamav-signature-provider-sidecar-legacy.service" \
+  install -Dm644 "${srcdir}/carbonio-clamav-signature-provider-sidecar-legacy.service" \
     "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 }
 
@@ -221,18 +218,18 @@ package__rocky_9() {
   _package
   _package_systemd
 
-  install -Dm644 "${srcdir}/../${pkgname}-sidecar.service" \
+  install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
-  install -Dm644 "${srcdir}/../carbonio-clamav-signature-provider-sidecar.service" \
+  install -Dm644 "${srcdir}/carbonio-clamav-signature-provider-sidecar.service" \
     "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 }
 
 package__ubuntu_jammy() {
   _package
 
-  install -Dm644 "${srcdir}/../${pkgname}-sidecar-legacy.service" \
+  install -Dm644 "${srcdir}/${pkgname}-sidecar-legacy.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
-  install -Dm644 "${srcdir}/../carbonio-clamav-signature-provider-sidecar-legacy.service" \
+  install -Dm644 "${srcdir}/carbonio-clamav-signature-provider-sidecar-legacy.service" \
     "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 }
 
@@ -240,9 +237,9 @@ package__ubuntu_noble() {
   _package
   _package_systemd
 
-  install -Dm644 "${srcdir}/../${pkgname}-sidecar.service" \
+  install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
-  install -Dm644 "${srcdir}/../carbonio-clamav-signature-provider-sidecar.service" \
+  install -Dm644 "${srcdir}/carbonio-clamav-signature-provider-sidecar.service" \
     "${pkgdir}/usr/lib/systemd/system/carbonio-clamav-signature-provider-sidecar.service"
 }
 
