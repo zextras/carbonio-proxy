@@ -18,7 +18,6 @@ defaultPipeline {
         ]) {
             stage('Build') {
                 sh 'mvn -DskipTests=true clean install'
-                stash includes: 'target/proxyconfgen.jar', name: 'staging'
             }
 
             stage('Tests') {
@@ -39,8 +38,7 @@ defaultPipeline {
         parallel(
                 'Packages': {
                     stage('Build deb/rpm') {
-                        echo 'Building deb/rpm packages'
-                        buildStage(buildFlags: ' -ds ')
+                        buildStage(buildFlags: ' -ds ', useDefaultExcludes: false)
                     }
                     stage('Publish packages') {
                         withJfrog {
@@ -68,11 +66,13 @@ EOF
                                         dockerfile: 'Dockerfile',
                                         imageName : 'carbonio-proxy',
                                         ocLabels  : [title: 'Carbonio Proxy'],
+                                        platforms : ['linux/amd64', 'linux/arm64'] as Set,
                                 ])
                                 dockerStage([
                                         dockerfile: 'Dockerfile-sidecar',
                                         imageName : 'carbonio-proxy-sidecar',
                                         ocLabels  : [title: 'Carbonio Proxy Sidecar'],
+                                        platforms : ['linux/amd64', 'linux/arm64'] as Set,
                                 ])
                             } finally {
                                 sh 'rm -f auth.conf'

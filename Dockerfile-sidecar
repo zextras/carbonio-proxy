@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 FROM registry.dev.zextras.com/dev/carbonio-sidecar:devel
 
 # Service registration
@@ -8,8 +9,7 @@ COPY proxy/service-protocol-proxy.json /etc/carbonio/proxy/service-discover/serv
 COPY proxy/policies-proxy.json /etc/carbonio/proxy/service-discover/policies.json
 
 # Setup script
-COPY proxy/carbonio-proxy.sh /usr/local/bin/carbonio-proxy
-RUN chmod +x /usr/local/bin/carbonio-proxy
+COPY --chmod=755 proxy/carbonio-proxy.sh /usr/local/bin/carbonio-proxy
 
 ENV SERVICE_NAME=carbonio-proxy
 ENV SETUP_SCRIPT="carbonio-proxy setup"

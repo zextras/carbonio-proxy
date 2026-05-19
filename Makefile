@@ -1,9 +1,10 @@
 build:
 	docker run --rm -it \
+		--entrypoint=bash \
 		--workdir /project \
 		-v $(shell pwd):/project \
-		docker.io/m0rf30/yap-ubuntu-focal:1.11 \
-		build ubuntu-focal package -sdc
+		docker.io/m0rf30/yap-ubuntu-jammy:2.0.1 \
+		-c "sudo yap build ubuntu-jammy proxy -sdc"
 
 sys-install: host-check
 	./install-packages.sh ${HOST}
