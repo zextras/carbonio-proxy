@@ -153,18 +153,18 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.14.1</version>
+          <version>3.15.0</version>
         </plugin>
         <!-- Testing -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.4</version>
+          <version>3.5.5</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>3.5.4</version>
+          <version>3.5.5</version>
           <executions>
             <execution>
               <goals>
@@ -197,7 +197,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.6.1</version>
+          <version>3.10.0</version>
           <executions>
             <execution>
               <id>analyze</id>
@@ -227,7 +227,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.6.2</version>
+          <version>3.6.3</version>
           <executions>
             <execution>
               <id>list-conflicts</id>
@@ -256,7 +256,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>flatten-maven-plugin</artifactId>
-          <version>1.1.0</version>
+          <version>1.7.3</version>
           <configuration>
             <updatePomFile>true</updatePomFile>
             <flattenMode>resolveCiFriendliesOnly</flattenMode>
@@ -282,7 +282,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.6.1</version>
+          <version>3.6.2</version>
           <executions>
             <execution>
               <phase>package</phase>
@@ -355,6 +355,6 @@
     <ldap.generated.dir>${ldap.dir}/generated</ldap.generated.dir>
     <ldap.config.dir>${ldap.dir}/config</ldap.config.dir>
     <mailbox.version>4.27.3</mailbox.version>
-    <sonar.version>5.5.0.6356</sonar.version>
+    <sonar.version>5.6.0.6792</sonar.version>
   </properties>
 </project>
