@@ -5,7 +5,7 @@
 # (no dep resolution, no postinst scripts, no service-discover/resolvconf).
 # Also pre-generates the self-signed cert and zmproxyconfgen wrapper so the
 # final stage needs zero RUN steps.
-FROM --platform=$BUILDPLATFORM ubuntu:jammy AS nginx-installer
+FROM --platform=$BUILDPLATFORM ubuntu:noble AS nginx-installer
 
 ARG TARGETARCH
 ARG BUILDARCH=amd64
