@@ -61,6 +61,13 @@ server
         ${web.carbonio.webui.logout.redirect.vhost};
     }
 
+    location ~ "^/static/(iris/[^/]+/[a-f0-9]{7,}/.*)$"
+    {
+        ${web.add.headers.vhost}
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        alias /opt/zextras/web/$1;
+    }
+
     location ~/static/(.*)
     {
         ${web.add.headers.vhost}
