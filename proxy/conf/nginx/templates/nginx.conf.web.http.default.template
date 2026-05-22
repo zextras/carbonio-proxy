@@ -91,6 +91,7 @@ server
     {
         ${web.add.headers.default}
         add_header Cache-Control "public, max-age=31536000, immutable";
+        etag off;
         alias /opt/zextras/web/$1;
     }
 
