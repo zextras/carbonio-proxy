@@ -119,6 +119,14 @@ server
         alias /opt/zextras/web/$1;
     }
 
+    location ~ "^/static/(login/assets/[a-f0-9]{8,}\..+)$"
+    {
+        ${web.add.headers.default}
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        etag off;
+        alias /opt/zextras/web/$1;
+    }
+
     location ~/static/(.*)
     {
         ${web.add.headers.default}
