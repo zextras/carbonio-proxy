@@ -108,9 +108,7 @@ EOF
                 jfrog 'jfrog-cli'
             }
             steps {
-                uploadStage(
-                    packages: yapHelper.resolvePackageNames()
-                )
+                uploadStage()
             }
         }
 
