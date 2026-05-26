@@ -1,60 +1,68 @@
 library(
-        identifier: 'jenkins-dt2-lib@main',
-        retriever: modernSCM([
-                $class: 'GitSCMSource',
-                credentialsId: 'jenkins-integration-with-github-account',
-                remote: 'git@github.com:zextras/jenkins-dt2-lib.git',
-        ])
+    identifier: 'jenkins-lib-common@1.7.0',
+    retriever: modernSCM([
+        $class: 'GitSCMSource',
+        credentialsId: 'jenkins-integration-with-github-account',
+        remote: 'git@github.com:zextras/jenkins-lib-common.git',
+    ])
 )
 
-String profile = env.TAG_NAME ? '-Pprod' : ''
 
-defaultPipeline {
 
-    withMaven {
-        withEnv([
-                'MAVEN_OPTS=-Xmx2g',
-                "MAVEN_ARGS=-B -s ${SETTINGS_PATH} -Ddebug=0 -Dis-production=1 ${profile} -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn",
-        ]) {
-            stage('Build') {
-                sh 'mvn -DskipTests=true clean install'
-            }
+properties(defaultPipelineProperties())
 
-            stage('Tests') {
-                sh 'mvn verify'
-                junit allowEmptyResults: true,
-                        testResults: '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
-            }
-
-            stage('Sonarqube Analysis') {
-                withSonarQube {
-                    sh 'mvn sonar:sonar -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports'
-                }
-            }
+pipeline {
+    agent {
+        node {
+            label 'zextras-v1'
         }
     }
 
-    stage('Build and upload artifacts') {
-        parallel(
-                'Packages': {
-                    stage('Build deb/rpm') {
-                        buildStage(buildFlags: ' -ds ', useDefaultExcludes: false)
-                    }
-                    stage('Publish packages') {
-                        withJfrog {
-                            uploadStage(packages: yapHelper.resolvePackageNames())
-                        }
-                    }
-                },
-                'Docker images': {
-                    stage('Build and Publish Docker images') {
-                        withCredentials([usernamePassword(
-                                credentialsId: 'artifactory-jenkins-gradle-properties-splitted',
-                                usernameVariable: 'USERNAME',
-                                passwordVariable: 'SECRET',
-                        )]) {
-                            try {
-                                sh '''
+    environment {
+        JAVA_OPTS = '-Dfile.encoding=UTF8'
+        jenkins_build = 'true'
+        LC_ALL = 'C.UTF-8'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '25'))
+        skipDefaultCheckout()
+        timeout(time: 2, unit: 'HOURS')
+    }
+
+    stages {
+
+        stage('Setup') {
+            steps {
+                checkout scm
+                script {
+                    gitMetadata()
+                }
+            }
+        }
+
+        stage('Maven') {
+            steps {
+                script {
+                    mavenStage(
+                        profile: env.TAG_NAME ? '-Pprod' : '',
+                        mvnOpts: ['Ddebug': '0', 'Dis-production': '1'],
+                        extraSonarArgs: '-Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports'
+                    )
+                }
+                stash includes: 'target/proxyconfgen.jar', name: 'staging'
+            }
+        }
+
+        stage('Publish containers') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'artifactory-jenkins-gradle-properties-splitted',
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'SECRET'
+                    )]) {
+                        sh '''
 set +x
 cat > auth.conf <<EOF
 machine zextras.jfrog.io
@@ -62,24 +70,56 @@ login $USERNAME
 password $SECRET
 EOF
 '''
-                                dockerStage([
-                                        dockerfile: 'Dockerfile',
-                                        imageName : 'carbonio-proxy',
-                                        ocLabels  : [title: 'Carbonio Proxy'],
-                                        platforms : ['linux/amd64', 'linux/arm64'] as Set,
-                                ])
-                                dockerStage([
-                                        dockerfile: 'Dockerfile-sidecar',
-                                        imageName : 'carbonio-proxy-sidecar',
-                                        ocLabels  : [title: 'Carbonio Proxy Sidecar'],
-                                        platforms : ['linux/amd64', 'linux/arm64'] as Set,
-                                ])
-                            } finally {
-                                sh 'rm -f auth.conf'
-                            }
+                        try {
+                            dockerStage([
+                                    dockerfile: 'Dockerfile',
+                                    imageName : 'carbonio-proxy',
+                                    ocLabels  : [
+                                            title : 'Carbonio Proxy'
+                                    ]
+                            ])
+                            dockerStage([
+                                    dockerfile: 'Dockerfile-sidecar',
+                                    imageName : 'carbonio-proxy-sidecar',
+                                    ocLabels  : [
+                                            title : 'Carbonio Proxy Sidecar'
+                                    ]
+                            ])
+                        } finally {
+                            sh 'rm -f auth.conf'
                         }
                     }
-                },
-        )
+                }
+            }
+        }
+
+        stage('Build deb/rpm') {
+            steps {
+                echo 'Building deb/rpm packages'
+                buildStage([
+                    buildFlags: ' -ds '
+                ])
+            }
+        }
+
+        stage('Upload artifacts')
+        {
+            tools {
+                jfrog 'jfrog-cli'
+            }
+            steps {
+                uploadStage(
+                    packages: yapHelper.resolvePackageNames()
+                )
+            }
+        }
+
+        stage('Bump version') {
+            steps {
+                script {
+                    dt2_semanticRelease()
+                }
+            }
+        }
     }
 }
