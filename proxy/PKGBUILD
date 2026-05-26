@@ -20,6 +20,7 @@ depends__apt=(
   "carbonio-nginx"
   "carbonio-prometheus-nginx-exporter"
   "sqlite3"
+  "service-discover-base"
 )
 depends__yum=(
   "carbonio-certbot"
@@ -27,6 +28,7 @@ depends__yum=(
   "carbonio-nginx"
   "carbonio-prometheus-nginx-exporter"
   "sqlite"
+  "service-discover-base"
 )
 source=(
   "211-carbonio-clamav-signature-provider-setup.sh"
