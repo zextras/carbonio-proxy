@@ -370,7 +370,7 @@ server
         proxy_set_header Host            $virtual_host;
 
         # Location header fudging
-        # Because NGINX SSL speaks plain HTTP to upstream, zimbraReverseProxyAvailableLookupTargetstherefore any
+        # Because NGINX SSL speaks plain HTTP to upstream, therefore any
         # redirects to http:// coming from the upstream need to be fudged
         # to https://
         #
