@@ -1,85 +1,106 @@
 library(
-        identifier: 'jenkins-dt2-lib@main',
-        retriever: modernSCM([
-                $class: 'GitSCMSource',
-                credentialsId: 'jenkins-integration-with-github-account',
-                remote: 'git@github.com:zextras/jenkins-dt2-lib.git',
-        ])
+    identifier: 'jenkins-lib-common@v2.8.8',
+    retriever: modernSCM([
+        $class: 'GitSCMSource',
+        credentialsId: 'jenkins-integration-with-github-account',
+        remote: 'git@github.com:zextras/jenkins-lib-common.git',
+    ])
 )
 
-String profile = env.TAG_NAME ? '-Pprod' : ''
+properties(defaultPipelineProperties())
 
-defaultPipeline {
-
-    withMaven {
-        withEnv([
-                'MAVEN_OPTS=-Xmx2g',
-                "MAVEN_ARGS=-B -s ${SETTINGS_PATH} -Ddebug=0 -Dis-production=1 ${profile} -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn",
-        ]) {
-            stage('Build') {
-                sh 'mvn -DskipTests=true clean install'
-            }
-
-            stage('Tests') {
-                sh 'mvn verify'
-                junit allowEmptyResults: true,
-                        testResults: '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
-            }
-
-            stage('Sonarqube Analysis') {
-                withSonarQube {
-                    sh 'mvn sonar:sonar -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports'
-                }
-            }
+pipeline {
+    agent {
+        node {
+            label 'zextras-v1'
         }
     }
 
-    stage('Build and upload artifacts') {
-        parallel(
-                'Packages': {
-                    stage('Build deb/rpm') {
-                        buildStage(buildFlags: ' -ds ', useDefaultExcludes: false)
-                    }
-                    stage('Publish packages') {
-                        withJfrog {
-                            uploadStage(packages: yapHelper.resolvePackageNames())
+    environment {
+        JAVA_OPTS = '-Dfile.encoding=UTF8'
+        jenkins_build = 'true'
+        LC_ALL = 'C.UTF-8'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '25'))
+        disableConcurrentBuilds()
+        skipDefaultCheckout()
+        timeout(time: 2, unit: 'HOURS')
+    }
+
+    stages {
+        stage('Setup') {
+            steps {
+                checkout scm
+                gitMetadata()
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                script {
+                    gitleaksStage()
+                }
+            }
+        }
+
+        stage('Maven') {
+            steps {
+                script {
+                    mavenStage(
+                        profile: env.TAG_NAME ? '-Pprod' : '',
+                        mvnOpts: ['Ddebug': '0', 'Dis-production': '1'],
+                        extraSonarArgs: '-Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports'
+                    )
+                }
+            }
+        }
+
+        stage('Build and upload artifacts') {
+            parallel {
+                stage('Packages') {
+                    stages {
+                        stage('Build deb/rpm') {
+                            steps {
+                                buildStage(buildFlags: ' -ds ', useDefaultExcludes: false)
+                            }
                         }
-                    }
-                },
-                'Docker images': {
-                    stage('Build and Publish Docker images') {
-                        withCredentials([usernamePassword(
-                                credentialsId: 'artifactory-jenkins-gradle-properties-splitted',
-                                usernameVariable: 'USERNAME',
-                                passwordVariable: 'SECRET',
-                        )]) {
-                            try {
-                                sh '''
-set +x
-cat > auth.conf <<EOF
-machine zextras.jfrog.io
-login $USERNAME
-password $SECRET
-EOF
-'''
-                                dockerStage([
-                                        dockerfile: 'Dockerfile',
-                                        imageName : 'carbonio-proxy',
-                                        ocLabels  : [title: 'Carbonio Proxy'],
-                                        platforms : ['linux/amd64', 'linux/arm64'] as Set,
-                                ])
-                                dockerStage([
-                                        dockerfile: 'Dockerfile-sidecar',
-                                        imageName : 'carbonio-proxy-sidecar',
-                                        ocLabels  : [title: 'Carbonio Proxy Sidecar'],
-                                        platforms : ['linux/amd64', 'linux/arm64'] as Set,
-                                ])
-                            } finally {
-                                sh 'rm -f auth.conf'
+                        stage('Upload artifacts') {
+                            tools {
+                                jfrog 'jfrog-cli'
+                            }
+                            steps {
+                                uploadStage()
                             }
                         }
                     }
-                },
-        )
+                }
+                stage('Docker images') {
+                    steps {
+                        dockerStage([
+                                dockerfile: 'Dockerfile',
+                                imageName : 'carbonio-proxy',
+                                ocLabels  : [title: 'Carbonio Proxy'],
+                                platforms : ['linux/amd64', 'linux/arm64'] as Set,
+                        ])
+                        dockerStage([
+                                dockerfile: 'Dockerfile-sidecar',
+                                imageName : 'carbonio-proxy-sidecar',
+                                ocLabels  : [title: 'Carbonio Proxy Sidecar'],
+                                platforms : ['linux/amd64', 'linux/arm64'] as Set,
+                        ])
+                    }
+                }
+            }
+        }
+
+        stage('Bump version') {
+            steps {
+                script {
+                    semanticRelease()
+                }
+            }
+        }
     }
 }
