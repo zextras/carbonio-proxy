@@ -755,7 +755,7 @@ server
     ${web.ews.upstream.disable}     proxy_redirect http://$relhost/ https://$http_host/;
     ${web.ews.upstream.disable} }
 
-    location ~* /(service|principals|dav|\.well-known|home|shf|user|certauth|spnegoauth)/
+    location ~* /(service|principals|dav|\.well-known|home|shf|user|certauth|spnegoauth)($|/)
     {
         # Memcached poisoning with unauthenticated request
         if ($request_uri ~* "%0A|%0D") {
