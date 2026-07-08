@@ -134,11 +134,12 @@ server
         alias /opt/zextras/web/$1;
     }
 
-    location ~/.well-known/(.*)
+    # Serve ACME challenges from disk; other well-known URIs proxy to mailbox.
+    location ~ /\.well-known/acme-challenge/(.*)
     {
         ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias /opt/zextras/.well-known/$1;
+        alias /opt/zextras/.well-known/acme-challenge/$1;
     }
 
     location /meeting
