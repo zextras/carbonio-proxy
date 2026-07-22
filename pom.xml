@@ -16,6 +16,11 @@
   <profiles>
     <profile>
       <id>prod</id>
+      <activation>
+        <property>
+          <name>env.TAG_NAME</name>
+        </property>
+      </activation>
       <properties>
         <changelist></changelist>
       </properties>
@@ -356,5 +361,8 @@
     <ldap.config.dir>${ldap.dir}/config</ldap.config.dir>
     <mailbox.version>4.27.3</mailbox.version>
     <sonar.version>5.6.0.6792</sonar.version>
+    <sonar.junit.reportPaths>target/surefire-reports,target/failsafe-reports</sonar.junit.reportPaths>
+    <!-- Artifacts ship as deb/rpm packages and Docker images, not to a Maven repo -->
+    <maven.deploy.skip>true</maven.deploy.skip>
   </properties>
 </project>
