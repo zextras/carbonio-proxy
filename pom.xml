@@ -9,23 +9,14 @@
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.zextras</groupId>
+    <artifactId>maven-ci-parent</artifactId>
+    <version>1.1.0</version>
+  </parent>
   <packaging>jar</packaging>
-  <groupId>com.zextras</groupId>
   <artifactId>proxyconfgen</artifactId>
   <version>${revision}${changelist}</version>
-  <profiles>
-    <profile>
-      <id>prod</id>
-      <activation>
-        <property>
-          <name>env.TAG_NAME</name>
-        </property>
-      </activation>
-      <properties>
-        <changelist></changelist>
-      </properties>
-    </profile>
-  </profiles>
   <repositories>
     <repository>
       <id>zextras-public-release</id>
@@ -351,7 +342,6 @@
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Maven revision: https://maven.apache.org/maven-ci-friendly.html -->
-    <changelist>-SNAPSHOT</changelist>
     <revision>4.14.6</revision>
     <maven-exec-plugin.version>3.1.0</maven-exec-plugin.version>
     <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
