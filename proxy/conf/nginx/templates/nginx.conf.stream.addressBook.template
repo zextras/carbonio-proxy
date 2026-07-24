@@ -18,5 +18,6 @@ server
     ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
     proxy_pass address-book;
     # Address Book is exposed with TLS natively
+    proxy_protocol on;
     proxy_ssl on;
 }
