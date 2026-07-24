@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-lib-common@v2.11.3',
+    identifier: 'jenkins-lib-common@v4.0.0',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -48,11 +48,7 @@ pipeline {
         stage('Maven') {
             steps {
                 script {
-                    mavenStage(
-                        profile: env.TAG_NAME ? '-Pprod' : '',
-                        mvnOpts: ['Ddebug': '0', 'Dis-production': '1'],
-                        extraSonarArgs: '-Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports'
-                    )
+                    mavenStage()
                 }
             }
         }

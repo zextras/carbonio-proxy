@@ -9,18 +9,14 @@
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.zextras</groupId>
+    <artifactId>maven-ci-parent</artifactId>
+    <version>1.1.0</version>
+  </parent>
   <packaging>jar</packaging>
-  <groupId>com.zextras</groupId>
   <artifactId>proxyconfgen</artifactId>
   <version>${revision}${changelist}</version>
-  <profiles>
-    <profile>
-      <id>prod</id>
-      <properties>
-        <changelist></changelist>
-      </properties>
-    </profile>
-  </profiles>
   <repositories>
     <repository>
       <id>zextras-public-release</id>
@@ -346,7 +342,6 @@
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Maven revision: https://maven.apache.org/maven-ci-friendly.html -->
-    <changelist>-SNAPSHOT</changelist>
     <revision>4.14.7</revision>
     <maven-exec-plugin.version>3.1.0</maven-exec-plugin.version>
     <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
@@ -356,5 +351,8 @@
     <ldap.config.dir>${ldap.dir}/config</ldap.config.dir>
     <mailbox.version>4.27.3</mailbox.version>
     <sonar.version>5.6.0.6792</sonar.version>
+    <sonar.junit.reportPaths>target/surefire-reports,target/failsafe-reports</sonar.junit.reportPaths>
+    <!-- Artifacts ship as deb/rpm packages and Docker images, not to a Maven repo -->
+    <maven.deploy.skip>true</maven.deploy.skip>
   </properties>
 </project>
