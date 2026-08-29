@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.24
+# syntax=docker/dockerfile:1.26
 
 # Stage 1: runs natively on BUILDPLATFORM (amd64 CI builder) — no QEMU.
 # Downloads carbonio-nginx + runtime libs for TARGETARCH via apt-get download
