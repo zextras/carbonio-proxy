@@ -16,7 +16,8 @@ class ListenAddressesVar extends ProxyConfVar {
         addresses,
         ProxyConfValueType.CUSTOM,
         ProxyConfOverride.CUSTOM,
-        "List of ip addresses nginx needs to listen to catch all unknown server names");
+        "List of IP addresses nginx needs to listen on to catch all unknown server names (taken from"
+            + " the deprecated zimbraVirtualIPAddress domain attribute)");
   }
 
   @Override

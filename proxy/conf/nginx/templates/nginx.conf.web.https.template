@@ -11,6 +11,9 @@ server
 {
     server_name             ${vhn};
 
+    # The listen address prefix is empty (all addresses, certificate chosen via SNI) unless
+    # zimbraReverseProxySNIEnabled is FALSE, in which case the deprecated zimbraVirtualIPAddress
+    # of the domain is used. IP-based virtual hosting is deprecated in favour of SNI.
     ${core.ipboth.enabled}listen                  ${vip}${web.https.port} ssl;
     ${core.ipv4only.enabled}listen                  ${vip}${web.https.port} ssl;
     ${core.ipv6only.enabled}listen                  ${vip}${web.https.port} ssl;

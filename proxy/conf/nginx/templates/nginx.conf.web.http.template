@@ -11,6 +11,9 @@ server
 {
     server_name             ${vhn};
 
+    # The listen address prefix is empty (all addresses, virtual host selected by server_name)
+    # unless zimbraReverseProxySNIEnabled is FALSE, in which case the deprecated
+    # zimbraVirtualIPAddress of the domain is used. IP-based virtual hosting is deprecated.
     ${core.ipboth.enabled}listen                  ${vip}${web.http.port};
     ${core.ipv4only.enabled}listen                  ${vip}${web.http.port};
     ${core.ipv6only.enabled}listen                  ${vip}${web.http.port};
