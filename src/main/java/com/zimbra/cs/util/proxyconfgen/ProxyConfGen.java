@@ -85,6 +85,15 @@ public class ProxyConfGen {
   private static final int DEFAULT_SERVERS_NAME_HASH_MAX_SIZE = 512;
   private static final int DEFAULT_SERVERS_NAME_HASH_BUCKET_SIZE = 64;
   private static final Log LOG = LogFactory.getLog(ProxyConfGen.class);
+
+  /**
+   * Legacy Virtual IP attributes, deprecated in CO-3691. ZAttrProvisioning no longer generates
+   * constants for deprecated attributes, but existing domains may still carry values, so the
+   * proxy keeps honouring them (with a warning) until the mechanism is removed.
+   */
+  static final String A_ZIMBRA_VIRTUAL_IP_ADDRESS = "zimbraVirtualIPAddress";
+
+  static final String A_ZIMBRA_REVERSE_PROXY_SNI_ENABLED = "zimbraReverseProxySNIEnabled";
   private static final Options mOptions = new Options();
   private static final String SSL_CRT_EXT = ".crt";
   private static final String SSL_KEY_EXT = ".key";
@@ -253,7 +262,7 @@ public class ProxyConfGen {
 
     final Set<String> attrsNeeded = new HashSet<>();
     attrsNeeded.add(ZAttrProvisioning.A_zimbraVirtualHostname);
-    attrsNeeded.add(ZAttrProvisioning.A_zimbraVirtualIPAddress);
+    attrsNeeded.add(A_ZIMBRA_VIRTUAL_IP_ADDRESS);
     attrsNeeded.add(ZAttrProvisioning.A_zimbraSSLCertificate);
     attrsNeeded.add(ZAttrProvisioning.A_zimbraSSLPrivateKey);
     attrsNeeded.add(ZAttrProvisioning.A_zimbraReverseProxyClientCertMode);
@@ -273,8 +282,7 @@ public class ProxyConfGen {
         entry -> {
           String domainName = entry.getAttr(ZAttrProvisioning.A_zimbraDomainName);
           String[] virtualHostnames = entry.getMultiAttr(ZAttrProvisioning.A_zimbraVirtualHostname);
-          String[] virtualIPAddresses =
-              entry.getMultiAttr(ZAttrProvisioning.A_zimbraVirtualIPAddress);
+          String[] virtualIPAddresses = entry.getMultiAttr(A_ZIMBRA_VIRTUAL_IP_ADDRESS);
           String certificate = entry.getAttr(ZAttrProvisioning.A_zimbraSSLCertificate);
           String privateKey = entry.getAttr(ZAttrProvisioning.A_zimbraSSLPrivateKey);
           String clientCertMode =
@@ -304,6 +312,14 @@ public class ProxyConfGen {
 
           boolean lookupVIP = true; // lookup virtual IP from DNS or /etc/hosts
           if (virtualIPAddresses.length > 0) {
+            LOG.warn(
+                "domain "
+                    + domainName
+                    + " has "
+                    + A_ZIMBRA_VIRTUAL_IP_ADDRESS
+                    + " set: IP-based virtual hosting is deprecated, use SNI with "
+                    + ZAttrProvisioning.A_zimbraVirtualHostname
+                    + " instead");
             Collections.addAll(mListenAddresses, virtualIPAddresses);
             lookupVIP = false;
           }
@@ -688,8 +704,12 @@ public class ProxyConfGen {
     }
 
     boolean sni =
-        ProxyConfVar.serverSource.getBooleanAttr(
-            ZAttrProvisioning.A_zimbraReverseProxySNIEnabled, true);
+        ProxyConfVar.serverSource.getBooleanAttr(A_ZIMBRA_REVERSE_PROXY_SNI_ENABLED, true);
+    if (!sni) {
+      LOG.warn(
+          A_ZIMBRA_REVERSE_PROXY_SNI_ENABLED
+              + " is FALSE: disabling SNI to use IP-based virtual hosts is deprecated");
+    }
     if (vip instanceof Inet6Address) {
       // ipv6 address has to be enclosed with [ ]
       if (sni) {
