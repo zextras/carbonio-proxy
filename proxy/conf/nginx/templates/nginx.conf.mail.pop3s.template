@@ -4,6 +4,10 @@
 server
 {
     server_name         ${vhn};
+    # The listen address prefix is empty (all addresses) unless zimbraReverseProxySNIEnabled is
+    # FALSE, in which case the deprecated zimbraVirtualIPAddress of the domain is used. IP-based
+    # virtual hosting is deprecated; note that the nginx mail module cannot select a certificate
+    # by SNI, so a per-domain certificate here only works with the legacy Virtual IP setup.
     ${core.ipboth.enabled}listen              ${vip}${mail.pop3s.port} ssl;
     ${core.ipv4only.enabled}listen            ${vip}${mail.pop3s.port} ssl;
     ${core.ipv6only.enabled}listen            ${vip}${mail.pop3s.port} ssl;
