@@ -24,6 +24,15 @@ http
 
     include ${core.includes}/${core.cprefix}.web.upstreams;
 
+    # Flag image/media/embed requests outside asset paths, so HTML content cannot trigger
+    # authenticated GETs via <img>, CSS url() and similar. Sec-Fetch-Dest is set by the browser
+    # (HTTPS only) and cannot be forged by page markup.
+    map "$http_sec_fetch_dest:$uri" $untrusted_subresource {
+        default 0;
+        "~^(image|audio|video|track|embed|object):/(static|service/home|service/preview|services/files/preview|services/docs|services/chats/(preview|attachments|rooms/[^/]+/picture)|meeting|files/public/link/access/assets)(/|$)" 0;
+        "~^(image|audio|video|track|embed|object):" 1;
+    }
+
     # Enable Access logs for web traffic
     log_format upstream '$remote_addr:$remote_port - $remote_user [$time_local]  '
       '"$request_method $scheme://$host$request_uri $server_protocol" $status $bytes_sent '
