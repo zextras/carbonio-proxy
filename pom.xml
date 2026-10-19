@@ -12,29 +12,17 @@
   <parent>
     <groupId>com.zextras</groupId>
     <artifactId>maven-ci-parent</artifactId>
-    <version>1.1.0</version>
+    <version>1.3.0</version>
   </parent>
   <packaging>jar</packaging>
   <artifactId>proxyconfgen</artifactId>
   <version>${revision}${changelist}</version>
   <repositories>
     <repository>
-      <id>zextras-public-release</id>
-      <name>Zextras public maven release repository</name>
-      <url>https://zextras.jfrog.io/artifactory/public-maven-repo</url>
+      <id>zextras-nexus</id>
+      <url>https://repo.zextras.tools/repository/java-sdk/</url>
       <releases>
         <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>zextras-public-snapshots</id>
-      <name>Zextras public maven snapshot repository</name>
-      <url>https://zextras.jfrog.io/artifactory/maven-snapshot</url>
-      <releases>
-        <enabled>false</enabled>
       </releases>
       <snapshots>
         <enabled>true</enabled>
