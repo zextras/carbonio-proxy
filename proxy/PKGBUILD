@@ -1,5 +1,5 @@
 pkgname="carbonio-proxy"
-pkgver="4.14.12"
+pkgver="4.14.13"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 arch=('any')
