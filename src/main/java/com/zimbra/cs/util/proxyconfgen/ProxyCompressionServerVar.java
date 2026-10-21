@@ -31,6 +31,7 @@ public class ProxyCompressionServerVar extends ProxyConfVar {
       .append(String.format("%sapplication/javascript%n", TYPE_DIRECTIVE_SEPARATOR))
       .append(String.format("%sapplication/x-javascript%n", TYPE_DIRECTIVE_SEPARATOR))
       .append(String.format("%sapplication/json%n", TYPE_DIRECTIVE_SEPARATOR))
+      .append(String.format("%sapplication/graphql-response+json%n", TYPE_DIRECTIVE_SEPARATOR))
       .append(String.format("%sapplication/ld+json%n", TYPE_DIRECTIVE_SEPARATOR))
       .append(String.format("%sapplication/manifest+json%n", TYPE_DIRECTIVE_SEPARATOR))
       .append(String.format("%sapplication/rdf+xml%n", TYPE_DIRECTIVE_SEPARATOR))
