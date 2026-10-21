@@ -1,5 +1,5 @@
 pkgname="carbonio-proxy"
-pkgver="4.14.11"
+pkgver="4.14.13"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 arch=('any')
@@ -17,6 +17,7 @@ priority="optional"
 depends__apt=(
   "carbonio-certbot"
   "carbonio-core"
+  "carbonio-mailbox-jar"
   "carbonio-nginx"
   "carbonio-prometheus-nginx-exporter"
   "sqlite3"
@@ -25,6 +26,7 @@ depends__apt=(
 depends__yum=(
   "carbonio-certbot"
   "carbonio-core"
+  "carbonio-mailbox-jar"
   "carbonio-nginx"
   "carbonio-prometheus-nginx-exporter"
   "sqlite"

@@ -24,7 +24,7 @@ ARG PROXY_JAVA_ARGS="-Dfile.encoding=UTF-8 -server \
               -Dzimbra.config=/localconfig/localconfig.xml \
               -Dzimbra.native.required=false \
               -Dlog4j.configurationFile=/opt/zextras/conf/log4j.properties \
-              -cp /opt/zextras/proxyconfgen/proxyconfgen.jar"
+              -cp '/opt/zextras/mailbox/jars/*:/opt/zextras/proxyconfgen/proxyconfgen.jar'"
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates openssl \
