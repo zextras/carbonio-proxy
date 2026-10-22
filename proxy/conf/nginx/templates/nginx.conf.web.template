@@ -24,6 +24,27 @@ http
 
     include ${core.includes}/${core.cprefix}.web.upstreams;
 
+    # Flag subresource requests (image, font, style, script, media, workers...) outside asset
+    # paths, so HTML content cannot trigger authenticated GETs via <img>, CSS url(), @import and
+    # similar. Navigations, frames, fetch/XHR and websockets are never flagged. Sec-Fetch-Dest is
+    # set by the browser (HTTPS only) and cannot be forged by page markup; requests without it
+    # match only the default. Regexes are evaluated in order, first match wins.
+    map "$http_sec_fetch_dest:$uri" $untrusted_subresource {
+        default 0;
+        "~^(document|iframe|frame|empty|websocket):" 0;
+        "~^[a-z]+:/static/" 0;
+        "~^[a-z]+:/service/home/~/" 0;
+        "~^[a-z]+:/service/preview/" 0;
+        "~^[a-z]+:/services/files/preview/" 0;
+        "~^[a-z]+:/services/docs/editor/" 0;
+        "~^[a-z]+:/services/chats/preview/" 0;
+        "~^[a-z]+:/services/chats/attachments/" 0;
+        "~^[a-z]+:/services/chats/rooms/[^/]+/picture$" 0;
+        "~^[a-z]+:/meeting(/|$)" 0;
+        "~^[a-z]+:/files/public/link/access/assets/" 0;
+        "~^[a-z]+:" 1;
+    }
+
     # Enable Access logs for web traffic
     log_format upstream '$remote_addr:$remote_port - $remote_user [$time_local]  '
       '"$request_method $scheme://$host$request_uri $server_protocol" $status $bytes_sent '

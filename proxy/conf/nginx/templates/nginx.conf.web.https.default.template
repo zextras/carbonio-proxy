@@ -67,6 +67,11 @@ server
     # response headers
     ${web.add.headers.default}
 
+    # Block subresource requests flagged by $untrusted_subresource (nginx.conf.web)
+    if ($untrusted_subresource) {
+        return 403;
+    }
+
     set $login_upstream     ${web.upstream.login.target};
     if ($http_cookie ~ "ZM_AUTH_TOKEN=") {
         set $login_upstream    ${web.upstream.webclient.target};
