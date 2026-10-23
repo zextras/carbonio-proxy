@@ -36,6 +36,7 @@ http
         "~^[a-z]+:/service/home/~/" 0;
         "~^[a-z]+:/service/preview/" 0;
         "~^[a-z]+:/services/files/preview/" 0;
+        "~^(video|audio):/services/files/download/" 0;
         "~^[a-z]+:/services/docs/editor/" 0;
         "~^[a-z]+:/services/chats/preview/" 0;
         "~^[a-z]+:/services/chats/attachments/" 0;
