@@ -30,7 +30,7 @@ class WebCustomLogoutRedirectVarTest {
         new WebCustomLogoutRedirectVar(
             provisioning, keyword, attribute, defaultValue, description, customUrl);
     var.update();
-    assertEquals("return 307 /static/login/", var.mValue);
+    assertEquals("return 303 /static/login/", var.mValue);
   }
 
   @Test
