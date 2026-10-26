@@ -69,10 +69,11 @@ server
       return 404;
     }
 
-    location ~/logout
+    location = /logout
     {
         # Logout changes state, so it is accepted only via POST
         if ($request_method != POST) {
+            add_header Allow "POST" always;
             return 405;
         }
 
