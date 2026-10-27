@@ -11,8 +11,9 @@ import com.zimbra.cs.account.Provisioning;
  * <p>The custom logout redirect configuration variable is used when a user logs out from the web
  * application, and the web proxy needs to handle the logout redirection. Upon calling update, if
  * the custom URL is provided, the web proxy will return a 200 response (this is intentional as the
- * redirect in this case will be handled by UI) with no redirection. Otherwise, it will return a 307
- * Temporary Redirect response with the default URL provided during initialization.
+ * redirect in this case will be handled by UI) with no redirection. Otherwise, it will return a 303
+ * See Other response with the default URL provided during initialization, so the redirect is
+ * always followed with GET, also when logout is requested with POST.
  *
  * @author Keshav Bhatt
  * @see ProxyConfVar
@@ -44,7 +45,7 @@ class WebCustomLogoutRedirectVar extends ProxyConfVar {
   public void update() {
     mValue =
         ProxyConfUtil.isEmptyString(mCustomUrl)
-            ? String.format("return 307 %s", mDefault)
+            ? String.format("return 303 %s", mDefault)
             : "return 200";
   }
 }

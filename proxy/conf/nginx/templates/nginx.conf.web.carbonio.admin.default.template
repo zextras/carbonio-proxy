@@ -133,8 +133,14 @@ server
         internal;
     }
 
-    location ~/logout
+    location = /logout
     {
+        # Logout changes state, so it is accepted only via POST
+        if ($request_method != POST) {
+            add_header Allow "POST" always;
+            return 405;
+        }
+
         add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; Secure; SameSite=Strict";
         add_header Set-Cookie "ZX_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; Secure; SameSite=Strict";
         add_header Set-Cookie "JSESSIONID=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; Secure; SameSite=Strict";
