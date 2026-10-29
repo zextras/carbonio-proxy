@@ -23,6 +23,9 @@ sed -i -e "s/127.78.0.1:20009/${CARBONIO_STORAGES_HOST}/g" /opt/zextras/conf/ngi
 sed -i -e "s/127.78.0.1:20010/${CARBONIO_NOTIFICATION_PUSH_HOST}/g" /opt/zextras/conf/nginx/templates/nginx.conf.web.upstreams.template
 sed -i -e "s/127.78.0.1:20011/${CARBONIO_CERTIFICATE_MANAGER_HOST}/g" /opt/zextras/conf/nginx/templates/nginx.conf.web.upstreams.template
 sed -i -e "s/127.78.0.1:20012/${CARBONIO_CATALOG_HOST}/g" /opt/zextras/conf/nginx/templates/nginx.conf.web.upstreams.template
+sed -i -e "s/127.78.0.1:20005/${CARBONIO_MESSAGE_DISPATCHER_XMPP_HOST}/g" /opt/zextras/conf/nginx/templates/nginx.conf.stream.template
+sed -i -e "s/127.78.0.1:20006/${CARBONIO_ADDRESS_BOOK_HOST}/g" /opt/zextras/conf/nginx/templates/nginx.conf.stream.template
+sed -i -e "s/127.78.0.1:20014/${CARBONIO_MEMCACHED_HOST}/g" /opt/zextras/conf/nginx/templates/nginx.conf.memcache.template
 
 
 SERVER_EXISTS=$(/usr/bin/zmprov -l gs "${HOSTNAME}" 2>&1)
