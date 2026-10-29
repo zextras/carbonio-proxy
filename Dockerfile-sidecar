@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.24
-FROM registry.dev.zextras.com/dev/carbonio-sidecar:devel
+FROM registry.dev.zextras.com/dev/carbonio-sidecar:main
 
 # Service registration
 COPY proxy/carbonio-proxy.hcl /consul/config/
