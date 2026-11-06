@@ -1,5 +1,5 @@
 # NGINX POP/IMAP proxy configuration file for use with Zimbra
-# 
+#
 
 working_directory ${core.workdir};
 include ${core.includes}/${core.cprefix}.main;

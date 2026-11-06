@@ -1,14 +1,14 @@
 mail
 {
     # mail proxy connection timeout
-    proxy_ctimeout              ${mail.ctimeout};
+    proxy_ctimeout ${mail.ctimeout};
 
     # pass error messages from the backend server to the client
     # if true, the error messages are passed to the client verbatim, else
     # nginx logs the original error message in its log file and sends back
     # a generic error message to the client
     #
-    proxy_pass_error_message    ${mail.passerrors};
+    proxy_pass_error_message ${mail.passerrors};
 
     # HTTP lookup handlers that will return the route information for a
     # pop3/imap login
@@ -21,11 +21,11 @@ mail
 
     # IMAP/POP3 greeting messages
     #
-    imap_greeting            "${mail.imap.greeting}";
-    pop3_greeting            "${mail.pop3.greeting}";
+    imap_greeting "${mail.imap.greeting}";
+    pop3_greeting "${mail.pop3.greeting}";
 
-    pop3_capabilities        ${mail.pop3capa};
-    imap_capabilities        ${mail.imapcapa};
+    pop3_capabilities ${mail.pop3capa};
+    imap_capabilities ${mail.imapcapa};
 
     # IMAP4 ID Extension support (RFC 2971)
     # Use the imap_id directive to specify the string that should be sent
@@ -45,7 +45,7 @@ mail
     # according to RFC 2971, is permissible in lieu of the field-value list
     # The imap_id directive may be overridden in a server block
     #
-    imap_id         ${mail.imapid};
+    imap_id ${mail.imapid};
 
     # Default realm (kerberos)
     # For GSSAPI authentication, when the server's realm is the same as
@@ -55,7 +55,7 @@ mail
     # principal. Therefore, the default realm name must be specified here
     # so that NGINX can append it to the authenticating principal for GSSAPI
     #
-    default_realm           "${mail.defaultrealm}";
+    default_realm "${mail.defaultrealm}";
 
     # Resolve IP address to SASL server name (kerberos)
     # For GSSAPI, in cases of multi-homed hosts, it may be that the proxy
@@ -68,7 +68,7 @@ mail
     # service principal
     # If not specified, this configuration defaults to off
     #
-    sasl_host_from_ip       ${mail.sasl_host_from_ip};
+    sasl_host_from_ip ${mail.sasl_host_from_ip};
 
     # sasl_app_name
     # This is the application name which nginx will use when initializing
@@ -77,7 +77,7 @@ mail
     # provided here is used for where to find the default configuration file
     # If not specified, sasl_app_name defaults to "nginx"
     #
-    sasl_app_name           "${mail.saslapp}";
+    sasl_app_name "${mail.saslapp}";
 
     # Login rate limiting directives
     #
@@ -102,7 +102,7 @@ mail
     # this directive
     # If this value is set to 0, then no throttling will take place for any IP
     #
-    mail_login_ip_max               ${mail.ipmax};
+    mail_login_ip_max ${mail.ipmax};
 
     # mail_login_ip_ttl
     #
@@ -115,7 +115,7 @@ mail
     # The semantics for such a configuration would then be -
     # "allow maximum 1000 users per hour from any given IP address"
     #
-    mail_login_ip_ttl               ${mail.ipttl};
+    mail_login_ip_ttl ${mail.ipttl};
 
     # mail_login_ip_imap_max
     #
@@ -139,7 +139,7 @@ mail
     # If this value is set to 0, the handling of imap connections will fall back to
     # using the mail_login_ip_max setting
     #
-    mail_login_ip_imap_max          ${mail.imapmax};
+    mail_login_ip_imap_max ${mail.imapmax};
 
     # mail_login_ip_imap_ttl
     #
@@ -152,7 +152,7 @@ mail
     # The semantics for such a configuration would then be -
     # "allow maximum 1000 IMAP users per hour from any given IP address"
     #
-    mail_login_ip_imap_ttl          ${mail.imapttl};
+    mail_login_ip_imap_ttl ${mail.imapttl};
 
     # mail_login_ip_pop3_max
     #
@@ -176,7 +176,7 @@ mail
     # If this value is set to 0, the handling of pop3 connections will fall back to
     # using the mail_login_ip_max setting
     #
-    mail_login_ip_pop3_max          ${mail.pop3max};
+    mail_login_ip_pop3_max ${mail.pop3max};
 
     # mail_login_ip_pop3_ttl
     #
@@ -189,14 +189,14 @@ mail
     # The semantics for such a configuration would then be -
     # "allow maximum 1000 IMAP users per hour from any given IP address"
     #
-    mail_login_ip_pop3_ttl          ${mail.pop3ttl};
+    mail_login_ip_pop3_ttl ${mail.pop3ttl};
 
     # Define a textual message that should be displayed to the user when
     # his/her connection is rejected based on IP overusage
     # This message will be encapsulated in the proper protocol specific
     # response to the client ("* BYE" for IMAP, and "-ERR" for POP3)
     #
-    mail_login_ip_rejectmsg         "${mail.iprej}";
+    mail_login_ip_rejectmsg "${mail.iprej}";
 
     # Similar semantics for Rate Limiting User Logins
     # Setting mail_login_user_max to 100 and mail_login_user_ttl to 3600s
@@ -209,24 +209,24 @@ mail
     # because the login name itself is over-usage
     # A value of 0 indicates that no throttling will take place for any user
     #
-    mail_login_user_max             ${mail.usermax};
-    mail_login_user_ttl             ${mail.userttl};
-    mail_login_user_rejectmsg       "${mail.userrej}";
+    mail_login_user_max       ${mail.usermax};
+    mail_login_user_ttl       ${mail.userttl};
+    mail_login_user_rejectmsg "${mail.userrej}";
 
     # List of servers to which no ip throttling will be done
     ${mail.whitelistip.:servers}
 
     # Sets the time-to-live of the list of servers for which no ip throttling
     # will be done
-    mail_whitelist_ip_ttl   ${mail.whitelist.ttl};
+    mail_whitelist_ip_ttl ${mail.whitelist.ttl};
 
     # Issue POP3 XOIP before logging in to upstream (Audit purposes)
     #
-    proxy_issue_pop3_xoip   ${mail.upstream.pop3xoip};
+    proxy_issue_pop3_xoip ${mail.upstream.pop3xoip};
 
     # Issue IMAP ID before logging in to upstream (Audit purposes)
     #
-    proxy_issue_imap_id     ${mail.upstream.imapid};
+    proxy_issue_imap_id ${mail.upstream.imapid};
 
     # Supported SASL Authentication mechanisms
     #
@@ -246,11 +246,11 @@ mail
     # different LDAP attributes
     # Currently, only PLAIN and GSSAPI mechanisms are supported
     #
-    ${mail.imap.authplain.enabled}imap_auth          plain;
-    ${mail.imap.authgssapi.enabled}imap_auth         gssapi;
+    ${mail.imap.authplain.enabled}imap_auth plain;
+    ${mail.imap.authgssapi.enabled}imap_auth gssapi;
 
-    ${mail.pop3.authplain.enabled}pop3_auth          plain;
-    ${mail.pop3.authgssapi.enabled}pop3_auth         gssapi;
+    ${mail.pop3.authplain.enabled}pop3_auth plain;
+    ${mail.pop3.authgssapi.enabled}pop3_auth gssapi;
 
     # Specify whether to use literal strings while issuing the LOGIN command
     # to the upstream server. If set to on, then it means that NGINX will use
@@ -260,7 +260,7 @@ mail
     # server when using the LOGIN command
     # If not specified, imap_literalauth defaults to on
     #
-    imap_literalauth        ${mail.imap.literalauth};
+    imap_literalauth ${mail.imap.literalauth};
 
     # Auth Wait Interval
     # Specifies the time interval that NGINX will wait before rejecting an
@@ -270,30 +270,30 @@ mail
     # lookup handler.
     # If not specified, this value defaults to 10 seconds.
     #
-    zm_auth_wait               ${mail.authwait};
+    zm_auth_wait ${mail.authwait};
 
     # TLS configuration
     #
-    ssl_prefer_server_ciphers   ${mail.ssl.preferserverciphers};
-    ssl_certificate     ${ssl.crt.default};
-    ssl_certificate_key ${ssl.key.default};
+    ssl_prefer_server_ciphers ${mail.ssl.preferserverciphers};
+    ssl_certificate           ${ssl.crt.default};
+    ssl_certificate_key       ${ssl.key.default};
 
     # SSL Protocols & Ciphers configuration
     # Enabled protocols & Permitted ciphers. Ciphers are assigned in the formats supported by OpenSSL
     #
-    ssl_protocols           ${mail.ssl.protocols};
-    ssl_ciphers             ${mail.ssl.ciphers};
+    ssl_protocols ${mail.ssl.protocols};
+    ssl_ciphers    ${mail.ssl.ciphers};
 
     # SSL ECDH cipher curve configuration
-    ssl_ecdh_curve          ${mail.ssl.ecdh.curve};
+    ssl_ecdh_curve ${mail.ssl.ecdh.curve};
 
-    ${mail.imap.enabled} include ${core.includes}/${core.cprefix}.mail.imap.default;
-    ${mail.imap.enabled} include ${core.includes}/${core.cprefix}.mail.imap;
-    ${mail.imaps.enabled} include ${core.includes}/${core.cprefix}.mail.imaps.default;
-    ${mail.imaps.enabled} include ${core.includes}/${core.cprefix}.mail.imaps;
-    ${mail.pop3.enabled} include ${core.includes}/${core.cprefix}.mail.pop3.default;
-    ${mail.pop3.enabled} include ${core.includes}/${core.cprefix}.mail.pop3;
-    ${mail.pop3s.enabled} include ${core.includes}/${core.cprefix}.mail.pop3s.default;
-    ${mail.pop3s.enabled} include ${core.includes}/${core.cprefix}.mail.pop3s;
+    ${mail.imap.enabled}include ${core.includes}/${core.cprefix}.mail.imap.default;
+    ${mail.imap.enabled}include ${core.includes}/${core.cprefix}.mail.imap;
+    ${mail.imaps.enabled}include ${core.includes}/${core.cprefix}.mail.imaps.default;
+    ${mail.imaps.enabled}include ${core.includes}/${core.cprefix}.mail.imaps;
+    ${mail.pop3.enabled}include ${core.includes}/${core.cprefix}.mail.pop3.default;
+    ${mail.pop3.enabled}include ${core.includes}/${core.cprefix}.mail.pop3;
+    ${mail.pop3s.enabled}include ${core.includes}/${core.cprefix}.mail.pop3s.default;
+    ${mail.pop3s.enabled}include ${core.includes}/${core.cprefix}.mail.pop3s;
 
 }

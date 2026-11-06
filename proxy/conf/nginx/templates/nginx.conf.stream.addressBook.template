@@ -4,18 +4,18 @@ include ${core.includes}/${core.cprefix}.map.ssl;
 
 server
 {
-    ${core.ipboth.enabled}listen                  8636 ssl so_keepalive=on;
-    ${core.ipv4only.enabled}listen                8636 ssl so_keepalive=on;
-    ${core.ipv6only.enabled}listen                [::]:8636 ssl so_keepalive=on;
-    ssl_protocols           ${web.ssl.protocols};
+    ${core.ipboth.enabled}listen                    8636 ssl so_keepalive=on;
+    ${core.ipv4only.enabled}listen                    8636 ssl so_keepalive=on;
+    ${core.ipv6only.enabled}listen                    [::]:8636 ssl so_keepalive=on;
+    ssl_protocols            ${web.ssl.protocols};
     ssl_prefer_server_ciphers ${web.ssl.preferserverciphers};
-    ssl_ciphers             ${web.ssl.ciphers};
-    ssl_ecdh_curve          ${web.ssl.ecdh.curve};
-    ssl_certificate         $targetCert;
-    ssl_certificate_key     $targetCertKey;
-    proxy_ssl_protocols           ${web.ssl.protocols};
-    proxy_ssl_ciphers             ${web.ssl.ciphers};
-    ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
+    ssl_ciphers               ${web.ssl.ciphers};
+    ssl_ecdh_curve            ${web.ssl.ecdh.curve};
+    ssl_certificate           $targetCert;
+    ssl_certificate_key       $targetCertKey;
+    proxy_ssl_protocols      ${web.ssl.protocols};
+    proxy_ssl_ciphers         ${web.ssl.ciphers};
+    ${web.ssl.dhparam.enabled}ssl_dhparam               ${web.ssl.dhparam.file};
     proxy_pass address-book;
     # Address Book is exposed with TLS natively
     proxy_protocol on;

@@ -3,37 +3,37 @@
 #
 
 map $http_cookie $auth_token_cookie {
-    default       0;
-    "~ZM_AUTH_TOKEN="  1;
+    default           0;
+    "~ZM_AUTH_TOKEN=" 1;
 }
 
 server
 {
-    server_name             ${vhn};
+    server_name ${vhn};
 
     # The listen address prefix is empty (all addresses, certificate chosen via SNI) unless
     # zimbraReverseProxySNIEnabled is FALSE, in which case the deprecated zimbraVirtualIPAddress
     # of the domain is used. IP-based virtual hosting is deprecated in favour of SNI.
-    ${core.ipboth.enabled}listen                  ${vip}${web.https.port} ssl;
-    ${core.ipv4only.enabled}listen                  ${vip}${web.https.port} ssl;
-    ${core.ipv6only.enabled}listen                  ${vip}${web.https.port} ssl;
+    ${core.ipboth.enabled}listen ${vip}${web.https.port} ssl;
+    ${core.ipv4only.enabled}listen ${vip}${web.https.port} ssl;
+    ${core.ipv6only.enabled}listen ${vip}${web.https.port} ssl;
     http2 on;
 
-    ssl_protocols           ${web.ssl.protocols};
+    ssl_protocols            ${web.ssl.protocols};
     ssl_prefer_server_ciphers ${web.ssl.preferserverciphers};
-    ssl_session_cache       ${ssl.session.cachesize};
-    ssl_session_timeout     ${ssl.session.timeout};
-    ssl_ciphers             ${web.ssl.ciphers};
-    ssl_ecdh_curve          ${web.ssl.ecdh.curve};
-    ssl_certificate         ${ssl.crt};
-    ssl_certificate_key     ${ssl.key};
-    ssl_verify_client       ${ssl.clientcertmode};
-    proxy_ssl_protocols           ${web.ssl.protocols};
-    proxy_ssl_ciphers             ${web.ssl.ciphers};
-    ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
+    ssl_session_cache         ${ssl.session.cachesize};
+    ssl_session_timeout       ${ssl.session.timeout};
+    ssl_ciphers               ${web.ssl.ciphers};
+    ssl_ecdh_curve            ${web.ssl.ecdh.curve};
+    ssl_certificate           ${ssl.crt};
+    ssl_certificate_key       ${ssl.key};
+    ssl_verify_client         ${ssl.clientcertmode};
+    proxy_ssl_protocols      ${web.ssl.protocols};
+    proxy_ssl_ciphers         ${web.ssl.ciphers};
+    ${web.ssl.dhparam.enabled}ssl_dhparam               ${web.ssl.dhparam.file};
 
     # no maximum limit imposed on the size of the request body
-    client_max_body_size    0;
+    client_max_body_size 0;
 
     # nginx compression
     ${proxy.http.compression}
@@ -53,20 +53,20 @@ server
 
     location = ${web.login.upstream.url}/
     {
-      if ($auth_token_cookie = 0) {
-        return 307 ${web.carbonio.webui.login.url.vhost};
-      }
+        if ($auth_token_cookie = 0) {
+            return 307 ${web.carbonio.webui.login.url.vhost};
+        }
     }
 
     location = /robots.txt
     {
-      default_type text/plain;
-      return 200 "User-agent: *\nDisallow: /\n";
+        default_type text/plain;
+        return 200 "User-agent: *\nDisallow: /\n";
     }
 
     location = /favicon.ico
     {
-      return 404;
+        return 404;
     }
 
     location = /logout
@@ -144,10 +144,10 @@ server
         set $public_link 0;
         set $AUTH_COOKIE_MISSING 0;
         if ($uri ~* "^/services/files/((link|public)/.*|graphql/?)$")  {
-        set $public_link 1;
+            set $public_link 1;
         }
         if ($http_cookie !~ "ZM_AUTH_TOKEN=") {
-        set $AUTH_COOKIE_MISSING 1;
+            set $AUTH_COOKIE_MISSING 1;
         }
         set $require_login $public_link:$AUTH_COOKIE_MISSING;
         if ( $require_login ~* "0:1") {
@@ -304,7 +304,7 @@ server
         # Redirect user to login URL.
         # Defaults to /static/login/
         if ($auth_token_cookie = 0) {
-          return 307 ${web.carbonio.webui.login.url.vhost};
+            return 307 ${web.carbonio.webui.login.url.vhost};
         }
 
         # Begin stray redirect hack
@@ -334,9 +334,9 @@ server
         # End stray redirect hack
 
         # Proxy to Login Upstream
-        proxy_pass       $login_upstream;
+        proxy_pass         $login_upstream;
         proxy_http_version 1.0;
-        proxy_set_header  Connection close;
+        proxy_set_header   Connection close;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -390,9 +390,9 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Webclient Upstream
-        proxy_pass       ${web.upstream.webclient.target};
+        proxy_pass         ${web.upstream.webclient.target};
         proxy_http_version 1.0;
-        proxy_set_header  Connection close;
+        proxy_set_header   Connection close;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -445,11 +445,11 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream
-        proxy_pass          ${web.upstream.target};
+        proxy_pass ${web.upstream.target};
         proxy_http_version 1.0;
-        proxy_set_header  Connection close;
-        proxy_read_timeout  ${web.upstream.polling.timeout};
-        proxy_buffering     off;
+        proxy_set_header   Connection close;
+        proxy_read_timeout ${web.upstream.polling.timeout};
+        proxy_buffering    off;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -474,12 +474,12 @@ server
 
     location ^~ /zx/ws-
     {
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_pass ${web.upstream.zx};
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection "upgrade";
-      proxy_set_header Host $http_host;
-      proxy_http_version 1.1;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass ${web.upstream.zx};
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $http_host;
+        proxy_http_version 1.1;
     }
 
     location ^~ /zx/powerstore/
@@ -495,11 +495,11 @@ server
         proxy_set_header Host $http_host;
         proxy_pass ${web.upstream.zx};
         proxy_http_version 1.0;
-        proxy_set_header  Connection close;
+        proxy_set_header   Connection close;
     }
 
     location ~* /service/extension/drive/(.*)/(.*)$
-		{
+    {
         # Begin stray redirect hack
         #
         # In some cases, we may get a stray redirect out of the mailhost,
@@ -526,10 +526,10 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream servers, with large buffers
-        proxy_pass          ${web.upstream.target};
+        proxy_pass ${web.upstream.target};
         proxy_http_version 1.0;
-        proxy_set_header  Connection close;
-        proxy_read_timeout  ${web.upstream.noop.timeout};
+        proxy_set_header   Connection close;
+        proxy_read_timeout ${web.upstream.noop.timeout};
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -589,11 +589,11 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream
-        proxy_pass          ${web.upstream.target};
+        proxy_pass ${web.upstream.target};
         proxy_http_version 1.0;
-        proxy_set_header  Connection close;
-        proxy_read_timeout  ${web.upstream.noop.timeout};
-        proxy_buffering     off;
+        proxy_set_header   Connection close;
+        proxy_read_timeout ${web.upstream.noop.timeout};
+        proxy_buffering    off;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -646,11 +646,11 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream
-        proxy_pass          ${web.upstream.target};
+        proxy_pass ${web.upstream.target};
         proxy_http_version 1.0;
-        proxy_set_header  Connection close;
-        proxy_read_timeout  ${web.upstream.waitset.timeout};
-        proxy_buffering     off;
+        proxy_set_header   Connection close;
+        proxy_read_timeout ${web.upstream.waitset.timeout};
+        proxy_buffering    off;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -700,16 +700,16 @@ server
         }
 
         set $autodiscover_upstream     ${web.upstream.target};
-        ${web.ews.upstream.disable}    if ($http_user_agent ~ "ExchangeWebServices") {
-        ${web.ews.upstream.disable}       set $autodiscover_upstream    ${web.upstream.ews.target};
-        ${web.ews.upstream.disable}    }
+        ${web.ews.upstream.disable}if ($http_user_agent ~ "ExchangeWebServices") {
+            ${web.ews.upstream.disable}set $autodiscover_upstream    ${web.upstream.ews.target};
+        ${web.ews.upstream.disable}}
 
         # End stray redirect hack
 
         # Proxy to Zimbra Mailbox Upstream
-        proxy_pass       $autodiscover_upstream;
+        proxy_pass         $autodiscover_upstream;
         proxy_http_version 1.0;
-        proxy_set_header  Connection close;
+        proxy_set_header   Connection close;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -742,35 +742,35 @@ server
         deny all;
     }
 
-    ${web.ews.upstream.disable} location ~* ^/ews/Exchange.asmx
-    ${web.ews.upstream.disable} {
-    ${web.ews.upstream.disable}     # Proxy to Zimbra Upstream
-    ${web.ews.upstream.disable}     proxy_pass          ${web.upstream.ews.target};
-    ${web.ews.upstream.disable}     proxy_http_version 1.0;
-    ${web.ews.upstream.disable}     proxy_set_header  Connection close;
-    ${web.ews.upstream.disable}     proxy_read_timeout  ${web.upstream.polling.timeout};
-    ${web.ews.upstream.disable}     proxy_buffering     off;
-    ${web.ews.upstream.disable}
-    ${web.ews.upstream.disable}     # For audit
-    ${web.ews.upstream.disable}     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    ${web.ews.upstream.disable}
-    ${web.ews.upstream.disable}     # For Virtual Hosting
-    ${web.ews.upstream.disable}     set $virtual_host $http_host;
-    ${web.ews.upstream.disable}     if ($virtual_host = '') {
-    ${web.ews.upstream.disable}        set $virtual_host $server_name:$server_port;
-    ${web.ews.upstream.disable}     }
-    ${web.ews.upstream.disable}     proxy_set_header Host            $virtual_host;
-    ${web.ews.upstream.disable}
-    ${web.ews.upstream.disable}     # Location header fudging
-    ${web.ews.upstream.disable}     # Because NGINX SSL speaks plain HTTP to upstream, therefore any
-    ${web.ews.upstream.disable}     # redirects to http:// coming from the upstream need to be fudged
-    ${web.ews.upstream.disable}     # to https://
-    ${web.ews.upstream.disable}     #
-    ${web.ews.upstream.disable}     proxy_redirect http://$http_host/ https://$http_host/;
-    ${web.ews.upstream.disable}
-    ${web.ews.upstream.disable}     # Fudge inter-mailbox redirects (kludge)
-    ${web.ews.upstream.disable}     proxy_redirect http://$relhost/ https://$http_host/;
-    ${web.ews.upstream.disable} }
+    ${web.ews.upstream.disable}location ~* ^/ews/Exchange.asmx
+    ${web.ews.upstream.disable}{
+        ${web.ews.upstream.disable}# Proxy to Zimbra Upstream
+        ${web.ews.upstream.disable}proxy_pass ${web.upstream.ews.target};
+        ${web.ews.upstream.disable}proxy_http_version 1.0;
+        ${web.ews.upstream.disable}proxy_set_header   Connection close;
+        ${web.ews.upstream.disable}proxy_read_timeout ${web.upstream.polling.timeout};
+        ${web.ews.upstream.disable}proxy_buffering    off;
+        ${web.ews.upstream.disable}
+        ${web.ews.upstream.disable}# For audit
+        ${web.ews.upstream.disable}proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        ${web.ews.upstream.disable}
+        ${web.ews.upstream.disable}# For Virtual Hosting
+        ${web.ews.upstream.disable}set $virtual_host $http_host;
+        ${web.ews.upstream.disable}if ($virtual_host = '') {
+            ${web.ews.upstream.disable}set $virtual_host $server_name:$server_port;
+        ${web.ews.upstream.disable}}
+        ${web.ews.upstream.disable}proxy_set_header Host            $virtual_host;
+        ${web.ews.upstream.disable}
+        ${web.ews.upstream.disable}# Location header fudging
+        ${web.ews.upstream.disable}# Because NGINX SSL speaks plain HTTP to upstream, therefore any
+        ${web.ews.upstream.disable}# redirects to http:// coming from the upstream need to be fudged
+        ${web.ews.upstream.disable}# to https://
+        ${web.ews.upstream.disable}#
+        ${web.ews.upstream.disable}proxy_redirect http://$http_host/ https://$http_host/;
+        ${web.ews.upstream.disable}
+        ${web.ews.upstream.disable}# Fudge inter-mailbox redirects (kludge)
+        ${web.ews.upstream.disable}proxy_redirect http://$relhost/ https://$http_host/;
+    ${web.ews.upstream.disable}}
 
     location ~* /(service|principals|dav|\.well-known|home|shf|user|certauth|spnegoauth)($|/)
     {
@@ -806,9 +806,9 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Mailbox Upstream
-        proxy_pass       ${web.upstream.target};
+        proxy_pass         ${web.upstream.target};
         proxy_http_version 1.0;
-        proxy_set_header  Connection close;
+        proxy_set_header   Connection close;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
