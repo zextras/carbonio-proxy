@@ -3,7 +3,7 @@ zm_lookup {
     zm_lookup_handlers  ${zmlookup.:handlers};
 
     # The timeout to lookup in the lookup handler. This timeout
-    # does not include the time out accessing memcache, which is 
+    # does not include the time out accessing memcache, which is
     # controlled by "timeout" in nginx.conf.memecache.
     #
     zm_lookup_timeout   ${zmlookup.timeout};

@@ -9,20 +9,20 @@ server
     # zimbraReverseProxySNIEnabled is FALSE, in which case the deprecated zimbraVirtualIPAddress
     # of the domain is used. IP-based virtual hosting is deprecated in favour of SNI.
     ${core.ipboth.enabled}listen                    ${vip}${web.carbonio.admin.port} ssl;
-    ${core.ipv4only.enabled}listen                  ${vip}${web.carbonio.admin.port} ssl;
-    ${core.ipv6only.enabled}listen                  ${vip}${web.carbonio.admin.port} ssl;
-    http2 on;
-    ssl_protocols           ${web.ssl.protocols};
+    ${core.ipv4only.enabled}listen                    ${vip}${web.carbonio.admin.port} ssl;
+    ${core.ipv6only.enabled}listen                    ${vip}${web.carbonio.admin.port} ssl;
+    http2                     on;
+    ssl_protocols             ${web.ssl.protocols};
     ssl_prefer_server_ciphers ${web.ssl.preferserverciphers};
-    ssl_session_cache       ${ssl.session.cachesize};
-    ssl_session_timeout     ${ssl.session.timeout};
-    ssl_ciphers             ${web.ssl.ciphers};
-    ssl_ecdh_curve          ${web.ssl.ecdh.curve};
-    ssl_certificate         ${ssl.crt};
-    ssl_certificate_key     ${ssl.key};
-    proxy_ssl_protocols           ${web.ssl.protocols};
-    proxy_ssl_ciphers             ${web.ssl.ciphers};
-    ${web.ssl.dhparam.enabled}ssl_dhparam             ${web.ssl.dhparam.file};
+    ssl_session_cache         ${ssl.session.cachesize};
+    ssl_session_timeout       ${ssl.session.timeout};
+    ssl_ciphers               ${web.ssl.ciphers};
+    ssl_ecdh_curve            ${web.ssl.ecdh.curve};
+    ssl_certificate           ${ssl.crt};
+    ssl_certificate_key       ${ssl.key};
+    proxy_ssl_protocols       ${web.ssl.protocols};
+    proxy_ssl_ciphers         ${web.ssl.ciphers};
+    ${web.ssl.dhparam.enabled}ssl_dhparam               ${web.ssl.dhparam.file};
 
     # no maximum limit imposed on the size of the request body
     client_max_body_size    0;
@@ -40,7 +40,7 @@ server
 
     location = /favicon.ico
     {
-      return 404;
+        return 404;
     }
 
     location /
@@ -54,17 +54,17 @@ server
     location /services/storages/
     {
         proxy_request_buffering off;
-        proxy_pass http://carbonio-storages/;
-        proxy_http_version 1.1;
-        proxy_set_header Connection "";
+        proxy_pass              http://carbonio-storages/;
+        proxy_http_version      1.1;
+        proxy_set_header        Connection "";
     }
 
     location /services/catalog/
     {
         proxy_request_buffering off;
-        proxy_pass http://carbonio-catalog/;
-        proxy_http_version 1.1;
-        proxy_set_header Connection "";
+        proxy_pass              http://carbonio-catalog/;
+        proxy_http_version      1.1;
+        proxy_set_header        Connection "";
     }
 
     location ^~ /service
@@ -93,7 +93,7 @@ server
     {
         ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias /opt/zextras/admin/login;
+        alias      /opt/zextras/admin/login;
     }
 
     location /carbonioAdmin
@@ -101,30 +101,30 @@ server
         try_files index.html /carbonioAdmin/;
         ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias /opt/zextras/admin/iris/carbonio-admin-ui/current/;
+        alias      /opt/zextras/admin/iris/carbonio-admin-ui/current/;
     }
 
     location ~ "^/static/(iris/[^/]+/[a-f0-9]{7,}/.*)$"
     {
         ${web.add.headers.vhost}
         add_header Cache-Control "public, max-age=31536000, immutable";
-        etag off;
-        alias /opt/zextras/admin/$1;
+        etag       off;
+        alias      /opt/zextras/admin/$1;
     }
 
     location ~ "^/static/(login/assets/[a-f0-9]{8,}\..+)$"
     {
         ${web.add.headers.vhost}
         add_header Cache-Control "public, max-age=31536000, immutable";
-        etag off;
-        alias /opt/zextras/admin/$1;
+        etag       off;
+        alias      /opt/zextras/admin/$1;
     }
 
     location ~/static/(.*)
     {
         ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias /opt/zextras/admin/$1;
+        alias      /opt/zextras/admin/$1;
     }
 
     location ~* ^/zmerror_.*\.html$ {
@@ -142,7 +142,7 @@ server
         # Logout changes state, so it is accepted only via POST
         if ($request_method != POST) {
             add_header Allow "POST" always;
-            return 405;
+            return     405;
         }
 
         add_header Set-Cookie "ZM_ADMIN_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; Secure; SameSite=Strict";
@@ -162,12 +162,12 @@ server
 
     location ^~ /zx/
     {
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Port $server_port;
-        proxy_set_header Host $http_host;
-        proxy_pass ${web.upstream.zx};
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Port $server_port;
+        proxy_set_header   Host $http_host;
+        proxy_pass         ${web.upstream.zx};
         proxy_http_version 1.0;
-        proxy_set_header  Connection close;
+        proxy_set_header   Connection close;
     }
 }

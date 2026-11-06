@@ -17,7 +17,7 @@ http
     # You need to customize these two values by setting local config
     # proxy_server_names_hash_max_size and proxy_names_hash_bucket_size
     # when too many virtual host names are added
-    server_names_hash_max_size ${web.server_names.max_size};
+    server_names_hash_max_size    ${web.server_names.max_size};
     server_names_hash_bucket_size ${web.server_names.bucket_size};
 
 
@@ -30,38 +30,38 @@ http
     # set by the browser (HTTPS only) and cannot be forged by page markup; requests without it
     # match only the default. Regexes are evaluated in order, first match wins.
     map "$http_sec_fetch_dest:$uri" $untrusted_subresource {
-        default 0;
-        "~^(document|iframe|frame|empty|websocket):" 0;
-        "~^[a-z]+:/static/" 0;
-        "~^[a-z]+:/service/home/~/" 0;
-        "~^[a-z]+:/service/preview/" 0;
-        "~^[a-z]+:/services/files/preview/" 0;
-        "~^(video|audio):/services/files/download/" 0;
-        "~^[a-z]+:/services/docs/editor/" 0;
-        "~^[a-z]+:/services/chats/preview/" 0;
-        "~^[a-z]+:/services/chats/attachments/" 0;
+        default                                         0;
+        "~^(document|iframe|frame|empty|websocket):"    0;
+        "~^[a-z]+:/static/"                             0;
+        "~^[a-z]+:/service/home/~/"                     0;
+        "~^[a-z]+:/service/preview/"                    0;
+        "~^[a-z]+:/services/files/preview/"             0;
+        "~^(video|audio):/services/files/download/"     0;
+        "~^[a-z]+:/services/docs/editor/"               0;
+        "~^[a-z]+:/services/chats/preview/"             0;
+        "~^[a-z]+:/services/chats/attachments/"         0;
         "~^[a-z]+:/services/chats/rooms/[^/]+/picture$" 0;
-        "~^[a-z]+:/meeting(/|$)" 0;
-        "~^[a-z]+:/files/public/link/access/assets/" 0;
-        "~^[a-z]+:" 1;
+        "~^[a-z]+:/meeting(/|$)"                        0;
+        "~^[a-z]+:/files/public/link/access/assets/"    0;
+        "~^[a-z]+:"                                     1;
     }
 
     # Enable Access logs for web traffic
     log_format upstream '$remote_addr:$remote_port - $remote_user [$time_local]  '
-      '"$request_method $scheme://$host$request_uri $server_protocol" $status $bytes_sent '
-      '"$http_referer" "$http_user_agent" "$upstream_addr" "$server_addr:$server_port"';
+        '"$request_method $scheme://$host$request_uri $server_protocol" $status $bytes_sent '
+        '"$http_referer" "$http_user_agent" "$upstream_addr" "$server_addr:$server_port"';
     access_log ${web.logfile} upstream;
 
     # Set proxy timeout
     proxy_connect_timeout ${web.upstream.connect.timeout};
-    proxy_read_timeout ${web.upstream.read.timeout};
-    proxy_send_timeout ${web.upstream.send.timeout};
+    proxy_read_timeout    ${web.upstream.read.timeout};
+    proxy_send_timeout    ${web.upstream.send.timeout};
 
     # Custom error pages for upstream connection errors
     proxy_intercept_errors on;
-    error_page 502 /zmerror_upstream_502.html;
-    error_page 504 /zmerror_upstream_504.html;
-    error_page 404 /carbonio_error_404.html;
+    error_page             502 /zmerror_upstream_502.html;
+    error_page             504 /zmerror_upstream_504.html;
+    error_page             404 /carbonio_error_404.html;
 
     ${ssl.clientcertca.enabled}ssl_client_certificate  ${ssl.clientcertca.default};
 

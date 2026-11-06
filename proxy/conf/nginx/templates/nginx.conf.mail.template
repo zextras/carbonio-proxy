@@ -246,10 +246,10 @@ mail
     # different LDAP attributes
     # Currently, only PLAIN and GSSAPI mechanisms are supported
     #
-    ${mail.imap.authplain.enabled}imap_auth          plain;
+    ${mail.imap.authplain.enabled}imap_auth         plain;
     ${mail.imap.authgssapi.enabled}imap_auth         gssapi;
 
-    ${mail.pop3.authplain.enabled}pop3_auth          plain;
+    ${mail.pop3.authplain.enabled}pop3_auth         plain;
     ${mail.pop3.authgssapi.enabled}pop3_auth         gssapi;
 
     # Specify whether to use literal strings while issuing the LOGIN command
@@ -275,8 +275,8 @@ mail
     # TLS configuration
     #
     ssl_prefer_server_ciphers   ${mail.ssl.preferserverciphers};
-    ssl_certificate     ${ssl.crt.default};
-    ssl_certificate_key ${ssl.key.default};
+    ssl_certificate             ${ssl.crt.default};
+    ssl_certificate_key         ${ssl.key.default};
 
     # SSL Protocols & Ciphers configuration
     # Enabled protocols & Permitted ciphers. Ciphers are assigned in the formats supported by OpenSSL
@@ -287,13 +287,13 @@ mail
     # SSL ECDH cipher curve configuration
     ssl_ecdh_curve          ${mail.ssl.ecdh.curve};
 
-    ${mail.imap.enabled} include ${core.includes}/${core.cprefix}.mail.imap.default;
-    ${mail.imap.enabled} include ${core.includes}/${core.cprefix}.mail.imap;
-    ${mail.imaps.enabled} include ${core.includes}/${core.cprefix}.mail.imaps.default;
-    ${mail.imaps.enabled} include ${core.includes}/${core.cprefix}.mail.imaps;
-    ${mail.pop3.enabled} include ${core.includes}/${core.cprefix}.mail.pop3.default;
-    ${mail.pop3.enabled} include ${core.includes}/${core.cprefix}.mail.pop3;
-    ${mail.pop3s.enabled} include ${core.includes}/${core.cprefix}.mail.pop3s.default;
-    ${mail.pop3s.enabled} include ${core.includes}/${core.cprefix}.mail.pop3s;
+    ${mail.imap.enabled}include ${core.includes}/${core.cprefix}.mail.imap.default;
+    ${mail.imap.enabled}include ${core.includes}/${core.cprefix}.mail.imap;
+    ${mail.imaps.enabled}include ${core.includes}/${core.cprefix}.mail.imaps.default;
+    ${mail.imaps.enabled}include ${core.includes}/${core.cprefix}.mail.imaps;
+    ${mail.pop3.enabled}include ${core.includes}/${core.cprefix}.mail.pop3.default;
+    ${mail.pop3.enabled}include ${core.includes}/${core.cprefix}.mail.pop3;
+    ${mail.pop3s.enabled}include ${core.includes}/${core.cprefix}.mail.pop3s.default;
+    ${mail.pop3s.enabled}include ${core.includes}/${core.cprefix}.mail.pop3s;
 
 }

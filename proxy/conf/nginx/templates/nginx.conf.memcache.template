@@ -6,7 +6,7 @@ memcache
     #
     # First connect to the local instance,
     # if that fails, connect to the server via service mesh
-    servers    127.0.0.1:11211;
+    servers   127.0.0.1:11211;
     servers   127.78.0.1:20014;
 
     # The time that NGINX will wait for a cached result from a memcached
