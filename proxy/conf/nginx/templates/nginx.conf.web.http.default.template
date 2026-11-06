@@ -58,7 +58,7 @@ server
         set $login_upstream    ${web.upstream.login.target};
     }
 
-    # the mobile client has been discontinued in Zimbra9, hence if the client is mobile, rerouting the requests to user's
+    # the legacy mobile client has been discontinued, hence if the client is mobile, rerouting the requests to user's
     # server - which could be an old one and not yet upgraded
     if ($arg_client = "mobile") {
         set $login_upstream    http://zimbra_ssl_webclient;
@@ -396,7 +396,7 @@ server
 
         # End stray redirect hack
 
-        # Proxy to Zimbra Upstream
+        # Proxy to Upstream
         proxy_pass ${web.upstream.target};
         proxy_http_version 1.0;
         proxy_set_header   Connection close;
@@ -477,7 +477,7 @@ server
 
         # End stray redirect hack
 
-        # Proxy to Zimbra Upstream servers, with large buffers
+        # Proxy to Upstream servers, with large buffers
         proxy_pass ${web.upstream.target};
         proxy_http_version 1.0;
         proxy_set_header   Connection close;
@@ -540,7 +540,7 @@ server
 
         # End stray redirect hack
 
-        # Proxy to Zimbra Upstream
+        # Proxy to Upstream
         proxy_pass ${web.upstream.target};
         proxy_http_version 1.0;
         proxy_set_header   Connection close;
@@ -597,7 +597,7 @@ server
 
         # End stray redirect hack
 
-        # Proxy to Zimbra Upstream
+        # Proxy to Upstream
         proxy_pass ${web.upstream.target};
         proxy_http_version 1.0;
         proxy_set_header   Connection close;
@@ -658,7 +658,7 @@ server
 
         # End stray redirect hack
 
-        # Proxy to Zimbra Mailbox Upstream
+        # Proxy to Mailbox Upstream
         proxy_pass         $autodiscover_upstream;
         proxy_http_version 1.0;
         proxy_set_header   Connection close;
@@ -696,7 +696,7 @@ server
 
     ${web.ews.upstream.disable}location ~* ^/ews/Exchange.asmx
     ${web.ews.upstream.disable}{
-        ${web.ews.upstream.disable}# Proxy to Zimbra Upstream
+        ${web.ews.upstream.disable}# Proxy to Upstream
         ${web.ews.upstream.disable}proxy_pass ${web.upstream.ews.target};
         ${web.ews.upstream.disable}proxy_http_version 1.0;
         ${web.ews.upstream.disable}proxy_set_header   Connection close;
@@ -757,7 +757,7 @@ server
 
         # End stray redirect hack
 
-        # Proxy to Zimbra Mailbox Upstream
+        # Proxy to Mailbox Upstream
         proxy_pass         ${web.upstream.target};
         proxy_http_version 1.0;
         proxy_set_header   Connection close;

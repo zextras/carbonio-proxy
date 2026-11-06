@@ -265,7 +265,7 @@ mail
     # Auth Wait Interval
     # Specifies the time interval that NGINX will wait before rejecting an
     # authentication attempt to the upstream mail server with invalid credentials.
-    # This value is not related to the wait time when Zimbra lookup handler replies
+    # This value is not related to the wait time when the lookup handler replies
     # some login error, which is controled by the "Auth-Wait" header returned by the
     # lookup handler.
     # If not specified, this value defaults to 10 seconds.
