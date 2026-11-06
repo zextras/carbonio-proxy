@@ -69,13 +69,13 @@ export default {
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "sed -i 's|<revision>.*</revision>|<revision>${nextRelease.version}</revision>|' pom.xml && sed -i 's/^pkgver=.*/pkgver=\"${nextRelease.version}\"/' proxy/PKGBUILD"
+        "prepareCmd": "sed -i 's/^pkgver=.*/pkgver=\"${nextRelease.version}\"/' proxy/PKGBUILD"
       }
     ],
     [
       '@semantic-release/git',
       {
-        assets: ['pom.xml', 'proxy/PKGBUILD'],
+        assets: ['proxy/PKGBUILD'],
         message: 'chore(release): ${nextRelease.version} [skip ci]'
       }
     ],

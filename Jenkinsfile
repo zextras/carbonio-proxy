@@ -17,7 +17,6 @@ pipeline {
     }
 
     environment {
-        JAVA_OPTS = '-Dfile.encoding=UTF8'
         jenkins_build = 'true'
         LC_ALL = 'C.UTF-8'
     }
@@ -41,14 +40,6 @@ pipeline {
             steps {
                 script {
                     gitleaksStage()
-                }
-            }
-        }
-
-        stage('Maven') {
-            steps {
-                script {
-                    mavenStage()
                 }
             }
         }
