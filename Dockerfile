@@ -1,30 +1,25 @@
 # syntax=docker/dockerfile:1.24
 
+# Stage 0: the base image (also the one of the final stage), and the static
+# configd binary.
+FROM --platform=$TARGETPLATFORM registry.dev.zextras.com/dev/carbonio-mailbox:devel AS base-image
+FROM --platform=$TARGETPLATFORM registry.dev.zextras.com/dev/carbonio-configd:main AS configd
+
 # Stage 1: runs natively on BUILDPLATFORM (amd64 CI builder) — no QEMU.
 # Downloads carbonio-nginx + runtime libs for TARGETARCH via apt-get download
 # (no dep resolution, no postinst scripts, no service-discover/resolvconf).
-# Also pre-generates the self-signed cert and zmproxyconfgen wrapper so the
-# final stage needs zero RUN steps.
+# Also pre-generates the self-signed cert, the zmproxyconfgen wrapper and the
+# zextras user/group files so the final stage needs zero RUN steps.
 FROM --platform=$BUILDPLATFORM docker.io/library/ubuntu:jammy AS nginx-installer
 
 ARG TARGETARCH
 ARG BUILDARCH=amd64
-ARG PROXY_JAVA_ARGS="-Dfile.encoding=UTF-8 -server \
-              -Dhttps.protocols=TLSv1.2,TLSv1.3 \
-              -Djdk.tls.client.protocols=TLSv1.2,TLSv1.3 \
-              -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true \
-              -Dsun.net.inetaddr.ttl=60 -Dorg.apache.jasper.compiler.disablejsr199=true \
-              -XX:+UseG1GC -XX:SoftRefLRUPolicyMSPerMB=1 -XX:+UnlockExperimentalVMOptions \
-              -XX:G1NewSizePercent=15 -XX:G1MaxNewSizePercent=45 -XX:-OmitStackTraceInFastThrow \
-              -Djava.security.egd=file:/dev/./urandom \
-              --add-opens java.base/java.lang=ALL-UNNAMED \
-              -Xss256k -Dlog4j.configurationFile=/opt/zextras/conf/log4j.properties \
-              -Xms1996m -Xmx1996m -Djava.io.tmpdir=/opt/zextras/mailboxd/work \
-              -Djava.library.path=/opt/zextras/lib \
-              -Dzimbra.config=/localconfig/localconfig.xml \
-              -Dzimbra.native.required=false \
-              -Dlog4j.configurationFile=/opt/zextras/conf/log4j.properties \
-              -cp '/opt/zextras/mailbox/jars/*:/opt/zextras/proxyconfgen/proxyconfgen.jar'"
+
+# passwd/group of the final stage's base image: the zextras user is appended to
+# them below. configd refuses to write the proxy configuration as root, it
+# insists on the 'zextras' user (the Java generator did not care).
+COPY --from=base-image /etc/passwd /base/passwd
+COPY --from=base-image /etc/group /base/group
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates openssl \
@@ -66,18 +61,26 @@ RUN apt-get update \
         -nodes -keyout /staging/opt/zextras/conf/nginx.key \
         -out /staging/opt/zextras/conf/nginx.crt -subj "/CN=example.com" \
         -addext "subjectAltName=DNS:example.com,DNS:*.example.com,IP:10.0.0.1" \
- # Write zmproxyconfgen wrapper
+ # zmproxyconfgen wrapper: configd is the nginx configuration generator
  && mkdir -p /staging/usr/bin \
- && echo "java ${PROXY_JAVA_ARGS} com.zimbra.cs.util.proxyconfgen.ProxyConfGen \"\$@\"" \
+ && printf '#!/bin/sh\nexec /opt/zextras/bin/configd proxy gen "$@"\n' \
     > /staging/usr/bin/zmproxyconfgen \
- && chmod +x /staging/usr/bin/zmproxyconfgen \
+ && chmod 755 /staging/usr/bin/zmproxyconfgen \
+ # configd reads <base dir>/conf/localconfig.xml; the image keeps it (the
+ # entrypoint fills in its placeholders) at /localconfig/localconfig.xml, the
+ # path the mailbox tools (zmprov) read
+ && ln -s /localconfig/localconfig.xml /staging/opt/zextras/conf/localconfig.xml \
+ # zextras user and group (uid/gid 999), appended to the base image files
+ && mkdir -p /staging/etc \
+ && { cat /base/passwd; echo 'zextras:x:999:999:Carbonio:/opt/zextras:/usr/sbin/nologin'; } \
+    > /staging/etc/passwd \
+ && { cat /base/group; echo 'zextras:x:999:'; } > /staging/etc/group \
  && rm -rf /var/lib/apt/lists/*
 
 # Stage 2: final image — TARGETPLATFORM, zero RUN steps (no QEMU needed).
-FROM --platform=$TARGETPLATFORM registry.dev.zextras.com/dev/carbonio-mailbox:devel
+FROM --platform=$TARGETPLATFORM base-image
 USER root
 
-COPY target/proxyconfgen.jar /opt/zextras/proxyconfgen/proxyconfgen.jar
 COPY entrypoint.sh entrypoint.sh
 COPY proxy/conf /opt/zextras/conf
 
@@ -101,6 +104,11 @@ ENV CARBONIO_MEMCACHED_HOST="127.78.0.1:20014"
 COPY --from=nginx-installer /staging/opt /opt
 COPY --from=nginx-installer /staging/usr/local/lib /usr/local/lib/
 COPY --from=nginx-installer /staging/usr/bin/zmproxyconfgen /usr/bin/zmproxyconfgen
+COPY --from=nginx-installer /staging/etc/passwd /staging/etc/group /etc/
+COPY --from=configd /opt/zextras/bin/configd /opt/zextras/bin/configd
+# LDAP attribute schema configd reads (<base dir>/conf/attrs); the Java generator
+# had it inside the mailbox jars
+COPY --from=configd /opt/zextras/share/configd/conf/attrs /opt/zextras/conf/attrs
 ENV LD_LIBRARY_PATH=/usr/local/lib:${LD_LIBRARY_PATH}
 
 ENTRYPOINT ["./entrypoint.sh"]

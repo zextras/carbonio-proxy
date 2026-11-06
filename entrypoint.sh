@@ -45,8 +45,9 @@ if [[ $SERVER_EXISTS == *"account.NO_SUCH_SERVER"* ]]; then
 fi
 
 
-chmod +x /usr/bin/zmproxyconfgen
-
-/usr/bin/zmproxyconfgen
+# configd refuses to write the configuration as root: hand the configuration
+# directory to the zextras user and generate as that user
+chown -R zextras:zextras /opt/zextras/conf
+runuser -u zextras -- /usr/bin/zmproxyconfgen
 
 /opt/zextras/common/sbin/nginx -c /opt/zextras/conf/nginx.conf -g "daemon off;"
