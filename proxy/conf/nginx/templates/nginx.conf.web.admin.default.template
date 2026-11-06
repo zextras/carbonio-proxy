@@ -32,7 +32,7 @@ server
 
     location /
     {
-        # Proxy to Zimbra adminclient Upstream
+        # Proxy to adminclient Upstream
         proxy_pass https://${web.admin.upstream.adminclient.name};
 
         # For audit
@@ -54,7 +54,7 @@ server
 
     location ^~ /service
     {
-        # Proxy to Zimbra Upstream
+        # Proxy to Upstream
         proxy_pass https://${web.admin.upstream.name};
 
         # For audit

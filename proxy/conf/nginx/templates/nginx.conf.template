@@ -1,4 +1,4 @@
-# NGINX POP/IMAP proxy configuration file for use with Zimbra
+# NGINX POP/IMAP proxy configuration file for use with Carbonio
 #
 
 working_directory ${core.workdir};

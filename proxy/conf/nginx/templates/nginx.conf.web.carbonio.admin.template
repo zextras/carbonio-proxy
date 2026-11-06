@@ -69,7 +69,7 @@ server
 
     location ^~ /service
     {
-        # Proxy to Zimbra Upstream
+        # Proxy to Upstream
         proxy_pass https://${web.admin.upstream.name};
 
         # For audit

@@ -17,7 +17,7 @@ events {
     # RLIMIT_NOFILE defines the maximum number of open file descriptors that
     # a process running as a user can have - by default, limits.conf on a
     # zextras system will ensure that the zextras user has more than 10k file
-    # descriptors allowed for a zimbra process
+    # descriptors allowed for a Carbonio process
 
     # (note) also see worker_rlimit_nofile at
     # http://wiki.codemongers.com/NginxMainModule#worker_rlimit_nofile
