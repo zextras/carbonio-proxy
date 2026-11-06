@@ -3,25 +3,25 @@
 #
 
 map $http_cookie $auth_token_cookie {
-    default            0;
-    "~ZM_AUTH_TOKEN="  1;
+    default           0;
+    "~ZM_AUTH_TOKEN=" 1;
 }
 
 server
 {
-    server_name             ${vhn};
+    server_name ${vhn};
 
     # The listen address prefix is empty (all addresses, virtual host selected by server_name)
     # unless zimbraReverseProxySNIEnabled is FALSE, in which case the deprecated
     # zimbraVirtualIPAddress of the domain is used. IP-based virtual hosting is deprecated.
-    ${core.ipboth.enabled}listen                  ${vip}${web.http.port};
-    ${core.ipv4only.enabled}listen                  ${vip}${web.http.port};
-    ${core.ipv6only.enabled}listen                  ${vip}${web.http.port};
+    ${core.ipboth.enabled}listen ${vip}${web.http.port};
+    ${core.ipv4only.enabled}listen ${vip}${web.http.port};
+    ${core.ipv6only.enabled}listen ${vip}${web.http.port};
 
 
     # no maximum limit imposed on the size of the request body
-    client_max_body_size    0;
-    include                 ${core.includes}/${core.cprefix}.web.http.mode-${web.mailmode};
+    client_max_body_size 0;
+    include              ${core.includes}/${core.cprefix}.web.http.mode-${web.mailmode};
 
     # nginx compression
     ${proxy.http.compression}
@@ -44,7 +44,7 @@ server
     location = /robots.txt
     {
         default_type text/plain;
-        return       200 "User-agent: *\nDisallow: /\n";
+        return 200 "User-agent: *\nDisallow: /\n";
     }
 
     location = /favicon.ico
@@ -57,7 +57,7 @@ server
         # Logout changes state, so it is accepted only via POST
         if ($request_method != POST) {
             add_header Allow "POST" always;
-            return     405;
+            return 405;
         }
 
         add_header Set-Cookie "ZM_AUTH_TOKEN=; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Strict";
@@ -74,23 +74,23 @@ server
     {
         ${web.add.headers.vhost}
         add_header Cache-Control "public, max-age=31536000, immutable";
-        etag       off;
-        alias      /opt/zextras/web/$1;
+        etag off;
+        alias /opt/zextras/web/$1;
     }
 
     location ~ "^/static/(login/assets/[a-f0-9]{8,}\..+)$"
     {
         ${web.add.headers.vhost}
         add_header Cache-Control "public, max-age=31536000, immutable";
-        etag       off;
-        alias      /opt/zextras/web/$1;
+        etag off;
+        alias /opt/zextras/web/$1;
     }
 
     location ~/static/(.*)
     {
         ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias      /opt/zextras/web/$1;
+        alias /opt/zextras/web/$1;
     }
 
     # Serve ACME challenges from disk; other well-known URIs proxy to mailbox.
@@ -98,7 +98,7 @@ server
     {
         ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias      /opt/zextras/.well-known/acme-challenge/$1;
+        alias /opt/zextras/.well-known/acme-challenge/$1;
     }
 
     location /meeting
@@ -106,7 +106,7 @@ server
         try_files index.html /meeting/;
         ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias      /opt/zextras/web/iris/carbonio-chats-ui/current/meeting/;
+        alias /opt/zextras/web/iris/carbonio-chats-ui/current/meeting/;
     }
 
     location /files/public/link/access/assets/
@@ -119,7 +119,7 @@ server
     {
         ${web.add.headers.vhost}
         try_files index.html /carbonio-files-public-folder-ui/;
-        alias     /opt/zextras/web/carbonio-files-public-folder-ui/;
+        alias /opt/zextras/web/carbonio-files-public-folder-ui/;
     }
 
     location /services/files/
@@ -137,47 +137,47 @@ server
             return 307 "/static/login/";
         }
         proxy_request_buffering off;
-        proxy_pass              http://files/;
-        proxy_http_version      1.1;
-        proxy_set_header        Connection "";
+        proxy_pass http://files/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/chats/events
     {
-        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header        Upgrade $http_upgrade;
-        proxy_set_header        Connection "upgrade";
-        proxy_set_header        Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $http_host;
         proxy_request_buffering off;
-        proxy_pass              http://ws-collaboration/events;
-        proxy_http_version      1.1;
+        proxy_pass http://ws-collaboration/events;
+        proxy_http_version 1.1;
     }
 
     location /services/chats/
     {
         proxy_request_buffering off;
-        proxy_pass              http://ws-collaboration/;
-        proxy_http_version      1.1;
-        proxy_set_header        Connection "";
+        proxy_pass http://ws-collaboration/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/messaging/ws-xmpp
     {
-        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header        Upgrade $http_upgrade;
-        proxy_set_header        Connection "upgrade";
-        proxy_set_header        Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $http_host;
         proxy_request_buffering off;
-        proxy_pass              http://message-dispatcher-http/ws-xmpp;
-        proxy_http_version      1.1;
+        proxy_pass http://message-dispatcher-http/ws-xmpp;
+        proxy_http_version 1.1;
     }
 
     location /services/docs/
     {
         proxy_request_buffering off;
-        proxy_pass              http://docs-connector/;
-        proxy_http_version      1.1;
-        proxy_set_header        Connection "";
+        proxy_pass http://docs-connector/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/docs/editor/
@@ -187,62 +187,62 @@ server
         proxy_set_header Host $http_host;
 
         proxy_request_buffering off;
-        proxy_pass              http://docs-editor;
-        proxy_http_version      1.1;
+        proxy_pass http://docs-editor;
+        proxy_http_version 1.1;
     }
 
     location /services/tasks/
     {
         proxy_request_buffering off;
-        proxy_pass              http://tasks/;
-        proxy_http_version      1.1;
-        proxy_set_header        Connection "";
+        proxy_pass http://tasks/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/storages/
     {
         proxy_request_buffering off;
-        proxy_pass              http://carbonio-storages/;
-        proxy_http_version      1.1;
-        proxy_set_header        Connection "";
+        proxy_pass http://carbonio-storages/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/catalog/
     {
         proxy_request_buffering off;
-        proxy_pass              http://carbonio-catalog/;
-        proxy_http_version      1.1;
-        proxy_set_header        Connection "";
+        proxy_pass http://carbonio-catalog/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location /services/mobile/tokens
     {
         proxy_request_buffering off;
-        proxy_pass              http://carbonio-notification-push/tokens;
-        proxy_http_version      1.1;
-        proxy_set_header        Connection "";
+        proxy_pass http://carbonio-notification-push/tokens;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
     }
 
     location ^~ /zx/login/
     {
-        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header   X-Forwarded-Proto $scheme;
-        proxy_set_header   X-Forwarded-Port $server_port;
-        proxy_set_header   Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $http_host;
         proxy_http_version 1.1;
-        proxy_set_header   Connection "";
-        proxy_pass         http://carbonio-auth/zx/login/;
+        proxy_set_header Connection "";
+        proxy_pass http://carbonio-auth/zx/login/;
     }
 
     location ^~ /zx/auth/
     {
-        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header   X-Forwarded-Proto $scheme;
-        proxy_set_header   X-Forwarded-Port $server_port;
-        proxy_set_header   Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $http_host;
         proxy_http_version 1.1;
-        proxy_set_header   Connection "";
-        proxy_pass         http://carbonio-auth/zx/auth/;
+        proxy_set_header Connection "";
+        proxy_pass http://carbonio-auth/zx/auth/;
     }
 
     location ~ ^/carbonio/focus-mode/meetings(/|$)
@@ -250,7 +250,7 @@ server
         try_files index.html /carbonio/focus-mode/meetings/;
         ${web.add.headers.default}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias      /opt/zextras/web/iris/carbonio-shell-ui/current/;
+        alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
     }
 
     location ~ ^/carbonio(/|$)
@@ -262,7 +262,7 @@ server
         try_files index.html /carbonio/;
         ${web.add.headers.vhost}
         add_header Cache-Control "no-cache,must-revalidate,no-transform,max-age=604800";
-        alias      /opt/zextras/web/iris/carbonio-shell-ui/current/;
+        alias /opt/zextras/web/iris/carbonio-shell-ui/current/;
 
     }
 
@@ -428,11 +428,11 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream
-        proxy_pass          ${web.upstream.target};
-        proxy_http_version  1.0;
-        proxy_set_header    Connection close;
-        proxy_read_timeout  ${web.upstream.polling.timeout};
-        proxy_buffering     off;
+        proxy_pass ${web.upstream.target};
+        proxy_http_version 1.0;
+        proxy_set_header   Connection close;
+        proxy_read_timeout ${web.upstream.polling.timeout};
+        proxy_buffering    off;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -457,11 +457,11 @@ server
 
     location ^~ /zx/ws-
     {
-        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_pass         ${web.upstream.zx};
-        proxy_set_header   Upgrade $http_upgrade;
-        proxy_set_header   Connection "upgrade";
-        proxy_set_header   Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass ${web.upstream.zx};
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $http_host;
         proxy_http_version 1.1;
     }
 
@@ -472,11 +472,11 @@ server
 
     location ^~ /zx/
     {
-        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header   X-Forwarded-Proto $scheme;
-        proxy_set_header   X-Forwarded-Port $server_port;
-        proxy_set_header   Host $http_host;
-        proxy_pass         ${web.upstream.zx};
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $http_host;
+        proxy_pass ${web.upstream.zx};
         proxy_http_version 1.0;
         proxy_set_header   Connection close;
     }
@@ -509,10 +509,10 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream servers, with large buffers
-        proxy_pass          ${web.upstream.target};
-        proxy_http_version  1.0;
-        proxy_set_header    Connection close;
-        proxy_read_timeout  ${web.upstream.noop.timeout};
+        proxy_pass ${web.upstream.target};
+        proxy_http_version 1.0;
+        proxy_set_header   Connection close;
+        proxy_read_timeout ${web.upstream.noop.timeout};
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -572,11 +572,11 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream
-        proxy_pass          ${web.upstream.target};
-        proxy_http_version  1.0;
-        proxy_set_header    Connection close;
-        proxy_read_timeout  ${web.upstream.noop.timeout};
-        proxy_buffering     off;
+        proxy_pass ${web.upstream.target};
+        proxy_http_version 1.0;
+        proxy_set_header   Connection close;
+        proxy_read_timeout ${web.upstream.noop.timeout};
+        proxy_buffering    off;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -629,11 +629,11 @@ server
         # End stray redirect hack
 
         # Proxy to Zimbra Upstream
-        proxy_pass          ${web.upstream.target};
-        proxy_http_version  1.0;
-        proxy_set_header    Connection close;
-        proxy_read_timeout  ${web.upstream.waitset.timeout};
-        proxy_buffering     off;
+        proxy_pass ${web.upstream.target};
+        proxy_http_version 1.0;
+        proxy_set_header   Connection close;
+        proxy_read_timeout ${web.upstream.waitset.timeout};
+        proxy_buffering    off;
 
         # For audit
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -683,9 +683,9 @@ server
         }
 
         set $autodiscover_upstream     ${web.upstream.target};
-        ${web.ews.upstream.disable}    if ($http_user_agent ~ "ExchangeWebServices") {
-            ${web.ews.upstream.disable}       set $autodiscover_upstream    ${web.upstream.ews.target};
-            ${web.ews.upstream.disable}    }
+        ${web.ews.upstream.disable}if ($http_user_agent ~ "ExchangeWebServices") {
+            ${web.ews.upstream.disable}set $autodiscover_upstream    ${web.upstream.ews.target};
+        ${web.ews.upstream.disable}}
 
         # End stray redirect hack
 
@@ -719,41 +719,41 @@ server
         # Location block to enable the stub status module
 
         stub_status on;
-        access_log  off;
-        allow       127.0.0.1;
-        allow       ::1;
-        deny        all;
+        access_log off;
+        allow 127.0.0.1;
+        allow ::1;
+        deny all;
     }
 
-    ${web.ews.upstream.disable} location ~* ^/ews/Exchange.asmx
-        ${web.ews.upstream.disable} {
-        ${web.ews.upstream.disable}     # Proxy to Zimbra Upstream
-        ${web.ews.upstream.disable}     proxy_pass          ${web.upstream.ews.target};
-        ${web.ews.upstream.disable}     proxy_http_version 1.0;
-        ${web.ews.upstream.disable}     proxy_set_header  Connection close;
-        ${web.ews.upstream.disable}     proxy_read_timeout  ${web.upstream.polling.timeout};
-        ${web.ews.upstream.disable}     proxy_buffering     off;
+    ${web.ews.upstream.disable}location ~* ^/ews/Exchange.asmx
+    ${web.ews.upstream.disable}{
+        ${web.ews.upstream.disable}# Proxy to Zimbra Upstream
+        ${web.ews.upstream.disable}proxy_pass ${web.upstream.ews.target};
+        ${web.ews.upstream.disable}proxy_http_version 1.0;
+        ${web.ews.upstream.disable}proxy_set_header   Connection close;
+        ${web.ews.upstream.disable}proxy_read_timeout ${web.upstream.polling.timeout};
+        ${web.ews.upstream.disable}proxy_buffering    off;
         ${web.ews.upstream.disable}
-        ${web.ews.upstream.disable}     # For audit
-        ${web.ews.upstream.disable}     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        ${web.ews.upstream.disable}# For audit
+        ${web.ews.upstream.disable}proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         ${web.ews.upstream.disable}
-        ${web.ews.upstream.disable}     # For Virtual Hosting
-        ${web.ews.upstream.disable}     set $virtual_host $http_host;
-        ${web.ews.upstream.disable}     if ($virtual_host = '') {
-            ${web.ews.upstream.disable}        set $virtual_host $server_name:$server_port;
-            ${web.ews.upstream.disable}     }
-        ${web.ews.upstream.disable}     proxy_set_header Host            $virtual_host;
+        ${web.ews.upstream.disable}# For Virtual Hosting
+        ${web.ews.upstream.disable}set $virtual_host $http_host;
+        ${web.ews.upstream.disable}if ($virtual_host = '') {
+            ${web.ews.upstream.disable}set $virtual_host $server_name:$server_port;
+        ${web.ews.upstream.disable}}
+        ${web.ews.upstream.disable}proxy_set_header Host            $virtual_host;
         ${web.ews.upstream.disable}
-        ${web.ews.upstream.disable}     # Location header fudging
-        ${web.ews.upstream.disable}     # Because NGINX SSL speaks plain HTTP to upstream, therefore any
-        ${web.ews.upstream.disable}     # redirects to http:// coming from the upstream need to be fudged
-        ${web.ews.upstream.disable}     # to https://
-        ${web.ews.upstream.disable}     #
-        ${web.ews.upstream.disable}     proxy_redirect http://$http_host/ https://$http_host/;
+        ${web.ews.upstream.disable}# Location header fudging
+        ${web.ews.upstream.disable}# Because NGINX SSL speaks plain HTTP to upstream, therefore any
+        ${web.ews.upstream.disable}# redirects to http:// coming from the upstream need to be fudged
+        ${web.ews.upstream.disable}# to https://
+        ${web.ews.upstream.disable}#
+        ${web.ews.upstream.disable}proxy_redirect http://$http_host/ https://$http_host/;
         ${web.ews.upstream.disable}
-        ${web.ews.upstream.disable}     # Fudge inter-mailbox redirects (kludge)
-        ${web.ews.upstream.disable}     proxy_redirect http://$relhost/ http://$http_host/;
-        ${web.ews.upstream.disable} }
+        ${web.ews.upstream.disable}# Fudge inter-mailbox redirects (kludge)
+        ${web.ews.upstream.disable}proxy_redirect http://$relhost/ http://$http_host/;
+    ${web.ews.upstream.disable}}
 
     location ~* /(service|principals|dav|\.well-known|home|shf|user|certauth|spnegoauth)($|/)
     {

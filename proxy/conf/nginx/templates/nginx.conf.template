@@ -2,11 +2,11 @@
 #
 
 working_directory ${core.workdir};
-include           ${core.includes}/${core.cprefix}.main;
-include           ${core.includes}/${core.cprefix}.memcache;
-${lookup.available}include           ${core.includes}/${core.cprefix}.zmlookup;
-${lookup.available}${mail.enabled}include           ${core.includes}/${core.cprefix}.mail;
-${web.available}${web.enabled}include           ${core.includes}/${core.cprefix}.web;
-include           ${core.includes}/${core.cprefix}.stream;
+include ${core.includes}/${core.cprefix}.main;
+include ${core.includes}/${core.cprefix}.memcache;
+${lookup.available}include ${core.includes}/${core.cprefix}.zmlookup;
+${lookup.available}${mail.enabled}include ${core.includes}/${core.cprefix}.mail;
+${web.available}${web.enabled}include ${core.includes}/${core.cprefix}.web;
+include ${core.includes}/${core.cprefix}.stream;
 
 # Don't edit the below comment

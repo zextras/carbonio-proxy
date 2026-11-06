@@ -84,42 +84,42 @@ upstream ${web.admin.upstream.name}
 #  Define the collection of upstream HTTP EWS servers to which we will
 #  proxy EWS request. Define each server:port against a server directive
 #
-${web.ews.upstream.disable} upstream ${web.ews.upstream.name}
-${web.ews.upstream.disable} {
-    ${web.ews.upstream.disable}    ${web.upstream.ewsserver.:servers}
-    ${web.ews.upstream.disable}    zmauth;
-    ${web.ews.upstream.disable}    keepalive 0;
-    ${web.ews.upstream.disable} }
+${web.ews.upstream.disable}upstream ${web.ews.upstream.name}
+${web.ews.upstream.disable}{
+    ${web.ews.upstream.disable}${web.upstream.ewsserver.:servers}
+    ${web.ews.upstream.disable}zmauth;
+    ${web.ews.upstream.disable}keepalive 0;
+${web.ews.upstream.disable}}
 
 #  Define the collection of upstream HTTPS EWS servers to which we will
 #  proxy EWS request. Define each server:port against a server directive
 #
-${web.ews.upstream.disable} upstream ${web.ssl.ews.upstream.name}
-${web.ews.upstream.disable} {
-    ${web.ews.upstream.disable}    ${web.ssl.upstream.ewsserver.:servers}
-    ${web.ews.upstream.disable}    zmauth;
-    ${web.ews.upstream.disable}    keepalive 0;
-    ${web.ews.upstream.disable} }
+${web.ews.upstream.disable}upstream ${web.ssl.ews.upstream.name}
+${web.ews.upstream.disable}{
+    ${web.ews.upstream.disable}${web.ssl.upstream.ewsserver.:servers}
+    ${web.ews.upstream.disable}zmauth;
+    ${web.ews.upstream.disable}keepalive 0;
+${web.ews.upstream.disable}}
 
 #  Define the collection of upstream HTTP Login servers to which we will
 #  proxy login request. Define each server:port against a server directive
 #
-${web.login.upstream.disable} upstream ${web.login.upstream.name}
-${web.login.upstream.disable} {
-    ${web.login.upstream.disable}    ${web.upstream.loginserver.:servers}
-    ${web.login.upstream.disable}    zmauth;
-    ${web.login.upstream.disable}    keepalive 0;
-    ${web.login.upstream.disable} }
+${web.login.upstream.disable}upstream ${web.login.upstream.name}
+${web.login.upstream.disable}{
+    ${web.login.upstream.disable}${web.upstream.loginserver.:servers}
+    ${web.login.upstream.disable}zmauth;
+    ${web.login.upstream.disable}keepalive 0;
+${web.login.upstream.disable}}
 
 #  Define the collection of upstream HTTPS Login servers to which we will
 #  proxy login request. Define each server:port against a server directive
 #
-${web.login.upstream.disable} upstream ${web.ssl.login.upstream.name}
-${web.login.upstream.disable} {
-    ${web.login.upstream.disable}    ${web.ssl.upstream.loginserver.:servers}
-    ${web.login.upstream.disable}    zmauth;
-    ${web.login.upstream.disable}    keepalive 0;
-    ${web.login.upstream.disable} }
+${web.login.upstream.disable}upstream ${web.ssl.login.upstream.name}
+${web.login.upstream.disable}{
+    ${web.login.upstream.disable}${web.ssl.upstream.loginserver.:servers}
+    ${web.login.upstream.disable}zmauth;
+    ${web.login.upstream.disable}keepalive 0;
+${web.login.upstream.disable}}
 
 
 upstream files

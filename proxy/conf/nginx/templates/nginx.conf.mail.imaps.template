@@ -3,7 +3,7 @@
 #
 server
 {
-    server_name         ${vhn};
+    server_name ${vhn};
     # The listen address prefix is empty (all addresses) unless zimbraReverseProxySNIEnabled is
     # FALSE, in which case the deprecated zimbraVirtualIPAddress of the domain is used. IP-based
     # virtual hosting is deprecated; note that the nginx mail module cannot select a certificate

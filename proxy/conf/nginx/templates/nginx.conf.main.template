@@ -6,7 +6,7 @@
 worker_processes auto;
 # worker_processes ${main.workers};
 
-error_log  ${main.logfile} ${main.loglevel};
+error_log ${main.logfile} ${main.loglevel};
 
 
 events {
@@ -22,8 +22,8 @@ events {
     # (note) also see worker_rlimit_nofile at
     # http://wiki.codemongers.com/NginxMainModule#worker_rlimit_nofile
     #
-    worker_connections  ${main.connections};
-    accept_mutex        ${main.accept_mutex};
+    worker_connections ${main.connections};
+    accept_mutex       ${main.accept_mutex};
 }
 
 # environment variables for worker processes

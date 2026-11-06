@@ -1,12 +1,12 @@
 zm_lookup {
 
-    zm_lookup_handlers  ${zmlookup.:handlers};
+    zm_lookup_handlers ${zmlookup.:handlers};
 
     # The timeout to lookup in the lookup handler. This timeout
     # does not include the time out accessing memcache, which is
     # controlled by "timeout" in nginx.conf.memecache.
     #
-    zm_lookup_timeout   ${zmlookup.timeout};
+    zm_lookup_timeout ${zmlookup.timeout};
 
     # The interval that nginx will try to reconnect to a failed lookup handler.
     #
@@ -15,7 +15,7 @@ zm_lookup {
     # Whether to turn on lookup result caching. This should be always
     # turn on in the production environment.
     #
-    zm_lookup_caching   ${zmlookup.caching};
+    zm_lookup_caching ${zmlookup.caching};
 
     # master authenticating user for cases where nginx must authenticate
     # on behalf of the end user -- this is required in those sasl auth
@@ -36,7 +36,7 @@ zm_lookup {
     # the client IP will be appended to the login name in the format:
     # <login name>@<client ip>
     #
-    zm_lookup_allow_unqualified   off;
+    zm_lookup_allow_unqualified off;
 
     # URL prefix for the upstream server
     zm_prefix_url ${zmprefix.url};
