@@ -1,9 +1,8 @@
 ---
-# Tekton Pipelines-as-Code evaluation: the Jenkinsfile pipeline without the
-# publishing stages (no Nexus/Artifactory upload, no semantic-release). Images
-# go to registry.dev.zextras.com/ci/tekton/, not to the dev/ namespace.
-# Shared Tasks (git-clone, gitleaks, yap-build, buildah-build) live in the
-# tekton-ci namespace, see zextras/infra-k3s argocd-projects/dev-zextras/tekton-ci.
+# Tekton Pipelines-as-Code: the Jenkinsfile pipeline through the shared
+# zextras/tekton-catalog `packages` pipeline. While Jenkins still builds this
+# repository, publishing is dry-run (no Nexus/Artifactory upload, no
+# semantic-release) and images go to registry.dev.zextras.com/ci/tekton/test/.
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
@@ -14,22 +13,36 @@ metadata:
     appstudio.openshift.io/component: carbonio-proxy
     pipelines.appstudio.openshift.io/type: build
   annotations:
-    # Pull requests into main, pushes to main, tag pushes. Pushes of commits
-    # that belong to an open pull request run only as the pull request.
+    # Pull requests into main, pushes to main, tag pushes.
     pipelinesascode.tekton.dev/on-cel-expression: |
       (event == "pull_request" && target_branch == "main") ||
       (event == "push" && (target_branch == "main" || target_branch.startsWith("refs/tags/")))
     pipelinesascode.tekton.dev/max-keep-runs: "10"
+    # tekton-catalog#1 head until the first catalog tag exists.
+    pipelinesascode.tekton.dev/pipeline: "https://github.com/zextras/tekton-catalog/blob/e2a4f68ee955245c615dd377f924bc5662e5659a/pipelines/packages.yaml"
 spec:
   timeouts:
     pipeline: 2h
+  pipelineRef:
+    name: packages
   params:
-    - name: repo-url
-      value: "{{ repo_url }}"
-    - name: revision
-      value: "{{ revision }}"
-    - name: ref
-      value: "{{ source_branch }}"
+    - {name: repo-url, value: "{{ repo_url }}"}
+    - {name: revision, value: "{{ revision }}"}
+    - {name: source-branch, value: "{{ source_branch }}"}
+    - {name: target-branch, value: "{{ target_branch }}"}
+    - {name: event-type, value: "{{ event_type }}"}
+    - {name: pull-request-number, value: "{{ pull_request_number }}"}
+    - {name: git-auth-secret, value: "{{ git_auth_secret }}"}
+    # Jenkinsfile: buildStage(buildFlags: ' -ds ', useDefaultExcludes: false)
+    - {name: build-flags, value: " -ds "}
+    - {name: use-default-excludes, value: "false"}
+    # Jenkinsfile: the two dockerStage calls
+    - name: images
+      value:
+        - name=carbonio-proxy,dockerfile=Dockerfile,title=Carbonio Proxy
+        - name=carbonio-proxy-sidecar,dockerfile=Dockerfile-sidecar,title=Carbonio Proxy Sidecar
+    - {name: image-platforms, value: "linux/amd64,linux/arm64"}
+    - {name: image-registry-override, value: registry.dev.zextras.com/ci/tekton/test}
   taskRunTemplate:
     podTemplate:
       nodeSelector:
@@ -38,171 +51,10 @@ spec:
     - name: source
       volumeClaimTemplate:
         spec:
-          accessModes:
-            - ReadWriteOnce
+          accessModes: [ReadWriteOnce]
           resources:
             requests:
               storage: 4Gi
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
-    - name: dockerconfig
-      secret:
-        secretName: tekton-registry
-  pipelineSpec:
-    params:
-      - name: repo-url
-      - name: revision
-      - name: ref
-    workspaces:
-      - name: source
-      - name: basic-auth
-      - name: dockerconfig
-    tasks:
-      - name: clone
-        taskRef:
-          resolver: cluster
-          params:
-            - name: name
-              value: git-clone
-            - name: namespace
-              value: tekton-ci
-        params:
-          - name: url
-            value: $(params.repo-url)
-          - name: revision
-            value: $(params.revision)
-          - name: ref
-            value: $(params.ref)
-        workspaces:
-          - name: source
-            workspace: source
-          - name: basic-auth
-            workspace: basic-auth
-
-      - name: gitleaks
-        runAfter:
-          - clone
-        taskRef:
-          resolver: cluster
-          params:
-            - name: name
-              value: gitleaks
-            - name: namespace
-              value: tekton-ci
-        workspaces:
-          - name: source
-            workspace: source
-
-      # Jenkinsfile: buildStage(buildFlags: ' -ds ') on the four yap-*-v2 agents.
-      - name: packages
-        runAfter:
-          - gitleaks
-        taskRef:
-          resolver: cluster
-          params:
-            - name: name
-              value: yap-build
-            - name: namespace
-              value: tekton-ci
-        params:
-          - name: build-flags
-            value: -ds
-          - name: release
-            value: $(tasks.clone.results.snapshot-release)
-        matrix:
-          include:
-            - name: ubuntu-jammy
-              params:
-                - name: distro
-                  value: ubuntu-jammy
-                - name: image
-                  value: docker.io/m0rf30/yap-ubuntu-jammy:2.7.6
-            - name: ubuntu-noble
-              params:
-                - name: distro
-                  value: ubuntu-noble
-                - name: image
-                  value: docker.io/m0rf30/yap-ubuntu-noble:2.8.0
-            - name: rocky-8
-              params:
-                - name: distro
-                  value: rocky-8
-                - name: image
-                  value: docker.io/m0rf30/yap-rocky-8:2.7.6
-            - name: rocky-9
-              params:
-                - name: distro
-                  value: rocky-9
-                - name: image
-                  value: docker.io/m0rf30/yap-rocky-9:2.8.0
-        workspaces:
-          - name: source
-            workspace: source
-
-      # Jenkinsfile: the two dockerStage calls.
-      - name: image-proxy
-        runAfter:
-          - gitleaks
-        taskRef:
-          resolver: cluster
-          params:
-            - name: name
-              value: buildah-build
-            - name: namespace
-              value: tekton-ci
-        params:
-          - name: image
-            value: registry.dev.zextras.com/ci/tekton/carbonio-proxy
-          - name: dockerfile
-            value: Dockerfile
-          - name: platforms
-            value: linux/amd64,linux/arm64
-          - name: tags
-            value: $(tasks.clone.results.image-tags)
-          - name: title
-            value: Carbonio Proxy
-          - name: source-url
-            value: $(params.repo-url)
-          - name: revision
-            value: $(tasks.clone.results.commit)
-          - name: version
-            value: $(tasks.clone.results.version)
-        workspaces:
-          - name: source
-            workspace: source
-          - name: dockerconfig
-            workspace: dockerconfig
-
-      - name: image-sidecar
-        runAfter:
-          - gitleaks
-        taskRef:
-          resolver: cluster
-          params:
-            - name: name
-              value: buildah-build
-            - name: namespace
-              value: tekton-ci
-        params:
-          - name: image
-            value: registry.dev.zextras.com/ci/tekton/carbonio-proxy-sidecar
-          - name: dockerfile
-            value: Dockerfile-sidecar
-          - name: platforms
-            value: linux/amd64,linux/arm64
-          - name: tags
-            value: $(tasks.clone.results.image-tags)
-          - name: title
-            value: Carbonio Proxy Sidecar
-          - name: source-url
-            value: $(params.repo-url)
-          - name: revision
-            value: $(tasks.clone.results.commit)
-          - name: version
-            value: $(tasks.clone.results.version)
-        workspaces:
-          - name: source
-            workspace: source
-          - name: dockerconfig
-            workspace: dockerconfig
