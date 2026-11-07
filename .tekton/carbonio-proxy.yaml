@@ -18,8 +18,7 @@ metadata:
       (event == "pull_request" && target_branch == "main") ||
       (event == "push" && (target_branch == "main" || target_branch.startsWith("refs/tags/")))
     pipelinesascode.tekton.dev/max-keep-runs: "10"
-    # tekton-catalog#1 head until the first catalog tag exists.
-    pipelinesascode.tekton.dev/pipeline: "https://github.com/zextras/tekton-catalog/blob/e2a4f68ee955245c615dd377f924bc5662e5659a/pipelines/packages.yaml"
+    pipelinesascode.tekton.dev/pipeline: "https://github.com/zextras/tekton-catalog/blob/v1.0.0/pipelines/packages.yaml"
 spec:
   timeouts:
     pipeline: 2h
