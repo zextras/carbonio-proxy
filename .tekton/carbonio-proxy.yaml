@@ -18,7 +18,9 @@ metadata:
       (event == "pull_request" && target_branch == "main") ||
       (event == "push" && (target_branch == "main" || target_branch.startsWith("refs/tags/")))
     pipelinesascode.tekton.dev/max-keep-runs: "10"
-    pipelinesascode.tekton.dev/pipeline: "https://github.com/zextras/tekton-catalog/blob/v1.0.0/pipelines/packages.yaml"
+    # Commit of the catalog branch whose `packages` pipeline reports the built
+    # images (results), so Konflux can create Snapshots and release tag builds.
+    pipelinesascode.tekton.dev/pipeline: "https://github.com/zextras/tekton-catalog/blob/9a018b8d61265aac52c8ea3a8ebff4df69037e3c/pipelines/packages.yaml"
 spec:
   timeouts:
     pipeline: 2h
