@@ -77,6 +77,12 @@ pipeline {
                                 ocLabels  : [title: 'Carbonio Proxy Sidecar'],
                                 platforms : ['linux/amd64', 'linux/arm64'] as Set,
                         ])
+                        dockerStage([
+                                dockerfile: 'Dockerfile-templates',
+                                imageName : 'carbonio-proxy-templates',
+                                ocLabels  : [title: 'Carbonio Proxy Templates'],
+                                platforms : ['linux/amd64', 'linux/arm64'] as Set,
+                        ])
                     }
                 }
             }

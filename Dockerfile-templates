@@ -1,0 +1,4 @@
+FROM scratch
+
+COPY proxy/conf/nginx/templates /templates
+COPY proxy/conf/nginx/errors /errors
