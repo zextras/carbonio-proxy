@@ -1,0 +1,61 @@
+---
+# Tekton Pipelines-as-Code: the Jenkinsfile pipeline through the shared
+# zextras/tekton-catalog `packages` pipeline. While Jenkins still builds this
+# repository, publishing is dry-run (no Nexus/Artifactory upload, no
+# semantic-release) and images go to registry.dev.zextras.com/ci/tekton/test/.
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: carbonio-proxy
+  labels:
+    # Konflux UI: shows the run under this Application and Component.
+    appstudio.openshift.io/application: carbonio-proxy
+    appstudio.openshift.io/component: carbonio-proxy
+    pipelines.appstudio.openshift.io/type: build
+  annotations:
+    # Pull requests into main, pushes to main, tag pushes.
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      (event == "pull_request" && target_branch == "main") ||
+      (event == "push" && (target_branch == "main" || target_branch.startsWith("refs/tags/")))
+    pipelinesascode.tekton.dev/max-keep-runs: "10"
+    # Commit of the catalog branch whose `packages` pipeline reports the built
+    # images (results), so Konflux can create Snapshots and release tag builds.
+    pipelinesascode.tekton.dev/pipeline: "https://github.com/zextras/tekton-catalog/blob/0da96ed510ac42f62cdf9c5d6072187b167eaabe/pipelines/packages.yaml"
+spec:
+  timeouts:
+    pipeline: 2h
+  pipelineRef:
+    name: packages
+  params:
+    - {name: repo-url, value: "{{ repo_url }}"}
+    - {name: revision, value: "{{ revision }}"}
+    - {name: source-branch, value: "{{ source_branch }}"}
+    - {name: target-branch, value: "{{ target_branch }}"}
+    - {name: event-type, value: "{{ event_type }}"}
+    - {name: pull-request-number, value: "{{ pull_request_number }}"}
+    - {name: git-auth-secret, value: "{{ git_auth_secret }}"}
+    # Jenkinsfile: buildStage(buildFlags: ' -ds ', useDefaultExcludes: false)
+    - {name: build-flags, value: " -ds "}
+    - {name: use-default-excludes, value: "false"}
+    # Jenkinsfile: the two dockerStage calls
+    - name: images
+      value:
+        - name=carbonio-proxy,dockerfile=Dockerfile,title=Carbonio Proxy
+        - name=carbonio-proxy-sidecar,dockerfile=Dockerfile-sidecar,title=Carbonio Proxy Sidecar
+    - {name: image-platforms, value: "linux/amd64,linux/arm64"}
+    - {name: image-registry-override, value: registry.dev.zextras.com/ci/tekton/test}
+  taskRunTemplate:
+    podTemplate:
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"
+  workspaces:
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes: [ReadWriteOnce]
+          resources:
+            requests:
+              storage: 4Gi
+    - name: basic-auth
+      secret:
+        secretName: "{{ git_auth_secret }}"
