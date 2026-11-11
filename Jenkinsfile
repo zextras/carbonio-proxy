@@ -66,12 +66,6 @@ pipeline {
                 stage('Docker images') {
                     steps {
                         dockerStage([
-                                dockerfile: 'Dockerfile',
-                                imageName : 'carbonio-proxy',
-                                ocLabels  : [title: 'Carbonio Proxy'],
-                                platforms : ['linux/amd64', 'linux/arm64'] as Set,
-                        ])
-                        dockerStage([
                                 dockerfile: 'Dockerfile-sidecar',
                                 imageName : 'carbonio-proxy-sidecar',
                                 ocLabels  : [title: 'Carbonio Proxy Sidecar'],
