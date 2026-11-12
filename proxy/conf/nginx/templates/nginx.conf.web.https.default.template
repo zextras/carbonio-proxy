@@ -259,6 +259,14 @@ server
         proxy_set_header Connection "";
     }
 
+    location /services/license/
+    {
+        proxy_request_buffering off;
+        proxy_pass http://carbonio-license/license/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+
     location /services/catalog/
     {
         proxy_request_buffering off;
