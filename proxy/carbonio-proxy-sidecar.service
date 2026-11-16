@@ -3,7 +3,7 @@ Description=Carbonio Proxy Sidecar
 Documentation=https://docs.zextras.com/
 Requires=network-online.target
 After=network-online.target service-discover.service carbonio-nginx.service
-PartOf=service-discover.target
+PartOf=service-discover.target carbonio-nginx.service
 # The token is written by the pending setup once Consul is bootstrapped.
 # Without it the sidecar cannot start: skip it instead of failing every
 # 15 s until then (CO-4746).
